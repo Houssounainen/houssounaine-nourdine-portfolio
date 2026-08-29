@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://houssounainen.github.io/houssounaine-nourdine-portfolio/sitemap.xml
