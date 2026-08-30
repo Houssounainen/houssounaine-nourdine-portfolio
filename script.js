@@ -1,6 +1,7 @@
 "use strict";
 
 const CONTACT_EMAIL = "houssounainen@gmail.com";
+const SITE_ORIGIN = "https://houssounainenourdine.vercel.app";
 const GA_MEASUREMENT_ID = ""; // Ajouter l'identifiant GA4, par exemple G-XXXXXXXXXX.
 const FEATURE_FLAGS = Object.freeze({ testimonials: false, publications: false, resume: false });
 const RESUME_URL = "";
@@ -284,7 +285,8 @@ const projectData = {
 
 const root = document.documentElement;
 const body = document.body;
-let currentLanguage = localStorage.getItem("portfolio-language") || "fr";
+const requestedLanguage = new URLSearchParams(window.location.search).get("lang");
+let currentLanguage = ["fr", "en"].includes(requestedLanguage) ? requestedLanguage : (localStorage.getItem("portfolio-language") || "fr");
 let currentClientFilter = "current";
 let currentProjectId = null;
 let currentWorksFilter = "all";
@@ -322,13 +324,34 @@ function routeFromLocation() {
 }
 
 function routeUrl(route) {
-  if (cleanRoutesEnabled()) return route === "about" ? "/" : `/${ROUTE_PATHS[route]}`;
+  if (cleanRoutesEnabled()) {
+    const path = route === "about" ? "/" : `/${ROUTE_PATHS[route]}`;
+    return currentLanguage === "en" ? `${path}?lang=en` : path;
+  }
   return `#/${route}`;
 }
 
-function updateDocumentTitle() {
+function updateDocumentMetadata() {
   const label = ROUTE_TITLES[currentLanguage][currentRoute];
-  document.title = `${label} — Houssounaine Nourdine`;
+  const pageTitle = `${label} — Houssounaine Nourdine`;
+  const routePath = currentRoute === "about" ? "/" : `/${ROUTE_PATHS[currentRoute]}`;
+  const canonicalUrl = new URL(routePath, SITE_ORIGIN);
+  if (currentLanguage === "en") canonicalUrl.searchParams.set("lang", "en");
+
+  document.title = pageTitle;
+  document.querySelector('link[rel="canonical"]').href = canonicalUrl.href;
+  document.querySelector('meta[property="og:url"]').content = canonicalUrl.href;
+  document.querySelector('meta[property="og:title"]').content = pageTitle;
+  document.querySelector('meta[property="og:locale"]').content = currentLanguage === "fr" ? "fr_FR" : "en_US";
+  document.querySelector('meta[name="twitter:title"]').content = pageTitle;
+
+  const frenchUrl = new URL(routePath, SITE_ORIGIN);
+  frenchUrl.searchParams.set("lang", "fr");
+  const englishUrl = new URL(routePath, SITE_ORIGIN);
+  englishUrl.searchParams.set("lang", "en");
+  document.querySelector('link[hreflang="fr"]').href = frenchUrl.href;
+  document.querySelector('link[hreflang="en"]').href = englishUrl.href;
+  document.querySelector('link[hreflang="x-default"]').href = new URL(routePath, SITE_ORIGIN).href;
 }
 
 function closeMobileNavigation() {
@@ -343,9 +366,12 @@ function closeMobileNavigation() {
 function setRoute(route, shouldScroll = true) {
   currentRoute = ROUTES.includes(route) ? route : "about";
   body.dataset.route = currentRoute;
+  const activeSections = [];
 
   document.querySelectorAll("[data-route]").forEach((section) => {
     section.hidden = section.dataset.route !== currentRoute;
+    section.classList.remove("route-enter");
+    if (!section.hidden) activeSections.push(section);
   });
   document.querySelectorAll("[data-route-link]").forEach((link) => {
     link.classList.toggle("active", link.dataset.routeLink === currentRoute);
@@ -353,14 +379,17 @@ function setRoute(route, shouldScroll = true) {
     link.setAttribute("href", routeUrl(link.dataset.routeLink));
   });
   document.querySelectorAll(`[data-route="${currentRoute}"] .reveal`).forEach((element) => element.classList.add("visible"));
-  updateDocumentTitle();
+  updateDocumentMetadata();
   closeMobileNavigation();
   if (shouldScroll) window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    window.requestAnimationFrame(() => activeSections.forEach((section) => section.classList.add("route-enter")));
+  }
 }
 
 function navigateToRoute(route) {
   const url = routeUrl(route);
-  if (`${window.location.pathname}${window.location.hash}` !== url) window.history.pushState({ route }, "", url);
+  if (`${window.location.pathname}${window.location.search}${window.location.hash}` !== url) window.history.pushState({ route }, "", url);
   setRoute(route);
 }
 
@@ -385,7 +414,7 @@ function setLanguage(language) {
   document.querySelector(".sidebar-backdrop").setAttribute("aria-label", language === "fr" ? "Fermer le menu" : "Close menu");
   document.querySelectorAll(".dialog-close").forEach((button) => button.setAttribute("aria-label", language === "fr" ? "Fermer" : "Close"));
   setTheme(root.dataset.theme || "dark");
-  updateDocumentTitle();
+  updateDocumentMetadata();
 
   renderClients(currentClientFilter);
   renderWorkFilters();
@@ -625,6 +654,40 @@ function trackEvent(name, parameters = {}) {
   if (typeof window.gtag === "function") window.gtag("event", name, parameters);
 }
 
+function installPlayfulMotion() {
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const portrait = document.querySelector(".portrait-frame");
+
+  if (!reducedMotion && finePointer && portrait) {
+    portrait.addEventListener("pointermove", (event) => {
+      const rect = portrait.getBoundingClientRect();
+      const x = ((event.clientX - rect.left) / rect.width - .5) * 8;
+      const y = ((event.clientY - rect.top) / rect.height - .5) * 8;
+      portrait.style.setProperty("--portrait-shift-x", `${x.toFixed(2)}px`);
+      portrait.style.setProperty("--portrait-shift-y", `${y.toFixed(2)}px`);
+    });
+    portrait.addEventListener("pointerleave", () => {
+      portrait.style.setProperty("--portrait-shift-x", "0px");
+      portrait.style.setProperty("--portrait-shift-y", "0px");
+    });
+  }
+
+  document.addEventListener("pointerdown", (event) => {
+    if (reducedMotion || event.button !== 0) return;
+    const host = event.target.closest(".button, .filter-button, .primary-nav a, .mobile-bottom-nav a, .sidebar-cta");
+    if (!host || host.hasAttribute("disabled")) return;
+    const rect = host.getBoundingClientRect();
+    const wave = document.createElement("span");
+    wave.className = "ripple-wave";
+    wave.style.left = `${event.clientX - rect.left}px`;
+    wave.style.top = `${event.clientY - rect.top}px`;
+    host.classList.add("ripple-host");
+    host.append(wave);
+    wave.addEventListener("animationend", () => wave.remove(), { once: true });
+  });
+}
+
 function init() {
   const storedTheme = localStorage.getItem("portfolio-theme");
   const preferredTheme = storedTheme || "dark";
@@ -637,7 +700,12 @@ function init() {
   if (FEATURE_FLAGS.resume && RESUME_URL) resumeLink.href = RESUME_URL;
 
   document.querySelector(".theme-toggle").addEventListener("click", () => setTheme(root.dataset.theme === "dark" ? "light" : "dark"));
-  document.querySelector(".lang-toggle").addEventListener("click", () => setLanguage(currentLanguage === "fr" ? "en" : "fr"));
+  document.querySelector(".lang-toggle").addEventListener("click", () => {
+    setLanguage(currentLanguage === "fr" ? "en" : "fr");
+    if (cleanRoutesEnabled()) window.history.replaceState({ route: currentRoute }, "", routeUrl(currentRoute));
+    updateDocumentMetadata();
+  });
+  installPlayfulMotion();
 
   const navToggle = document.querySelector(".nav-toggle");
   const nav = document.querySelector(".site-sidebar");

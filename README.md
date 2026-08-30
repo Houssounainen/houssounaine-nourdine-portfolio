@@ -8,7 +8,7 @@ Portfolio personnel bilingue de Houssounaine Nourdine, Lead Community Manager sp
 - responsive design mobile-first ;
 - thèmes clair et sombre ;
 - version française et anglaise ;
-- navigation en écrans distincts avec barre latérale fixe sur ordinateur ;
+- navigation en écrans distincts avec barre latérale fixe sur ordinateur et dock inférieur sur mobile ;
 - chiffres clés animés ;
 - études de cas interactives ;
 - galerie éditoriale de 40 créations graphiques, dont 18 mises en avant ;
@@ -43,4 +43,6 @@ Le formulaire prépare un e-mail dans l’application du visiteur et ne stocke a
 
 ## Publication
 
-Le site peut être publié depuis la branche `main` avec GitHub Pages ou importé directement dans Vercel. Sur Vercel, les rubriques utilisent des URL propres (`/projects`, `/works`, `/clients`, etc.).
+Adresse officielle : [houssounainenourdine.vercel.app](https://houssounainenourdine.vercel.app/).
+
+Le site est déployé automatiquement sur Vercel depuis la branche `main`. Les rubriques utilisent des URL propres (`/projects`, `/works`, `/clients`, etc.).

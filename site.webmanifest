@@ -1,15 +1,15 @@
 {
   "name": "Portfolio de Houssounaine Nourdine",
-  "short_name": "HN Portfolio",
-  "start_url": "./",
+  "short_name": "Houssounaine",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#f8fafc",
   "theme_color": "#0b132b",
   "icons": [
     {
-      "src": "assets/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "assets/profile.webp",
+      "sizes": "900x900",
+      "type": "image/webp",
       "purpose": "any"
     }
   ]

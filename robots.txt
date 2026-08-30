@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://houssounainen.github.io/houssounaine-nourdine-portfolio/sitemap.xml
+Sitemap: https://houssounainenourdine.vercel.app/sitemap.xml
