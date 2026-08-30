@@ -2,7 +2,7 @@
 
 const CONTACT_EMAIL = "houssounainen@gmail.com";
 const SITE_ORIGIN = "https://houssounainenourdine.vercel.app";
-const GA_MEASUREMENT_ID = ""; // Ajouter l'identifiant GA4, par exemple G-XXXXXXXXXX.
+const GA_MEASUREMENT_ID = "G-1LL57GXLVY";
 const FEATURE_FLAGS = Object.freeze({ testimonials: false, publications: false, resume: false });
 const RESUME_URL = "";
 
@@ -55,8 +55,8 @@ const translations = {
     languagesKicker: "Langues", languagesTitle: "Communiquer avec clarté, s’adapter aux publics.", comorian: "Comorien", french: "Français", malagasy: "Malagasy", english: "Anglais", native: "Langue maternelle", fluent: "Courant", intermediate: "Intermédiaire", beginner: "Débutant",
     contactKicker: "Construisons la suite", contactTitle: "Une opportunité, une mission ou une collaboration ?", contactIntro: "Décrivez votre besoin. Je vous répondrai dès que possible pour discuter de la meilleure manière d’avancer ensemble.",
     formName: "Nom", formEmail: "E-mail", formSubject: "Objet", formType: "Type de demande", formChoose: "Choisir une option", formRecruitment: "Recrutement", formConsulting: "Mission de conseil", formPartnership: "Partenariat ou influence", formOther: "Autre", formMessage: "Message", formConsent: "J’accepte que mes informations soient utilisées uniquement pour répondre à ma demande.", formSend: "Préparer l’e-mail", formNote: "Le formulaire ouvre votre application de messagerie ; aucune donnée n’est stockée sur ce site.", formReady: "Votre application de messagerie va s’ouvrir.",
-    footerTagline: "Créativité, discipline et résultats au service des marques.", privacy: "Confidentialité", privacyKicker: "Données personnelles", privacyTitle: "Politique de confidentialité", privacyBody1: "Ce portfolio ne stocke aucune donnée personnelle sur un serveur. Le formulaire prépare un e-mail dans l’application de messagerie du visiteur.", privacyBody2: "Les informations communiquées sont utilisées uniquement pour répondre à la demande. Les statistiques d’audience ne seront activées qu’après configuration et consentement lorsque celui-ci est requis.", close: "Fermer",
-    cookieTitle: "Respect de votre vie privée", cookieBody: "Ce site utilise uniquement les préférences essentielles. Les statistiques anonymes peuvent être activées avec votre accord.", cookieReject: "Refuser", cookieAccept: "Accepter",
+    footerTagline: "Créativité, discipline et résultats au service des marques.", privacy: "Confidentialité", privacyKicker: "Données personnelles", privacyTitle: "Politique de confidentialité", privacyBody1: "Ce portfolio ne stocke aucune donnée personnelle sur un serveur. Le formulaire prépare un e-mail dans l’application de messagerie du visiteur.", privacyBody2: "Les informations communiquées sont utilisées uniquement pour répondre à la demande. Avec votre accord, Google Analytics mesure anonymement l’audience et l’utilisation du portfolio.", close: "Fermer",
+    cookieTitle: "Respect de votre vie privée", cookieBody: "Ce site utilise des préférences essentielles. Google Analytics est activé uniquement avec votre accord afin de mesurer l’audience.", cookieReject: "Refuser", cookieAccept: "Accepter",
     dialogRole: "Mon rôle", dialogPeriod: "Période", dialogActions: "Actions principales", dialogResults: "Résultats et faits marquants", officialLink: "Lien officiel", siteLink: "Site officiel", testimonialsKicker: "Témoignages", testimonialsTitle: "Ce qu’ils disent de notre collaboration.", publicationsKicker: "Publications & réflexions", publicationsTitle: "Partager les méthodes derrière les résultats.", resumeTitle: "Télécharger mon parcours complet.", resumeDownload: "Télécharger le CV", statsCaption: "Statistiques Facebook — du 1er janvier au 29 août 2026"
   },
   en: {
@@ -107,8 +107,8 @@ const translations = {
     languagesKicker: "Languages", languagesTitle: "Communicating clearly and adapting to different audiences.", comorian: "Comorian", french: "French", malagasy: "Malagasy", english: "English", native: "Native", fluent: "Fluent", intermediate: "Intermediate", beginner: "Beginner",
     contactKicker: "Let’s build what comes next", contactTitle: "A role, a project or a partnership?", contactIntro: "Tell me about your needs. I will get back to you as soon as possible so we can discuss the best way forward.",
     formName: "Name", formEmail: "Email", formSubject: "Subject", formType: "Request type", formChoose: "Choose an option", formRecruitment: "Recruitment", formConsulting: "Consulting project", formPartnership: "Partnership or influence", formOther: "Other", formMessage: "Message", formConsent: "I agree that my information may be used solely to respond to my request.", formSend: "Prepare email", formNote: "The form opens your email application; no data is stored on this website.", formReady: "Your email application is about to open.",
-    footerTagline: "Creativity, discipline and results in service of brands.", privacy: "Privacy", privacyKicker: "Personal data", privacyTitle: "Privacy policy", privacyBody1: "This portfolio does not store personal data on a server. The form prepares an email in the visitor's email application.", privacyBody2: "Information provided is used solely to respond to the request. Audience analytics will only be activated after configuration and consent whenever required.", close: "Close",
-    cookieTitle: "Your privacy matters", cookieBody: "This website uses essential preferences only. Anonymous analytics may be enabled with your consent.", cookieReject: "Reject", cookieAccept: "Accept",
+    footerTagline: "Creativity, discipline and results in service of brands.", privacy: "Privacy", privacyKicker: "Personal data", privacyTitle: "Privacy policy", privacyBody1: "This portfolio does not store personal data on a server. The form prepares an email in the visitor's email application.", privacyBody2: "Information provided is used solely to respond to the request. With your consent, Google Analytics anonymously measures portfolio traffic and usage.", close: "Close",
+    cookieTitle: "Your privacy matters", cookieBody: "This website uses essential preferences. Google Analytics is enabled only with your consent to measure traffic.", cookieReject: "Reject", cookieAccept: "Accept",
     dialogRole: "My role", dialogPeriod: "Period", dialogActions: "Main actions", dialogResults: "Results and highlights", officialLink: "Official link", siteLink: "Official website", testimonialsKicker: "Testimonials", testimonialsTitle: "What people say about working with me.", publicationsKicker: "Posts & insights", publicationsTitle: "Sharing the methods behind the results.", resumeTitle: "Download my full professional profile.", resumeDownload: "Download résumé", statsCaption: "Facebook statistics — January 1 to August 29, 2026"
   }
 };
@@ -380,6 +380,7 @@ function setRoute(route, shouldScroll = true) {
   });
   document.querySelectorAll(`[data-route="${currentRoute}"] .reveal`).forEach((element) => element.classList.add("visible"));
   updateDocumentMetadata();
+  trackPageView();
   closeMobileNavigation();
   if (shouldScroll) window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -639,19 +640,37 @@ function animateCounter(element) {
 
 function enableAnalytics() {
   if (!GA_MEASUREMENT_ID || document.querySelector("#ga-script")) return;
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function () { window.dataLayer.push(arguments); };
+  window.gtag("consent", "default", {
+    analytics_storage: "granted",
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied",
+    functionality_storage: "granted",
+    security_storage: "granted"
+  });
+  window.gtag("js", new Date());
+  window.gtag("config", GA_MEASUREMENT_ID, { send_page_view: false });
+
   const script = document.createElement("script");
   script.id = "ga-script";
   script.async = true;
   script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_MEASUREMENT_ID)}`;
   document.head.append(script);
-  window.dataLayer = window.dataLayer || [];
-  window.gtag = function () { window.dataLayer.push(arguments); };
-  window.gtag("js", new Date());
-  window.gtag("config", GA_MEASUREMENT_ID, { anonymize_ip: true });
+  trackPageView();
 }
 
 function trackEvent(name, parameters = {}) {
   if (typeof window.gtag === "function") window.gtag("event", name, parameters);
+}
+
+function trackPageView() {
+  trackEvent("page_view", {
+    page_title: document.title,
+    page_location: window.location.href,
+    page_path: `${window.location.pathname}${window.location.search}`
+  });
 }
 
 function installPlayfulMotion() {
@@ -800,6 +819,9 @@ function init() {
 
   document.querySelectorAll('a[href^="https://wa.me/"]').forEach((link) => link.addEventListener("click", () => trackEvent("click_whatsapp")));
   document.querySelectorAll('a[href^="mailto:"]').forEach((link) => link.addEventListener("click", () => trackEvent("click_email")));
+  document.querySelectorAll('a[href*="linkedin.com"]').forEach((link) => link.addEventListener("click", () => trackEvent("click_social", { network: "linkedin" })));
+  document.querySelectorAll('a[href*="facebook.com"]').forEach((link) => link.addEventListener("click", () => trackEvent("click_social", { network: "facebook" })));
+  document.querySelectorAll('a[href*="instagram.com"]').forEach((link) => link.addEventListener("click", () => trackEvent("click_social", { network: "instagram" })));
 
   const cookieBanner = document.querySelector("#cookie-banner");
   const consent = localStorage.getItem("portfolio-cookie-consent");
