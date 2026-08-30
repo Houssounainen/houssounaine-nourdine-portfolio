@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr" data-theme="light">
+<html lang="fr" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -55,59 +55,99 @@
 <body>
   <a class="skip-link" href="#main" data-i18n="skip">Aller au contenu</a>
 
-  <header class="site-header" id="top">
-    <div class="container nav-shell">
-      <a class="brand" href="#top" aria-label="Accueil — Houssounaine Nourdine">
-        <span class="brand-mark"><img src="assets/portrait-hero-cutout.webp" alt="" width="84" height="84"></span>
-        <span class="brand-copy">
-          <strong>Houssounaine</strong>
-          <small>Lead Community Manager</small>
-        </span>
-      </a>
+  <aside class="site-sidebar" id="primary-nav" aria-label="Navigation principale">
+    <a class="sidebar-brand" href="#/about" data-route-link="about" aria-label="Accueil — Houssounaine Nourdine">
+      <span class="sidebar-monogram" aria-hidden="true">HN</span>
+      <span>
+        <strong>Houssounaine</strong>
+        <small data-i18n="sidebarTagline">Stratégie · Création · Influence</small>
+      </span>
+    </a>
 
+    <nav class="primary-nav">
+      <a href="#/about" data-route-link="about">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"></circle><path d="M5.5 20a6.5 6.5 0 0 1 13 0"></path></svg>
+        <span data-i18n="navAbout">À propos</span><i aria-hidden="true"></i>
+      </a>
+      <a href="#/expertise" data-route-link="expertise">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4.5-8 4.5-8-4.5L12 3Z"></path><path d="m4 12.5 8 4.5 8-4.5M4 17l8 4 8-4"></path></svg>
+        <span data-i18n="navExpertise">Expertises</span><i aria-hidden="true"></i>
+      </a>
+      <a href="#/journey" data-route-link="journey">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5z"></path><path d="M9 4V2h6v2M8 9h8M8 13h8M8 17h5"></path></svg>
+        <span data-i18n="navJourney">Parcours</span><i aria-hidden="true"></i>
+      </a>
+      <a href="#/projects" data-route-link="projects">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"></path></svg>
+        <span data-i18n="navProjects">Projets</span><i aria-hidden="true"></i>
+      </a>
+      <a href="#/works" data-route-link="works">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="8" cy="9" r="1.5"></circle><path d="m5 18 5-5 3 3 2-2 4 4"></path></svg>
+        <span data-i18n="navWorks">Créations</span><i aria-hidden="true"></i>
+      </a>
+      <a href="#/clients" data-route-link="clients">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"></circle><path d="M3 20a6 6 0 0 1 12 0M16 5.5a3 3 0 0 1 0 5.5M17 14a5 5 0 0 1 4 5"></path></svg>
+        <span data-i18n="navClients">Clients</span><i aria-hidden="true"></i>
+      </a>
+      <a href="#/contact" data-route-link="contact">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m4 7 8 6 8-6"></path></svg>
+        <span data-i18n="navContact">Me contacter</span><i aria-hidden="true"></i>
+      </a>
+    </nav>
+
+    <div class="sidebar-controls">
+      <button class="theme-toggle" type="button" aria-label="Activer le mode clair">
+        <span class="theme-icon" aria-hidden="true">
+          <svg class="sun-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path></svg>
+          <svg class="moon-icon" viewBox="0 0 24 24"><path d="M20.5 14.3A8.5 8.5 0 0 1 9.7 3.5 8.5 8.5 0 1 0 20.5 14.3Z"></path></svg>
+        </span>
+        <span class="theme-label">Mode sombre</span>
+        <span class="theme-switch" aria-hidden="true"><b></b></span>
+      </button>
+      <a class="sidebar-cta" href="#/contact" data-route-link="contact"><span data-i18n="contactMe">Me contacter</span><span aria-hidden="true">↗</span></a>
+    </div>
+  </aside>
+
+  <button class="sidebar-backdrop" type="button" aria-label="Fermer le menu" hidden></button>
+
+  <header class="site-header" id="top">
+    <div class="topbar-shell">
       <button class="nav-toggle icon-button" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Ouvrir le menu">
         <span></span><span></span><span></span>
       </button>
-
-      <nav class="primary-nav" id="primary-nav" aria-label="Navigation principale">
-        <a href="#about" data-i18n="navAbout">À propos</a>
-        <a href="#expertise" data-i18n="navExpertise">Expertises</a>
-        <a href="#journey" data-i18n="navJourney">Parcours</a>
-        <a href="#projects" data-i18n="navProjects">Projets</a>
-        <a href="#works" data-i18n="navWorks">Créations</a>
-        <a href="#clients" data-i18n="navClients">Clients</a>
-        <a href="#contact" class="nav-cta" data-i18n="navContact">Me contacter</a>
-      </nav>
-
+      <div class="topbar-identity">
+        <span class="topbar-avatar"><img src="assets/portrait-hero-cutout.webp" alt="" width="84" height="84"></span>
+        <span>
+          <strong>Lead Community Manager</strong>
+          <small>Houssounaine Nourdine</small>
+        </span>
+      </div>
       <div class="nav-actions">
+        <span class="topbar-location" data-i18n="topbarLocation">Toliara · Madagascar</span>
         <button class="lang-toggle" type="button" aria-label="Passer le site en anglais">
-          <span class="lang-current">FR</span><span aria-hidden="true">/</span><span class="lang-next">EN</span>
-        </button>
-        <button class="theme-toggle icon-button" type="button" aria-label="Activer le mode sombre">
-          <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path></svg>
-          <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.3A8.5 8.5 0 0 1 9.7 3.5 8.5 8.5 0 1 0 20.5 14.3Z"></path></svg>
+          <span aria-hidden="true">文</span><span class="lang-current">FR</span><span aria-hidden="true">/</span><span class="lang-next">EN</span>
         </button>
       </div>
     </div>
   </header>
 
-  <main id="main">
-    <section class="hero section" aria-labelledby="hero-title">
+  <main class="site-main" id="main">
+    <section class="hero section" data-route="about" aria-labelledby="hero-title">
       <div class="hero-orb hero-orb-one" aria-hidden="true"></div>
       <div class="hero-orb hero-orb-two" aria-hidden="true"></div>
       <div class="container hero-grid">
         <div class="hero-copy reveal">
           <div class="hero-edition" aria-hidden="true"><span>Portfolio</span><strong>2026</strong></div>
           <p class="eyebrow"><span class="live-dot"></span><span data-i18n="heroEyebrow">Lead Community Manager · Toliara, Madagascar</span></p>
-          <h1 id="hero-title">Houssounaine <span>Nourdine.</span></h1>
+          <h1 id="hero-title"><span data-i18n="heroGreeting">Bonjour, je suis</span> <strong>Houssounaine Nourdine.</strong></h1>
           <p class="hero-role" data-i18n="heroRole">Marketing digital, relationnel et d’influence</p>
           <p class="hero-intro" data-i18n="heroIntro">J’aide les marques à structurer leur présence digitale, à développer des communautés engagées et à transformer leur visibilité en résultats mesurables.</p>
           <div class="hero-actions">
-            <a class="button button-primary" href="#projects">
+            <a class="button button-primary" href="#/projects" data-route-link="projects">
               <span data-i18n="viewProjects">Voir mes projets</span>
               <span aria-hidden="true">↗</span>
             </a>
-            <a class="button button-secondary" href="#contact" data-i18n="contactMe">Me contacter</a>
+            <a class="button button-secondary" href="#/contact" data-route-link="contact" data-i18n="contactMe">Me contacter</a>
           </div>
           <ul class="hero-tags" aria-label="Domaines d’expertise">
             <li data-i18n="tagStrategy">Stratégie social media</li>
@@ -154,7 +194,7 @@
       </div>
     </section>
 
-    <section class="section about" id="about" aria-labelledby="about-title">
+    <section class="section about" id="about" data-route="about" aria-labelledby="about-title">
       <div class="container section-grid">
         <div class="section-heading reveal">
           <p class="kicker" data-i18n="aboutKicker">À propos</p>
@@ -187,7 +227,7 @@
       </div>
     </section>
 
-    <section class="section expertise" id="expertise" aria-labelledby="expertise-title">
+    <section class="section expertise" id="expertise" data-route="expertise" aria-labelledby="expertise-title" hidden>
       <div class="container">
         <div class="section-heading horizontal reveal">
           <div>
@@ -272,7 +312,7 @@
       </div>
     </section>
 
-    <section class="section journey" id="journey" aria-labelledby="journey-title">
+    <section class="section journey" id="journey" data-route="journey" aria-labelledby="journey-title" hidden>
       <div class="container">
         <div class="section-heading horizontal reveal">
           <div>
@@ -353,7 +393,7 @@
       </div>
     </section>
 
-    <section class="section projects" id="projects" aria-labelledby="projects-title">
+    <section class="section projects" id="projects" data-route="projects" aria-labelledby="projects-title" hidden>
       <div class="container">
         <div class="section-heading horizontal reveal">
           <div>
@@ -373,7 +413,7 @@
         <div class="project-grid" id="project-grid">
           <article class="project-card project-featured reveal" data-category="personal" data-project="sfcb">
             <div class="project-card-top">
-              <span class="project-monogram">S</span>
+              <span class="project-logo project-logo-personal"><img src="assets/portrait-hero-cutout.webp" alt="Houssounaine S-FCB" loading="lazy"></span>
               <span class="project-type" data-i18n="projectPersonal">Projet personnel</span>
             </div>
             <div>
@@ -385,63 +425,63 @@
           </article>
 
           <article class="project-card reveal" data-category="management" data-project="raiky">
-            <div class="project-card-top"><span class="project-monogram">R</span><span class="project-type" data-i18n="projectManagement">Management</span></div>
+            <div class="project-card-top"><span class="project-logo"><img src="assets/logos/raiky.jpg" alt="Logo Raiky" loading="lazy"></span><span class="project-type" data-i18n="projectManagement">Management</span></div>
             <div><h3>Raiky</h3><p data-i18n="raikySummary">Pilotage d’un portefeuille digital, organisation des processus et coordination d’une équipe créative.</p></div>
             <div class="project-proof"><strong>24</strong><span data-i18n="managedPages">pages supervisées</span></div>
             <button class="project-open" type="button" data-i18n="viewCase">Voir l’étude de cas</button>
           </article>
 
           <article class="project-card reveal" data-category="client" data-project="tfc">
-            <div class="project-card-top"><span class="project-monogram">TF</span><span class="project-type">Fitness</span></div>
+            <div class="project-card-top"><span class="project-logo"><img src="assets/logos/tulear-fitness.jpg" alt="Logo Tulear Fitness Club" loading="lazy"></span><span class="project-type">Fitness</span></div>
             <div><h3>Tulear Fitness Club</h3><p data-i18n="tfcSummary">Une stratégie communautaire régulière soutenant la croissance et les campagnes événementielles.</p></div>
             <div class="project-proof"><strong>+10 K</strong><span data-i18n="newFollowers">nouveaux abonnés</span></div>
             <button class="project-open" type="button" data-i18n="viewCase">Voir l’étude de cas</button>
           </article>
 
           <article class="project-card reveal" data-category="client" data-project="univpass">
-            <div class="project-card-top"><span class="project-monogram">U</span><span class="project-type">EdTech</span></div>
+            <div class="project-card-top"><span class="project-logo"><img src="assets/logos/univpass.jpg" alt="Logo Univpass" loading="lazy"></span><span class="project-type">EdTech</span></div>
             <div><h3>Univpass</h3><p data-i18n="univpassSummary">Déploiement éditorial multiplateforme et reporting d’une marque digitale destinée aux étudiants.</p></div>
             <div class="project-proof"><strong>48</strong><span data-i18n="contentsMonth">contenus en un mois</span></div>
             <button class="project-open" type="button" data-i18n="viewCase">Voir l’étude de cas</button>
           </article>
 
           <article class="project-card reveal" data-category="client" data-project="le-jardin">
-            <div class="project-card-top"><span class="project-monogram">LJ</span><span class="project-type" data-i18n="restaurant">Restaurant</span></div>
+            <div class="project-card-top"><span class="project-logo"><img src="assets/logos/le-jardin.jpg" alt="Logo Le Jardin Tuléar" loading="lazy"></span><span class="project-type" data-i18n="restaurant">Restaurant</span></div>
             <div><h3>Le Jardin Tuléar</h3><p data-i18n="gardenSummary">Valorisation des plats, de l’expérience du restaurant et de son univers artistique.</p></div>
             <div class="project-proof"><strong>2025</strong><span data-i18n="sinceMarch">depuis mars</span></div>
             <button class="project-open" type="button" data-i18n="viewCase">Voir l’étude de cas</button>
           </article>
 
           <article class="project-card reveal" data-category="client" data-project="indian-basket">
-            <div class="project-card-top"><span class="project-monogram">IB</span><span class="project-type" data-i18n="retail">Commerce</span></div>
+            <div class="project-card-top"><span class="project-logo"><img src="assets/logos/indian-basket.jpg" alt="Logo Indian Basket" loading="lazy"></span><span class="project-type" data-i18n="retail">Commerce</span></div>
             <div><h3>Indian Basket</h3><p data-i18n="indianSummary">Stratégie éditoriale produit, nouveautés, offres et présentation fidèle des références.</p></div>
             <div class="project-proof"><strong>FB</strong><span data-i18n="managedChannel">canal géré</span></div>
             <button class="project-open" type="button" data-i18n="viewCase">Voir l’étude de cas</button>
           </article>
 
           <article class="project-card reveal" data-category="client" data-project="homeopharma">
-            <div class="project-card-top"><span class="project-monogram">H</span><span class="project-type" data-i18n="wellness">Bien-être</span></div>
+            <div class="project-card-top"><span class="project-logo"><img src="assets/logos/homeopharma.jpg" alt="Logo Homeopharma Tuléar" loading="lazy"></span><span class="project-type" data-i18n="wellness">Bien-être</span></div>
             <div><h3>Homeopharma Tuléar</h3><p data-i18n="homeoSummary">Vulgarisation responsable, produits naturels, usages et campagnes saisonnières.</p></div>
             <div class="project-proof"><strong>FB</strong><span data-i18n="localPage">page locale</span></div>
             <button class="project-open" type="button" data-i18n="viewCase">Voir l’étude de cas</button>
           </article>
 
           <article class="project-card reveal" data-category="client" data-project="total-tools">
-            <div class="project-card-top"><span class="project-monogram">TT</span><span class="project-type" data-i18n="tools">Outillage</span></div>
+            <div class="project-card-top"><span class="project-logo"><img src="assets/logos/total-tools.jpg" alt="Logo Total Tools Shop Tuléar" loading="lazy"></span><span class="project-type" data-i18n="tools">Outillage</span></div>
             <div><h3>Total Tools Shop Tuléar</h3><p data-i18n="totalSummary">Présentation technique, arrivages, contenus pédagogiques et vérification produit.</p></div>
             <div class="project-proof"><strong>360°</strong><span data-i18n="contentProcess">processus contenu</span></div>
             <button class="project-open" type="button" data-i18n="viewCase">Voir l’étude de cas</button>
           </article>
 
           <article class="project-card reveal" data-category="client" data-project="wedis">
-            <div class="project-card-top"><span class="project-monogram">W</span><span class="project-type">Automation</span></div>
+            <div class="project-card-top"><span class="project-logo"><img src="assets/logos/wedis.jpg" alt="Logo WEDIS Tuléar" loading="lazy"></span><span class="project-type">Automation</span></div>
             <div><h3>WEDIS Tuléar</h3><p data-i18n="wedisSummary">Un chatbot Messenger conçu pour informer, qualifier et orienter les prospects.</p></div>
             <div class="project-proof"><strong>7</strong><span data-i18n="botFunctions">fonctions automatisées</span></div>
             <button class="project-open" type="button" data-i18n="viewCase">Voir l’étude de cas</button>
           </article>
 
           <article class="project-card reveal" data-category="client" data-project="shain">
-            <div class="project-card-top"><span class="project-monogram">SL</span><span class="project-type" data-i18n="tourism">Tourisme</span></div>
+            <div class="project-card-top"><span class="project-logo"><img src="assets/logos/shain-lodge.jpg" alt="Logo Shain Lodge" loading="lazy"></span><span class="project-type" data-i18n="tourism">Tourisme</span></div>
             <div><h3>Shain Lodge</h3><p data-i18n="shainSummary">Contenus dédiés au tourisme, à l’hébergement, à la restauration et à l’évasion.</p></div>
             <div class="project-proof"><strong>FB + IG</strong><span data-i18n="managedChannels">canaux gérés</span></div>
             <button class="project-open" type="button" data-i18n="viewCase">Voir l’étude de cas</button>
@@ -450,7 +490,7 @@
       </div>
     </section>
 
-    <section class="section works" id="works" aria-labelledby="works-title">
+    <section class="section works" id="works" data-route="works" aria-labelledby="works-title" hidden>
       <div class="works-glow works-glow-one" aria-hidden="true"></div>
       <div class="works-glow works-glow-two" aria-hidden="true"></div>
       <div class="container">
@@ -475,7 +515,7 @@
       </div>
     </section>
 
-    <section class="section clients" id="clients" aria-labelledby="clients-title">
+    <section class="section clients" id="clients" data-route="clients" aria-labelledby="clients-title" hidden>
       <div class="container">
         <div class="section-heading horizontal reveal">
           <div>
@@ -494,7 +534,7 @@
       </div>
     </section>
 
-    <section class="section languages" aria-labelledby="languages-title">
+    <section class="section languages" data-route="expertise" aria-labelledby="languages-title" hidden>
       <div class="container languages-shell reveal">
         <div>
           <p class="kicker" data-i18n="languagesKicker">Langues</p>
@@ -521,7 +561,7 @@
       <div class="container"><p class="kicker">CV</p><h2 data-i18n="resumeTitle">Télécharger mon parcours complet.</h2><a class="button button-primary" id="resume-link" href="#" download data-i18n="resumeDownload">Télécharger le CV</a></div>
     </section>
 
-    <section class="section contact" id="contact" aria-labelledby="contact-title">
+    <section class="section contact" id="contact" data-route="contact" aria-labelledby="contact-title" hidden>
       <div class="container contact-shell">
         <div class="contact-copy reveal">
           <p class="kicker" data-i18n="contactKicker">Construisons la suite</p>
@@ -566,7 +606,7 @@
   <footer class="site-footer">
     <div class="container footer-grid">
       <div>
-        <a class="brand footer-brand" href="#top"><span class="brand-mark"><img src="assets/portrait-hero-cutout.webp" alt="" width="84" height="84"></span><span class="brand-copy"><strong>Houssounaine Nourdine</strong><small>Lead Community Manager</small></span></a>
+        <a class="brand footer-brand" href="#/about" data-route-link="about"><span class="brand-mark"><img src="assets/portrait-hero-cutout.webp" alt="" width="84" height="84"></span><span class="brand-copy"><strong>Houssounaine Nourdine</strong><small>Lead Community Manager</small></span></a>
         <p data-i18n="footerTagline">Créativité, discipline et résultats au service des marques.</p>
       </div>
       <nav aria-label="Liens sociaux">

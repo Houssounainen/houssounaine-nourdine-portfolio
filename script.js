@@ -9,6 +9,7 @@ const translations = {
   fr: {
     skip: "Aller au contenu",
     navAbout: "À propos", navExpertise: "Expertises", navJourney: "Parcours", navProjects: "Projets", navWorks: "Créations", navClients: "Clients", navContact: "Me contacter",
+    sidebarTagline: "Stratégie · Création · Influence", topbarLocation: "Toliara · Madagascar", heroGreeting: "Bonjour, je suis", themeDark: "Mode sombre", themeLight: "Mode clair",
     heroEyebrow: "Lead Community Manager · Toliara, Madagascar",
     heroRole: "Marketing digital, relationnel et d’influence",
     heroIntro: "J’aide les marques à structurer leur présence digitale, à développer des communautés engagées et à transformer leur visibilité en résultats mesurables.",
@@ -60,6 +61,7 @@ const translations = {
   en: {
     skip: "Skip to content",
     navAbout: "About", navExpertise: "Expertise", navJourney: "Journey", navProjects: "Projects", navWorks: "Creative work", navClients: "Clients", navContact: "Contact me",
+    sidebarTagline: "Strategy · Creation · Influence", topbarLocation: "Toliara · Madagascar", heroGreeting: "Hello, I’m", themeDark: "Dark mode", themeLight: "Light mode",
     heroEyebrow: "Lead Community Manager · Toliara, Madagascar",
     heroRole: "Digital, relationship and influencer marketing",
     heroIntro: "I help brands structure their digital presence, grow engaged communities and turn visibility into measurable results.",
@@ -289,14 +291,83 @@ let currentWorksFilter = "all";
 let showAllWorks = false;
 let currentWorkId = null;
 let visibleWorks = [];
+let currentRoute = "about";
+
+const ROUTES = Object.freeze(["about", "expertise", "journey", "projects", "works", "clients", "contact"]);
+const ROUTE_PATHS = Object.freeze({ about: "", expertise: "expertise", journey: "journey", projects: "projects", works: "works", clients: "clients", contact: "contact" });
+const ROUTE_TITLES = Object.freeze({
+  fr: { about: "À propos", expertise: "Expertises", journey: "Parcours", projects: "Projets", works: "Créations", clients: "Clients", contact: "Contact" },
+  en: { about: "About", expertise: "Expertise", journey: "Journey", projects: "Projects", works: "Creative work", clients: "Clients", contact: "Contact" }
+});
 
 function localeIndex() { return currentLanguage === "fr" ? 0 : 1; }
+
+function cleanRoutesEnabled() {
+  const host = window.location.hostname;
+  return window.location.protocol !== "file:"
+    && host !== "localhost"
+    && host !== "127.0.0.1"
+    && !host.endsWith(".github.io");
+}
+
+function routeFromLocation() {
+  const hashRoute = window.location.hash.match(/^#\/?([a-z-]+)/)?.[1];
+  if (ROUTES.includes(hashRoute)) return hashRoute;
+  if (cleanRoutesEnabled()) {
+    const path = window.location.pathname.replace(/^\/+|\/+$/g, "");
+    const route = Object.keys(ROUTE_PATHS).find((key) => ROUTE_PATHS[key] === path);
+    if (route) return route;
+  }
+  return "about";
+}
+
+function routeUrl(route) {
+  if (cleanRoutesEnabled()) return route === "about" ? "/" : `/${ROUTE_PATHS[route]}`;
+  return `#/${route}`;
+}
+
+function updateDocumentTitle() {
+  const label = ROUTE_TITLES[currentLanguage][currentRoute];
+  document.title = `${label} — Houssounaine Nourdine`;
+}
+
+function closeMobileNavigation() {
+  const sidebar = document.querySelector(".site-sidebar");
+  const navToggle = document.querySelector(".nav-toggle");
+  const backdrop = document.querySelector(".sidebar-backdrop");
+  sidebar.classList.remove("open");
+  navToggle.setAttribute("aria-expanded", "false");
+  backdrop.hidden = true;
+}
+
+function setRoute(route, shouldScroll = true) {
+  currentRoute = ROUTES.includes(route) ? route : "about";
+  body.dataset.route = currentRoute;
+
+  document.querySelectorAll("[data-route]").forEach((section) => {
+    section.hidden = section.dataset.route !== currentRoute;
+  });
+  document.querySelectorAll("[data-route-link]").forEach((link) => {
+    link.classList.toggle("active", link.dataset.routeLink === currentRoute);
+    link.setAttribute("aria-current", link.dataset.routeLink === currentRoute ? "page" : "false");
+    link.setAttribute("href", routeUrl(link.dataset.routeLink));
+  });
+  document.querySelectorAll(`[data-route="${currentRoute}"] .reveal`).forEach((element) => element.classList.add("visible"));
+  updateDocumentTitle();
+  closeMobileNavigation();
+  if (shouldScroll) window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+}
+
+function navigateToRoute(route) {
+  const url = routeUrl(route);
+  if (`${window.location.pathname}${window.location.hash}` !== url) window.history.pushState({ route }, "", url);
+  setRoute(route);
+}
 
 function setLanguage(language) {
   currentLanguage = language;
   localStorage.setItem("portfolio-language", language);
   root.lang = language;
-  document.title = language === "fr" ? "Houssounaine Nourdine — Lead Community Manager" : "Houssounaine Nourdine — Lead Community Manager Portfolio";
   const description = document.querySelector('meta[name="description"]');
   description.content = language === "fr"
     ? "Portfolio de Houssounaine Nourdine, Lead Community Manager spécialisé en marketing digital, relationnel et d’influence à Toliara, Madagascar."
@@ -311,7 +382,10 @@ function setLanguage(language) {
   document.querySelector(".lang-next").textContent = language === "fr" ? "EN" : "FR";
   document.querySelector(".lang-toggle").setAttribute("aria-label", language === "fr" ? "Passer le site en anglais" : "Switch website to French");
   document.querySelector(".nav-toggle").setAttribute("aria-label", language === "fr" ? "Ouvrir le menu" : "Open menu");
+  document.querySelector(".sidebar-backdrop").setAttribute("aria-label", language === "fr" ? "Fermer le menu" : "Close menu");
   document.querySelectorAll(".dialog-close").forEach((button) => button.setAttribute("aria-label", language === "fr" ? "Fermer" : "Close"));
+  setTheme(root.dataset.theme || "dark");
+  updateDocumentTitle();
 
   renderClients(currentClientFilter);
   renderWorkFilters();
@@ -326,6 +400,9 @@ function setTheme(theme) {
   document.querySelector(".theme-toggle").setAttribute("aria-label", theme === "dark"
     ? (currentLanguage === "fr" ? "Activer le mode clair" : "Enable light mode")
     : (currentLanguage === "fr" ? "Activer le mode sombre" : "Enable dark mode"));
+  document.querySelector(".theme-label").textContent = theme === "dark"
+    ? translations[currentLanguage].themeDark
+    : translations[currentLanguage].themeLight;
 }
 
 function renderClients(filter) {
@@ -550,9 +627,10 @@ function trackEvent(name, parameters = {}) {
 
 function init() {
   const storedTheme = localStorage.getItem("portfolio-theme");
-  const preferredTheme = storedTheme || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  const preferredTheme = storedTheme || "dark";
   setTheme(preferredTheme);
   setLanguage(currentLanguage);
+  setRoute(routeFromLocation(), false);
   document.querySelector("#year").textContent = new Date().getFullYear();
   document.querySelectorAll("[data-feature]").forEach((section) => { section.hidden = !FEATURE_FLAGS[section.dataset.feature]; });
   const resumeLink = document.querySelector("#resume-link");
@@ -562,15 +640,20 @@ function init() {
   document.querySelector(".lang-toggle").addEventListener("click", () => setLanguage(currentLanguage === "fr" ? "en" : "fr"));
 
   const navToggle = document.querySelector(".nav-toggle");
-  const nav = document.querySelector(".primary-nav");
+  const nav = document.querySelector(".site-sidebar");
+  const backdrop = document.querySelector(".sidebar-backdrop");
   navToggle.addEventListener("click", () => {
     const open = nav.classList.toggle("open");
     navToggle.setAttribute("aria-expanded", String(open));
+    backdrop.hidden = !open;
   });
-  nav.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => {
-    nav.classList.remove("open");
-    navToggle.setAttribute("aria-expanded", "false");
+  backdrop.addEventListener("click", closeMobileNavigation);
+
+  document.querySelectorAll("[data-route-link]").forEach((link) => link.addEventListener("click", (event) => {
+    event.preventDefault();
+    navigateToRoute(link.dataset.routeLink);
   }));
+  window.addEventListener("popstate", () => setRoute(routeFromLocation()));
 
   window.addEventListener("scroll", () => document.querySelector(".site-header").classList.toggle("scrolled", window.scrollY > 20), { passive: true });
 
@@ -589,13 +672,6 @@ function init() {
     }
   }), { threshold: 0.65 });
   document.querySelectorAll(".counter").forEach((counter) => counterObserver.observe(counter));
-
-  const sectionObserver = new IntersectionObserver((entries) => entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      document.querySelectorAll(".primary-nav a").forEach((link) => link.classList.toggle("active", link.getAttribute("href") === `#${entry.target.id}`));
-    }
-  }), { rootMargin: "-30% 0px -60%", threshold: 0 });
-  document.querySelectorAll("main section[id]").forEach((section) => sectionObserver.observe(section));
 
   document.querySelectorAll("[data-project-filter]").forEach((button) => button.addEventListener("click", () => {
     document.querySelectorAll("[data-project-filter]").forEach((item) => item.classList.toggle("active", item === button));
