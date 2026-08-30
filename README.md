@@ -10,7 +10,10 @@ Portfolio personnel bilingue de Houssounaine Nourdine, Lead Community Manager sp
 - version française et anglaise ;
 - chiffres clés animés ;
 - études de cas interactives ;
-- filtres de projets et de clients ;
+- galerie éditoriale de 40 créations graphiques, dont 18 mises en avant ;
+- filtres de projets, de créations par secteur et de clients ;
+- visionneuse plein écran avec navigation clavier ;
+- portefeuille de 21 identités clientes dans leurs couleurs originales ;
 - formulaire de contact utilisant l’application e-mail du visiteur ;
 - bouton WhatsApp ;
 - préférences de confidentialité ;
@@ -22,12 +25,12 @@ Portfolio personnel bilingue de Houssounaine Nourdine, Lead Community Manager sp
 - `index.html` : structure et contenus ;
 - `styles.css` : identité visuelle, responsive design et thèmes ;
 - `script.js` : traduction, filtres, dialogues, formulaire et interactions ;
-- `assets/` : portrait, statistiques et favicon ;
+- `assets/` : portraits, créations, logos clients, statistiques et favicon ;
 - `robots.txt` et `sitemap.xml` : indexation.
 
 ## Modifier le contenu
 
-Les textes statiques se trouvent dans `index.html`. Les traductions, études de cas et clients sont centralisés dans `script.js`.
+Les textes statiques se trouvent dans `index.html`. Les traductions, études de cas, créations et clients sont centralisés dans `script.js`.
 
 Pour activer Google Analytics 4, renseigner la constante `GA_MEASUREMENT_ID` au début de `script.js`.
 

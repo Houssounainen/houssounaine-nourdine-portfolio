@@ -8,7 +8,7 @@ const RESUME_URL = "";
 const translations = {
   fr: {
     skip: "Aller au contenu",
-    navAbout: "À propos", navExpertise: "Expertises", navJourney: "Parcours", navProjects: "Projets", navClients: "Clients", navContact: "Me contacter",
+    navAbout: "À propos", navExpertise: "Expertises", navJourney: "Parcours", navProjects: "Projets", navWorks: "Créations", navClients: "Clients", navContact: "Me contacter",
     heroEyebrow: "Lead Community Manager · Toliara, Madagascar",
     heroRole: "Marketing digital, relationnel et d’influence",
     heroIntro: "J’aide les marques à structurer leur présence digitale, à développer des communautés engagées et à transformer leur visibilité en résultats mesurables.",
@@ -17,7 +17,7 @@ const translations = {
     metricFollowers: "abonnés sur Facebook", metricFollowersNote: "Houssounaine S-FCB", metricViews: "vues Facebook", metricViewsNote: "1 janv. — 29 août 2026", metricClients: "pages clientes supervisées", metricClientsNote: "volume maximal chez Raiky",
     aboutKicker: "À propos", aboutTitle: "Une vision créative, structurée et orientée résultats.",
     aboutLead: "Lead Community Manager chez Raiky et étudiant en Master 2 de marketing international et relationnel à l’Université de Toliara, j’accompagne les marques dans leur stratégie digitale, leur création de contenu et le développement de leurs communautés.",
-    aboutBody: "Mon parcours associe management d’équipe, marketing relationnel, analyse des performances et expérience concrète de l’influence grâce à ma propre communauté Houssounaine S-FCB.",
+    aboutBody: "Mon parcours associe management d’équipe, marketing relationnel, analyse des performances et expérience concrète de l’influence grâce à ma propre communauté Houssounaine S-FCB.", aboutPortraitCaption: "Stratégie, création et coordination au quotidien.",
     valueCreativity: "Créativité", valueListening: "Écoute", valueInnovation: "Innovation", valueDiscipline: "Discipline", valueResults: "Résultats",
     thesisKicker: "Recherche & marketing d’influence", thesisTitle: "L’impact du marketing d’influence sur les performances des marques à Madagascar", thesisSubtitle: "Entre notoriété et conversion — cas des influenceurs malgaches. Mémoire entièrement rédigé et déposé, soutenance à venir.",
     expertiseKicker: "Expertises", expertiseTitle: "De la stratégie à la performance.", expertiseIntro: "Une approche complète pour construire une présence digitale cohérente, régulière et mesurable.",
@@ -48,7 +48,8 @@ const translations = {
     tools: "Outillage", totalSummary: "Présentation technique, arrivages, contenus pédagogiques et vérification produit.", contentProcess: "processus contenu",
     wedisSummary: "Un chatbot Messenger conçu pour informer, qualifier et orienter les prospects.", botFunctions: "fonctions automatisées",
     tourism: "Tourisme", shainSummary: "Contenus dédiés au tourisme, à l’hébergement, à la restauration et à l’évasion.", managedChannels: "canaux gérés",
-    clientsKicker: "Portefeuille clients", clientsTitle: "Des secteurs différents, une même exigence.", clientsIntro: "18 clients actuels et 3 anciens clients présentés avec leurs liens officiels.", currentClients: "Clients actuels", formerClients: "Anciens clients", current: "Client actuel", former: "Ancien client",
+    worksKicker: "Créations graphiques", worksTitle: "Des idées conçues pour arrêter le regard.", worksIntro: "Une sélection professionnelle parmi 40 affiches réalisées pour des marques de secteurs variés.", worksViewAll: "Voir toutes les réalisations", worksShowSelection: "Afficher la sélection", workClient: "Client", workRole: "Rôle", workRoleValue: "Conception graphique complète", workDescription: "Affiche de communication imaginée et réalisée pour répondre à l’univers de la marque.", previousWork: "Précédente", nextWork: "Suivante", openWork: "Agrandir la création", allSectors: "Tous les secteurs",
+    clientsKicker: "Portefeuille clients", clientsTitle: "Des secteurs différents, une même exigence.", clientsIntro: "18 clients actuels et 3 anciens clients réunis dans un portefeuille multisectoriel.", currentClients: "Clients actuels", formerClients: "Anciens clients", current: "Client actuel", former: "Ancien client",
     languagesKicker: "Langues", languagesTitle: "Communiquer avec clarté, s’adapter aux publics.", comorian: "Comorien", french: "Français", malagasy: "Malagasy", english: "Anglais", native: "Langue maternelle", fluent: "Courant", intermediate: "Intermédiaire", beginner: "Débutant",
     contactKicker: "Construisons la suite", contactTitle: "Une opportunité, une mission ou une collaboration ?", contactIntro: "Décrivez votre besoin. Je vous répondrai dès que possible pour discuter de la meilleure manière d’avancer ensemble.",
     formName: "Nom", formEmail: "E-mail", formSubject: "Objet", formType: "Type de demande", formChoose: "Choisir une option", formRecruitment: "Recrutement", formConsulting: "Mission de conseil", formPartnership: "Partenariat ou influence", formOther: "Autre", formMessage: "Message", formConsent: "J’accepte que mes informations soient utilisées uniquement pour répondre à ma demande.", formSend: "Préparer l’e-mail", formNote: "Le formulaire ouvre votre application de messagerie ; aucune donnée n’est stockée sur ce site.", formReady: "Votre application de messagerie va s’ouvrir.",
@@ -58,7 +59,7 @@ const translations = {
   },
   en: {
     skip: "Skip to content",
-    navAbout: "About", navExpertise: "Expertise", navJourney: "Journey", navProjects: "Projects", navClients: "Clients", navContact: "Contact me",
+    navAbout: "About", navExpertise: "Expertise", navJourney: "Journey", navProjects: "Projects", navWorks: "Creative work", navClients: "Clients", navContact: "Contact me",
     heroEyebrow: "Lead Community Manager · Toliara, Madagascar",
     heroRole: "Digital, relationship and influencer marketing",
     heroIntro: "I help brands structure their digital presence, grow engaged communities and turn visibility into measurable results.",
@@ -67,7 +68,7 @@ const translations = {
     metricFollowers: "Facebook followers", metricFollowersNote: "Houssounaine S-FCB", metricViews: "Facebook views", metricViewsNote: "Jan 1 — Aug 29, 2026", metricClients: "client pages supervised", metricClientsNote: "maximum volume at Raiky",
     aboutKicker: "About", aboutTitle: "A creative, structured and results-driven vision.",
     aboutLead: "As Lead Community Manager at Raiky and a Master's student in International and Relationship Marketing at the University of Toliara, I help brands shape their digital strategy, create relevant content and grow their communities.",
-    aboutBody: "My background combines team management, relationship marketing, performance analysis and hands-on influencer experience through my own community, Houssounaine S-FCB.",
+    aboutBody: "My background combines team management, relationship marketing, performance analysis and hands-on influencer experience through my own community, Houssounaine S-FCB.", aboutPortraitCaption: "Strategy, creation and coordination in daily practice.",
     valueCreativity: "Creativity", valueListening: "Listening", valueInnovation: "Innovation", valueDiscipline: "Discipline", valueResults: "Results",
     thesisKicker: "Research & influencer marketing", thesisTitle: "The impact of influencer marketing on brand performance in Madagascar", thesisSubtitle: "Between awareness and conversion — the case of Malagasy influencers. Dissertation fully written and submitted; defence forthcoming.",
     expertiseKicker: "Expertise", expertiseTitle: "From strategy to performance.", expertiseIntro: "A complete approach to building a coherent, consistent and measurable digital presence.",
@@ -98,7 +99,8 @@ const translations = {
     tools: "Tools", totalSummary: "Technical product presentation, arrivals, educational content and specification checks.", contentProcess: "content process",
     wedisSummary: "A Messenger chatbot designed to inform, qualify and route prospects.", botFunctions: "automated functions",
     tourism: "Tourism", shainSummary: "Content focused on tourism, accommodation, dining and escape.", managedChannels: "managed channels",
-    clientsKicker: "Client portfolio", clientsTitle: "Different industries, the same high standards.", clientsIntro: "18 current clients and 3 former clients with their official links.", currentClients: "Current clients", formerClients: "Former clients", current: "Current client", former: "Former client",
+    worksKicker: "Graphic design", worksTitle: "Ideas designed to stop the scroll.", worksIntro: "A professionally curated selection from 40 posters created for brands across diverse industries.", worksViewAll: "View all creative work", worksShowSelection: "Show curated selection", workClient: "Client", workRole: "Role", workRoleValue: "Full graphic design", workDescription: "A communication poster imagined and designed to reflect the brand’s own visual world.", previousWork: "Previous", nextWork: "Next", openWork: "Open creative work", allSectors: "All industries",
+    clientsKicker: "Client portfolio", clientsTitle: "Different industries, the same high standards.", clientsIntro: "18 current and 3 former clients brought together in a multi-industry portfolio.", currentClients: "Current clients", formerClients: "Former clients", current: "Current client", former: "Former client",
     languagesKicker: "Languages", languagesTitle: "Communicating clearly and adapting to different audiences.", comorian: "Comorian", french: "French", malagasy: "Malagasy", english: "English", native: "Native", fluent: "Fluent", intermediate: "Intermediate", beginner: "Beginner",
     contactKicker: "Let’s build what comes next", contactTitle: "A role, a project or a partnership?", contactIntro: "Tell me about your needs. I will get back to you as soon as possible so we can discuss the best way forward.",
     formName: "Name", formEmail: "Email", formSubject: "Subject", formType: "Request type", formChoose: "Choose an option", formRecruitment: "Recruitment", formConsulting: "Consulting project", formPartnership: "Partnership or influence", formOther: "Other", formMessage: "Message", formConsent: "I agree that my information may be used solely to respond to my request.", formSend: "Prepare email", formNote: "The form opens your email application; no data is stored on this website.", formReady: "Your email application is about to open.",
@@ -109,27 +111,79 @@ const translations = {
 };
 
 const clients = [
-  { name: "Raiky", mark: "R", sector: ["Agence & digital", "Agency & digital"], status: "current", url: "https://raiky.mg/" },
-  { name: "Tulear Fitness Club", mark: "TF", sector: ["Fitness", "Fitness"], status: "current", url: "https://www.facebook.com/100057171320694/" },
-  { name: "Univpass", mark: "U", sector: ["EdTech", "EdTech"], status: "current", url: "https://univ-pass.tech/" },
-  { name: "Le Jardin Tuléar", mark: "LJ", sector: ["Restaurant", "Restaurant"], status: "current", url: "https://www.facebook.com/61584415452779/" },
-  { name: "Indian Basket", mark: "IB", sector: ["Commerce", "Retail"], status: "current", url: "https://www.facebook.com/100079755558409/" },
-  { name: "Homeopharma Tuléar", mark: "H", sector: ["Bien-être", "Wellness"], status: "current", url: "https://www.facebook.com/100038813263819/" },
-  { name: "Total Tools Shop Tuléar", mark: "TT", sector: ["Outillage", "Tools"], status: "current", url: "https://www.facebook.com/totaltulear/" },
-  { name: "WEDIS Tuléar", mark: "W", sector: ["Télévision & services", "TV & services"], status: "current", url: "https://www.facebook.com/61577502127003/" },
-  { name: "Shain Lodge", mark: "SL", sector: ["Tourisme", "Tourism"], status: "current", url: "https://www.shainlodge.com/" },
-  { name: "Raiky Academy", mark: "RA", sector: ["Formation", "Training"], status: "current", url: "https://www.facebook.com/100092492537667/" },
-  { name: "Mad Sud Voyage", mark: "MS", sector: ["Voyage", "Travel"], status: "current", url: "https://www.facebook.com/madsudvoyage/" },
-  { name: "Quincaillerie Tayyebi Tuléar", mark: "QT", sector: ["Quincaillerie", "Hardware"], status: "current", url: "https://www.facebook.com/quincaillerietayyebitulear/" },
-  { name: "Tranombarotra Moïse", mark: "TM", sector: ["Commerce", "Retail"], status: "current", url: "https://www.facebook.com/100035078516653/" },
-  { name: "Gass’Kaly", mark: "GK", sector: ["Traiteur", "Catering"], status: "current", url: "https://www.facebook.com/GassKaly/" },
-  { name: "Escapade — Hôtel & Restaurant", mark: "E", sector: ["Hôtellerie", "Hospitality"], status: "current", url: "https://www.facebook.com/100064562384862/" },
-  { name: "Prolavage Tuléar", mark: "P", sector: ["Services", "Services"], status: "current", url: "https://www.facebook.com/61578783156927/" },
-  { name: "Sunset Madiorano", mark: "SM", sector: ["Tourisme", "Tourism"], status: "current", url: "https://www.facebook.com/SunsetMadiorano/" },
-  { name: "La Signature de Hoby", mark: "LH", sector: ["Mode & création", "Fashion & design"], status: "current", url: "https://www.facebook.com/lasignaturedehoby/" },
-  { name: "Marina Blue", mark: "MB", sector: ["Tourisme", "Tourism"], status: "former", url: "https://www.facebook.com/MarinaBlueToliara/" },
-  { name: "Quincaillerie Vao2 Sanfil Tuléar", mark: "V2", sector: ["Quincaillerie", "Hardware"], status: "former", url: "https://www.facebook.com/QV2Tul/" },
-  { name: "KS Beauty Toliara", mark: "KS", sector: ["Beauté", "Beauty"], status: "former", url: "https://www.facebook.com/ksbeautytoliara/" }
+  { name: "Raiky", logo: "assets/logos/raiky.jpg", sector: ["Agence & digital", "Agency & digital"], status: "current" },
+  { name: "Tulear Fitness Club", logo: "assets/logos/tulear-fitness.jpg", sector: ["Fitness", "Fitness"], status: "current" },
+  { name: "Univpass", logo: "assets/logos/univpass.jpg", sector: ["EdTech", "EdTech"], status: "current" },
+  { name: "Le Jardin Tuléar", logo: "assets/logos/le-jardin.jpg", sector: ["Restaurant", "Restaurant"], status: "current" },
+  { name: "Indian Basket", logo: "assets/logos/indian-basket.jpg", sector: ["Commerce", "Retail"], status: "current" },
+  { name: "Homeopharma Tuléar", logo: "assets/logos/homeopharma.jpg", sector: ["Bien-être", "Wellness"], status: "current" },
+  { name: "Total Tools Shop Tuléar", logo: "assets/logos/total-tools.jpg", sector: ["Outillage", "Tools"], status: "current" },
+  { name: "WEDIS Tuléar", logo: "assets/logos/wedis.jpg", sector: ["Télévision & services", "TV & services"], status: "current" },
+  { name: "Shain Lodge", logo: "assets/logos/shain-lodge.jpg", sector: ["Tourisme", "Tourism"], status: "current" },
+  { name: "Raiky Academy", logo: "assets/logos/raiky-academy.jpg", sector: ["Formation", "Training"], status: "current" },
+  { name: "Mad Sud Voyage", logo: "assets/logos/mad-sud-voyage.jpg", sector: ["Voyage", "Travel"], status: "current" },
+  { name: "Quincaillerie Tayyebi Tuléar", logo: "assets/logos/quincaillerie-tayyebi.jpg", sector: ["Quincaillerie", "Hardware"], status: "current" },
+  { name: "Tranombarotra Moïse", logo: "assets/logos/tranombarotra-moise.jpg", sector: ["Commerce", "Retail"], status: "current" },
+  { name: "Gass’Kaly", logo: "assets/logos/gass-kaly.jpg", sector: ["Traiteur", "Catering"], status: "current" },
+  { name: "Escapade — Hôtel & Restaurant", logo: "assets/logos/escapade.jpg", sector: ["Hôtellerie", "Hospitality"], status: "current" },
+  { name: "Prolavage Tuléar", logo: "assets/logos/prolavage.jpg", sector: ["Services", "Services"], status: "current" },
+  { name: "Sunset Madiorano", logo: "assets/logos/sunset-madiorano.jpg", sector: ["Tourisme", "Tourism"], status: "current" },
+  { name: "La Signature de Hoby", logo: "assets/logos/signature-hoby.jpg", sector: ["Mode & création", "Fashion & design"], status: "current" },
+  { name: "Marina Blue", logo: "assets/logos/marina-blue.jpg", sector: ["Tourisme", "Tourism"], status: "former" },
+  { name: "Quincaillerie Vao2 Sanfil Tuléar", logo: "assets/logos/vao2.jpg", sector: ["Quincaillerie", "Hardware"], status: "former" },
+  { name: "KS Beauty Toliara", logo: "assets/logos/ks-beauty.jpg", sector: ["Beauté", "Beauty"], status: "former" }
+];
+
+const workSectors = {
+  retail: ["Commerce & distribution", "Retail & distribution"],
+  hardware: ["Outillage & quincaillerie", "Tools & hardware"],
+  wellness: ["Beauté & bien-être", "Beauty & wellness"],
+  hospitality: ["Restauration & tourisme", "Hospitality & tourism"],
+  creative: ["Mode & événementiel", "Fashion & events"],
+  media: ["Médias & services", "Media & services"]
+};
+
+const works = [
+  { id: 1, src: "assets/works/01-indian-basket-italie.jpg", client: "Indian Basket", category: "retail", format: "square", title: ["Campagne teaser — Saveurs d’Italie", "Teaser campaign — Flavours of Italy"] },
+  { id: 2, src: "assets/works/02-indian-basket-mango.jpg", client: "Indian Basket", category: "retail", format: "square", featured: true, title: ["Campagne produit — Mango", "Product campaign — Mango"] },
+  { id: 3, src: "assets/works/03-indian-basket-mms.jpg", client: "Indian Basket", category: "retail", format: "portrait", featured: true, title: ["Campagne produit — M&M’s", "Product campaign — M&M’s"] },
+  { id: 4, src: "assets/works/04-indian-basket-gato.jpg", client: "Indian Basket", category: "retail", format: "square", featured: true, title: ["Campagne produit — Gato", "Product campaign — Gato"] },
+  { id: 5, src: "assets/works/05-vao2-grillage-pvc.jpg", client: "Quincaillerie Vao2 Tuléar", category: "hardware", format: "landscape", featured: true, title: ["Arrivage — Grillage moustiquaire", "New arrival — Insect screen"] },
+  { id: 6, src: "assets/works/06-vao2-papier-abrasif.jpg", client: "Quincaillerie Vao2 Tuléar", category: "hardware", format: "landscape", title: ["Catalogue produit — Papier abrasif", "Product catalogue — Sandpaper"] },
+  { id: 7, src: "assets/works/07-indian-basket-independance.jpg", client: "Indian Basket", category: "retail", format: "square", title: ["Fête de l’Indépendance", "Independence Day"] },
+  { id: 8, src: "assets/works/08-indian-basket-glace.jpg", client: "Indian Basket", category: "retail", format: "portrait", title: ["Nouveauté — Glace", "New product — Ice cream"] },
+  { id: 9, src: "assets/works/09-signature-academy.jpg", client: "La Signature de Hoby", category: "creative", format: "square", featured: true, title: ["Annonce événementielle — Academy", "Event announcement — Academy"] },
+  { id: 10, src: "assets/works/10-signature-hoby.jpg", client: "La Signature de Hoby", category: "creative", format: "square", featured: true, title: ["Présentation de marque", "Brand presentation"] },
+  { id: 11, src: "assets/works/11-vao2-abattant.jpg", client: "Quincaillerie Vao2 Tuléar", category: "hardware", format: "landscape", title: ["Arrivage — Abattant WC", "New arrival — Toilet seat"] },
+  { id: 12, src: "assets/works/12-homeopharma-soiree.jpg", client: "Homeopharma Tuléar", category: "wellness", format: "portrait", title: ["Routine bien-être du soir", "Evening wellness routine"] },
+  { id: 13, src: "assets/works/13-vao2-eid.jpg", client: "Quincaillerie Vao2 Tuléar", category: "hardware", format: "square", title: ["Communication événementielle — Eid", "Event communication — Eid"] },
+  { id: 14, src: "assets/works/14-homeopharma-neem.jpg", client: "Homeopharma Tuléar", category: "wellness", format: "portrait", featured: true, title: ["Campagne soin du visage", "Facial care campaign"] },
+  { id: 15, src: "assets/works/15-total-testeur.jpg", client: "Total Tools Shop Tuléar", category: "hardware", format: "landscape", title: ["Fiche produit — Testeur digital", "Product card — Digital tester"] },
+  { id: 16, src: "assets/works/16-homeopharma-infusion.jpg", client: "Homeopharma Tuléar", category: "wellness", format: "portrait", featured: true, title: ["Campagne infusion après-repas", "After-meal infusion campaign"] },
+  { id: 17, src: "assets/works/17-homeopharma-cernes.jpg", client: "Homeopharma Tuléar", category: "wellness", format: "square", title: ["Campagne sérum anti-cernes", "Eye serum campaign"] },
+  { id: 18, src: "assets/works/18-total-groupe.jpg", client: "Total Tools Shop Tuléar", category: "hardware", format: "square", featured: true, title: ["Campagne groupe électrogène", "Generator campaign"] },
+  { id: 19, src: "assets/works/19-total-agrafeuse.jpg", client: "Total Tools Shop Tuléar", category: "hardware", format: "landscape", title: ["Fiche produit — Agrafeuse", "Product card — Staple gun"] },
+  { id: 20, src: "assets/works/20-total-decametre.jpg", client: "Total Tools Shop Tuléar", category: "hardware", format: "portrait", title: ["Nouveauté — Décamètre", "New product — Measuring tape"] },
+  { id: 21, src: "assets/works/21-shain-cheat-meal.jpg", client: "Shain Lodge", category: "hospitality", format: "square", title: ["Campagne restauration — Cheat meal", "Dining campaign — Cheat meal"] },
+  { id: 22, src: "assets/works/22-homeopharma-ete.jpg", client: "Homeopharma Tuléar", category: "wellness", format: "portrait", title: ["Campagne saisonnière — Été", "Seasonal campaign — Summer"] },
+  { id: 23, src: "assets/works/23-shain-salary-nord.jpg", client: "Shain Lodge", category: "hospitality", format: "square", featured: true, title: ["Destination — Salary Nord", "Destination — Salary Nord"] },
+  { id: 24, src: "assets/works/24-shain-restauration.jpg", client: "Shain Lodge", category: "hospitality", format: "square", featured: true, title: ["Campagne restauration", "Dining campaign"] },
+  { id: 25, src: "assets/works/25-gass-kaly-mariages.jpg", client: "Gass’Kaly", category: "hospitality", format: "square", featured: true, title: ["Campagne mariage & réception", "Wedding & reception campaign"] },
+  { id: 26, src: "assets/works/26-gass-kaly-client.jpg", client: "Gass’Kaly", category: "hospitality", format: "square", title: ["Preuve sociale — Client satisfait", "Social proof — Happy client"] },
+  { id: 27, src: "assets/works/27-ks-beauty-soins.jpg", client: "KS Beauty Toliara", category: "wellness", format: "square", featured: true, title: ["Campagne soins du visage", "Facial treatment campaign"] },
+  { id: 28, src: "assets/works/28-homeopharma-peau.jpg", client: "Homeopharma Tuléar", category: "wellness", format: "square", title: ["Campagne SOS peau", "Skin SOS campaign"] },
+  { id: 29, src: "assets/works/29-gass-kaly-saveurs.jpg", client: "Gass’Kaly", category: "hospitality", format: "square", featured: true, title: ["Campagne culinaire — Saveurs raffinées", "Culinary campaign — Refined flavours"] },
+  { id: 30, src: "assets/works/30-marina-blue-chandeleur.jpg", client: "Marina Blue", category: "hospitality", format: "square", title: ["Événement enfants — Chandeleur", "Children’s event — Candlemas"] },
+  { id: 31, src: "assets/works/31-wedis-weekend.jpg", client: "WEDIS Tuléar", category: "media", format: "square", title: ["Campagne week-end", "Weekend campaign"] },
+  { id: 32, src: "assets/works/32-wedis-match.jpg", client: "WEDIS Tuléar", category: "media", format: "square", featured: true, title: ["Affiche sportive — France vs Maroc", "Sports poster — France vs Morocco"] },
+  { id: 33, src: "assets/works/33-le-jardin-assiette.jpg", client: "Le Jardin Tuléar", category: "hospitality", format: "portrait", featured: true, title: ["Campagne culinaire — Le kiff pur", "Culinary campaign — Pure enjoyment"] },
+  { id: 34, src: "assets/works/34-le-jardin-assiette-vertical.jpg", client: "Le Jardin Tuléar", category: "hospitality", format: "portrait", title: ["Déclinaison culinaire", "Culinary adaptation"] },
+  { id: 35, src: "assets/works/35-ks-beauty-hydrafacial.jpg", client: "KS Beauty Toliara", category: "wellness", format: "square", title: ["Campagne Hydrafacial", "Hydrafacial campaign"] },
+  { id: 36, src: "assets/works/36-wedis-programmes.jpg", client: "WEDIS Tuléar", category: "media", format: "square", title: ["Campagne programmes du week-end", "Weekend programming campaign"] },
+  { id: 37, src: "assets/works/37-ks-beauty-prendre-soin.jpg", client: "KS Beauty Toliara", category: "wellness", format: "square", title: ["Campagne prendre soin de soi", "Self-care campaign"] },
+  { id: 38, src: "assets/works/38-le-jardin-aubergine.jpg", client: "Le Jardin Tuléar", category: "hospitality", format: "portrait", featured: true, title: ["Campagne culinaire — Aubergine", "Culinary campaign — Aubergine"] },
+  { id: 39, src: "assets/works/39-wedis-bonus-internet.jpg", client: "WEDIS Tuléar", category: "media", format: "square", featured: true, title: ["Campagne promotionnelle — Bonus internet", "Promotional campaign — Internet bonus"] },
+  { id: 40, src: "assets/works/40-wedis-film-serie-sport.jpg", client: "WEDIS Tuléar", category: "media", format: "square", title: ["Campagne choix de programmes", "Programming choice campaign"] }
 ];
 
 const projectData = {
@@ -231,6 +285,10 @@ const body = document.body;
 let currentLanguage = localStorage.getItem("portfolio-language") || "fr";
 let currentClientFilter = "current";
 let currentProjectId = null;
+let currentWorksFilter = "all";
+let showAllWorks = false;
+let currentWorkId = null;
+let visibleWorks = [];
 
 function localeIndex() { return currentLanguage === "fr" ? 0 : 1; }
 
@@ -256,7 +314,10 @@ function setLanguage(language) {
   document.querySelectorAll(".dialog-close").forEach((button) => button.setAttribute("aria-label", language === "fr" ? "Fermer" : "Close"));
 
   renderClients(currentClientFilter);
+  renderWorkFilters();
+  renderWorks();
   if (currentProjectId && document.querySelector("#project-dialog").open) openProject(currentProjectId);
+  if (currentWorkId && document.querySelector("#work-dialog").open) updateWorkDialog();
 }
 
 function setTheme(theme) {
@@ -271,16 +332,17 @@ function renderClients(filter) {
   const grid = document.querySelector("#client-grid");
   grid.replaceChildren();
   clients.filter((client) => client.status === filter).forEach((client) => {
-    const card = document.createElement("a");
+    const card = document.createElement("article");
     card.className = "client-card";
-    card.href = client.url;
-    card.target = "_blank";
-    card.rel = "noopener noreferrer";
-    card.setAttribute("aria-label", `${client.name} — ${translations[currentLanguage].officialLink}`);
 
-    const mark = document.createElement("span");
-    mark.className = "client-mark";
-    mark.textContent = client.mark;
+    const logoWrap = document.createElement("span");
+    logoWrap.className = "client-logo";
+    const logo = document.createElement("img");
+    logo.src = client.logo;
+    logo.alt = `Logo ${client.name}`;
+    logo.loading = "lazy";
+    logo.decoding = "async";
+    logoWrap.append(logo);
 
     const copy = document.createElement("span");
     const name = document.createElement("strong");
@@ -289,13 +351,109 @@ function renderClients(filter) {
     sector.textContent = client.sector[localeIndex()];
     copy.append(name, sector);
 
-    const arrow = document.createElement("span");
-    arrow.className = "client-arrow";
-    arrow.setAttribute("aria-hidden", "true");
-    arrow.textContent = "↗";
-    card.append(mark, copy, arrow);
+    card.append(logoWrap, copy);
     grid.append(card);
   });
+}
+
+function renderWorkFilters() {
+  const filters = document.querySelector("#works-filters");
+  filters.replaceChildren();
+  const options = [["all", translations[currentLanguage].allSectors], ...Object.entries(workSectors).map(([key, label]) => [key, label[localeIndex()]])];
+
+  options.forEach(([key, label]) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `filter-button${currentWorksFilter === key ? " active" : ""}`;
+    button.dataset.workFilter = key;
+    button.textContent = label;
+    button.addEventListener("click", () => {
+      currentWorksFilter = key;
+      renderWorkFilters();
+      renderWorks();
+    });
+    filters.append(button);
+  });
+}
+
+function renderWorks() {
+  const grid = document.querySelector("#works-grid");
+  const filteredWorks = works.filter((work) => currentWorksFilter === "all" || work.category === currentWorksFilter);
+  visibleWorks = showAllWorks ? filteredWorks : filteredWorks.filter((work) => work.featured);
+  grid.replaceChildren();
+
+  visibleWorks.forEach((work) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `work-card work-card--${work.format}`;
+    button.dataset.workId = String(work.id);
+    button.setAttribute("aria-label", `${translations[currentLanguage].openWork} — ${work.title[localeIndex()]}`);
+
+    const image = document.createElement("img");
+    image.src = work.src;
+    image.alt = `${work.title[localeIndex()]} — ${work.client}`;
+    image.loading = "lazy";
+    image.decoding = "async";
+
+    const overlay = document.createElement("span");
+    overlay.className = "work-card-overlay";
+    const meta = document.createElement("span");
+    meta.className = "work-card-meta";
+    meta.textContent = `${work.client} · ${workSectors[work.category][localeIndex()]}`;
+    const title = document.createElement("strong");
+    title.textContent = work.title[localeIndex()];
+    const arrow = document.createElement("span");
+    arrow.className = "work-card-arrow";
+    arrow.setAttribute("aria-hidden", "true");
+    arrow.textContent = "↗";
+    overlay.append(meta, title, arrow);
+    button.append(image, overlay);
+    button.addEventListener("click", () => openWork(work.id));
+    grid.append(button);
+  });
+
+  const count = document.querySelector("#works-count");
+  count.textContent = currentLanguage === "fr"
+    ? `${visibleWorks.length} création${visibleWorks.length > 1 ? "s" : ""} affichée${visibleWorks.length > 1 ? "s" : ""} sur ${filteredWorks.length}`
+    : `${visibleWorks.length} of ${filteredWorks.length} creative work${filteredWorks.length > 1 ? "s" : ""} shown`;
+
+  const toggle = document.querySelector("#works-toggle");
+  toggle.textContent = showAllWorks ? translations[currentLanguage].worksShowSelection : translations[currentLanguage].worksViewAll;
+  toggle.setAttribute("aria-expanded", String(showAllWorks));
+}
+
+function updateWorkDialog() {
+  const work = works.find((item) => item.id === currentWorkId);
+  if (!work) return;
+  const index = localeIndex();
+  const image = document.querySelector("#work-dialog-image");
+  image.src = work.src;
+  image.alt = `${work.title[index]} — ${work.client}`;
+  document.querySelector("#work-dialog-sector").textContent = workSectors[work.category][index];
+  document.querySelector("#work-dialog-title").textContent = work.title[index];
+  document.querySelector("#work-dialog-description").textContent = translations[currentLanguage].workDescription;
+  document.querySelector("#work-dialog-client").textContent = work.client;
+
+  const position = Math.max(visibleWorks.findIndex((item) => item.id === currentWorkId), 0);
+  document.querySelector("#work-dialog-position").textContent = `${position + 1} / ${visibleWorks.length}`;
+}
+
+function openWork(id) {
+  if (!works.some((work) => work.id === id)) return;
+  currentWorkId = id;
+  updateWorkDialog();
+  const dialog = document.querySelector("#work-dialog");
+  if (!dialog.open) dialog.showModal();
+  body.classList.add("dialog-open");
+  trackEvent("view_creative_work", { work_id: id });
+}
+
+function stepWork(direction) {
+  if (!visibleWorks.length) return;
+  const currentIndex = visibleWorks.findIndex((work) => work.id === currentWorkId);
+  const nextIndex = (currentIndex + direction + visibleWorks.length) % visibleWorks.length;
+  currentWorkId = visibleWorks[nextIndex].id;
+  updateWorkDialog();
 }
 
 function openProject(id) {
@@ -453,22 +611,37 @@ function init() {
     renderClients(currentClientFilter);
   }));
 
+  document.querySelector("#works-toggle").addEventListener("click", () => {
+    showAllWorks = !showAllWorks;
+    renderWorks();
+  });
+
   const projectDialog = document.querySelector("#project-dialog");
+  const workDialog = document.querySelector("#work-dialog");
   const privacyDialog = document.querySelector("#privacy-dialog");
   projectDialog.querySelector(".dialog-close").addEventListener("click", () => closeDialog(projectDialog));
+  workDialog.querySelector(".dialog-close").addEventListener("click", () => closeDialog(workDialog));
   privacyDialog.querySelector(".dialog-close").addEventListener("click", () => closeDialog(privacyDialog));
   privacyDialog.querySelector(".privacy-close").addEventListener("click", () => closeDialog(privacyDialog));
+  document.querySelector("#work-previous").addEventListener("click", () => stepWork(-1));
+  document.querySelector("#work-next").addEventListener("click", () => stepWork(1));
   document.querySelector(".privacy-link").addEventListener("click", (event) => {
     event.preventDefault();
     privacyDialog.showModal();
     body.classList.add("dialog-open");
   });
-  [projectDialog, privacyDialog].forEach((dialog) => {
+  [projectDialog, workDialog, privacyDialog].forEach((dialog) => {
     dialog.addEventListener("click", (event) => {
       const rect = dialog.getBoundingClientRect();
       if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) closeDialog(dialog);
     });
     dialog.addEventListener("close", () => body.classList.remove("dialog-open"));
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (!workDialog.open) return;
+    if (event.key === "ArrowLeft") stepWork(-1);
+    if (event.key === "ArrowRight") stepWork(1);
   });
 
   document.querySelector("#contact-form").addEventListener("submit", (event) => {

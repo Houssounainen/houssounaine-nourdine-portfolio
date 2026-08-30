@@ -29,7 +29,7 @@
   <link rel="alternate" hreflang="x-default" href="https://houssounainen.github.io/houssounaine-nourdine-portfolio/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script type="application/ld+json">
   {
@@ -58,7 +58,7 @@
   <header class="site-header" id="top">
     <div class="container nav-shell">
       <a class="brand" href="#top" aria-label="Accueil — Houssounaine Nourdine">
-        <span class="brand-mark" aria-hidden="true">HN</span>
+        <span class="brand-mark"><img src="assets/portrait-hero-cutout.webp" alt="" width="84" height="84"></span>
         <span class="brand-copy">
           <strong>Houssounaine</strong>
           <small>Lead Community Manager</small>
@@ -74,6 +74,7 @@
         <a href="#expertise" data-i18n="navExpertise">Expertises</a>
         <a href="#journey" data-i18n="navJourney">Parcours</a>
         <a href="#projects" data-i18n="navProjects">Projets</a>
+        <a href="#works" data-i18n="navWorks">Créations</a>
         <a href="#clients" data-i18n="navClients">Clients</a>
         <a href="#contact" class="nav-cta" data-i18n="navContact">Me contacter</a>
       </nav>
@@ -96,6 +97,7 @@
       <div class="hero-orb hero-orb-two" aria-hidden="true"></div>
       <div class="container hero-grid">
         <div class="hero-copy reveal">
+          <div class="hero-edition" aria-hidden="true"><span>Portfolio</span><strong>2026</strong></div>
           <p class="eyebrow"><span class="live-dot"></span><span data-i18n="heroEyebrow">Lead Community Manager · Toliara, Madagascar</span></p>
           <h1 id="hero-title">Houssounaine <span>Nourdine.</span></h1>
           <p class="hero-role" data-i18n="heroRole">Marketing digital, relationnel et d’influence</p>
@@ -117,7 +119,8 @@
         <div class="hero-visual reveal" aria-label="Portrait professionnel de Houssounaine Nourdine">
           <div class="portrait-frame">
             <div class="portrait-grid" aria-hidden="true"></div>
-            <img src="assets/profile.webp" alt="Portrait professionnel de Houssounaine Nourdine" width="900" height="900" fetchpriority="high">
+            <div class="portrait-lines" aria-hidden="true"></div>
+            <img src="assets/portrait-hero-cutout.webp" alt="Portrait professionnel de Houssounaine Nourdine" width="1536" height="1536" fetchpriority="high">
             <div class="portrait-label">
               <span data-i18n="openTo">Ouvert aux opportunités</span>
               <strong data-i18n="openToTypes">Emploi · Conseil · Partenariats</strong>
@@ -156,6 +159,10 @@
         <div class="section-heading reveal">
           <p class="kicker" data-i18n="aboutKicker">À propos</p>
           <h2 id="about-title" data-i18n="aboutTitle">Une vision créative, structurée et orientée résultats.</h2>
+          <figure class="about-portrait">
+            <img src="assets/about-workspace.jpg" alt="Houssounaine Nourdine dans son environnement de travail" width="1536" height="1536" loading="lazy">
+            <figcaption data-i18n="aboutPortraitCaption">Stratégie, création et coordination au quotidien.</figcaption>
+          </figure>
         </div>
         <div class="about-content reveal">
           <p class="lead" data-i18n="aboutLead">Lead Community Manager chez Raiky et étudiant en Master 2 de marketing international et relationnel à l’Université de Toliara, j’accompagne les marques dans leur stratégie digitale, leur création de contenu et le développement de leurs communautés.</p>
@@ -443,6 +450,31 @@
       </div>
     </section>
 
+    <section class="section works" id="works" aria-labelledby="works-title">
+      <div class="works-glow works-glow-one" aria-hidden="true"></div>
+      <div class="works-glow works-glow-two" aria-hidden="true"></div>
+      <div class="container">
+        <div class="section-heading horizontal reveal">
+          <div>
+            <p class="kicker" data-i18n="worksKicker">Créations graphiques</p>
+            <h2 id="works-title" data-i18n="worksTitle">Des idées conçues pour arrêter le regard.</h2>
+          </div>
+          <p data-i18n="worksIntro">Une sélection professionnelle parmi 40 affiches réalisées pour des marques de secteurs variés.</p>
+        </div>
+
+        <div class="works-toolbar reveal">
+          <div class="filters works-filters" id="works-filters" role="group" aria-label="Filtrer les créations par secteur"></div>
+          <p class="works-count" id="works-count" aria-live="polite"></p>
+        </div>
+
+        <div class="works-grid" id="works-grid" aria-live="polite"></div>
+
+        <div class="works-actions reveal">
+          <button class="button button-light" id="works-toggle" type="button" data-i18n="worksViewAll">Voir toutes les réalisations</button>
+        </div>
+      </div>
+    </section>
+
     <section class="section clients" id="clients" aria-labelledby="clients-title">
       <div class="container">
         <div class="section-heading horizontal reveal">
@@ -450,7 +482,7 @@
             <p class="kicker" data-i18n="clientsKicker">Portefeuille clients</p>
             <h2 id="clients-title" data-i18n="clientsTitle">Des secteurs différents, une même exigence.</h2>
           </div>
-          <p data-i18n="clientsIntro">18 clients actuels et 3 anciens clients présentés avec leurs liens officiels.</p>
+          <p data-i18n="clientsIntro">18 clients actuels et 3 anciens clients réunis dans un portefeuille multisectoriel.</p>
         </div>
 
         <div class="filters reveal" role="group" aria-label="Filtrer les clients">
@@ -534,7 +566,7 @@
   <footer class="site-footer">
     <div class="container footer-grid">
       <div>
-        <a class="brand footer-brand" href="#top"><span class="brand-mark" aria-hidden="true">HN</span><span class="brand-copy"><strong>Houssounaine Nourdine</strong><small>Lead Community Manager</small></span></a>
+        <a class="brand footer-brand" href="#top"><span class="brand-mark"><img src="assets/portrait-hero-cutout.webp" alt="" width="84" height="84"></span><span class="brand-copy"><strong>Houssounaine Nourdine</strong><small>Lead Community Manager</small></span></a>
         <p data-i18n="footerTagline">Créativité, discipline et résultats au service des marques.</p>
       </div>
       <nav aria-label="Liens sociaux">
@@ -567,6 +599,29 @@
       <div class="dialog-section"><h3 data-i18n="dialogResults">Résultats et faits marquants</h3><ul id="dialog-results"></ul></div>
       <div class="dialog-media" id="dialog-media" hidden></div>
       <div class="dialog-links" id="dialog-links"></div>
+    </div>
+  </dialog>
+
+  <dialog class="work-dialog" id="work-dialog" aria-labelledby="work-dialog-title">
+    <button class="dialog-close icon-button" type="button" aria-label="Fermer">×</button>
+    <div class="work-dialog-layout">
+      <figure class="work-dialog-figure">
+        <img id="work-dialog-image" src="" alt="">
+      </figure>
+      <div class="work-dialog-copy">
+        <p class="kicker" id="work-dialog-sector"></p>
+        <h2 id="work-dialog-title"></h2>
+        <p id="work-dialog-description"></p>
+        <dl>
+          <div><dt data-i18n="workClient">Client</dt><dd id="work-dialog-client"></dd></div>
+          <div><dt data-i18n="workRole">Rôle</dt><dd data-i18n="workRoleValue">Conception graphique complète</dd></div>
+        </dl>
+        <div class="work-dialog-nav" aria-label="Parcourir les créations">
+          <button class="button button-secondary" id="work-previous" type="button" data-i18n="previousWork">Précédente</button>
+          <span id="work-dialog-position"></span>
+          <button class="button button-primary" id="work-next" type="button" data-i18n="nextWork">Suivante</button>
+        </div>
+      </div>
     </div>
   </dialog>
 
