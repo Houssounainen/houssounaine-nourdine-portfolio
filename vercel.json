@@ -3,12 +3,12 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/expertise", "destination": "/index.html" },
-    { "source": "/journey", "destination": "/index.html" },
-    { "source": "/projects", "destination": "/index.html" },
-    { "source": "/works", "destination": "/index.html" },
-    { "source": "/clients", "destination": "/index.html" },
-    { "source": "/contact", "destination": "/index.html" }
+    { "source": "/expertise", "destination": "/" },
+    { "source": "/journey", "destination": "/" },
+    { "source": "/projects", "destination": "/" },
+    { "source": "/works", "destination": "/" },
+    { "source": "/clients", "destination": "/" },
+    { "source": "/contact", "destination": "/" }
   ],
   "headers": [
     {
