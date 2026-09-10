@@ -8,7 +8,7 @@ const RESUME_URL = "";
 
 const translations = {
   fr: {
-    skip: "Aller au contenu",
+    skip: "Aller au contenu", findMe: "Retrouvez-moi sur", selectedWork: "Un aperçu de mes créations", exploreWork: "Explorer les créations",
     navAbout: "À propos", navExpertise: "Expertises", navJourney: "Parcours", navProjects: "Projets", navWorks: "Créations", navClients: "Clients", navContact: "Me contacter",
     sidebarTagline: "Stratégie · Création · Influence", topbarLocation: "Toliara · Madagascar", heroGreeting: "Bonjour, je suis", themeDark: "Mode sombre", themeLight: "Mode clair",
     heroEyebrow: "Lead Community Manager · Toliara, Madagascar",
@@ -60,7 +60,7 @@ const translations = {
     dialogRole: "Mon rôle", dialogPeriod: "Période", dialogActions: "Actions principales", dialogResults: "Résultats et faits marquants", officialLink: "Lien officiel", siteLink: "Site officiel", testimonialsKicker: "Témoignages", testimonialsTitle: "Ce qu’ils disent de notre collaboration.", publicationsKicker: "Publications & réflexions", publicationsTitle: "Partager les méthodes derrière les résultats.", resumeTitle: "Télécharger mon parcours complet.", resumeDownload: "Télécharger le CV", statsCaption: "Statistiques Facebook — du 1er janvier au 29 août 2026"
   },
   en: {
-    skip: "Skip to content",
+    skip: "Skip to content", findMe: "Find me on", selectedWork: "A glimpse of my creative work", exploreWork: "Explore creative work",
     navAbout: "About", navExpertise: "Expertise", navJourney: "Journey", navProjects: "Projects", navWorks: "Creative work", navClients: "Clients", navContact: "Contact me",
     sidebarTagline: "Strategy · Creation · Influence", topbarLocation: "Toliara · Madagascar", heroGreeting: "Hello, I’m", themeDark: "Dark mode", themeLight: "Light mode",
     heroEyebrow: "Lead Community Manager · Toliara, Madagascar",
@@ -359,6 +359,7 @@ function closeMobileNavigation() {
   const navToggle = document.querySelector(".nav-toggle");
   const backdrop = document.querySelector(".sidebar-backdrop");
   sidebar.classList.remove("open");
+  body.classList.remove("menu-open");
   navToggle.setAttribute("aria-expanded", "false");
   backdrop.hidden = true;
 }
@@ -368,7 +369,8 @@ function setRoute(route, shouldScroll = true) {
   body.dataset.route = currentRoute;
   const activeSections = [];
 
-  document.querySelectorAll("[data-route]").forEach((section) => {
+  // Animate only page sections: transforming the body also moves the fixed navigation.
+  document.querySelectorAll(".site-main > [data-route]").forEach((section) => {
     section.hidden = section.dataset.route !== currentRoute;
     section.classList.remove("route-enter");
     if (!section.hidden) activeSections.push(section);
@@ -378,11 +380,17 @@ function setRoute(route, shouldScroll = true) {
     link.setAttribute("aria-current", link.dataset.routeLink === currentRoute ? "page" : "false");
     link.setAttribute("href", routeUrl(link.dataset.routeLink));
   });
-  document.querySelectorAll(`[data-route="${currentRoute}"] .reveal`).forEach((element) => element.classList.add("visible"));
   updateDocumentMetadata();
   trackPageView();
   closeMobileNavigation();
-  if (shouldScroll) window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  if (shouldScroll) {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    const heading = activeSections[0]?.querySelector("h1, h2");
+    if (heading) {
+      heading.setAttribute("tabindex", "-1");
+      heading.focus({ preventScroll: true });
+    }
+  }
   if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     window.requestAnimationFrame(() => activeSections.forEach((section) => section.classList.add("route-enter")));
   }
@@ -426,6 +434,7 @@ function setLanguage(language) {
 
 function setTheme(theme) {
   root.dataset.theme = theme;
+  document.querySelector('meta[name="theme-color"]').content = theme === "dark" ? "#0b1220" : "#f5f7fb";
   localStorage.setItem("portfolio-theme", theme);
   document.querySelector(".theme-toggle").setAttribute("aria-label", theme === "dark"
     ? (currentLanguage === "fr" ? "Activer le mode clair" : "Enable light mode")
@@ -473,10 +482,16 @@ function renderWorkFilters() {
     button.type = "button";
     button.className = `filter-button${currentWorksFilter === key ? " active" : ""}`;
     button.dataset.workFilter = key;
+    button.setAttribute("aria-pressed", String(currentWorksFilter === key));
     button.textContent = label;
     button.addEventListener("click", () => {
       currentWorksFilter = key;
-      renderWorkFilters();
+      // Keep the activated button in place so keyboard focus survives filtering.
+      filters.querySelectorAll("[data-work-filter]").forEach((item) => {
+        const active = item.dataset.workFilter === key;
+        item.classList.toggle("active", active);
+        item.setAttribute("aria-pressed", String(active));
+      });
       renderWorks();
     });
     filters.append(button);
@@ -585,7 +600,22 @@ function openProject(id) {
     anchor.href = link.url;
     anchor.target = "_blank";
     anchor.rel = "noopener noreferrer";
-    anchor.textContent = `${link.label} ↗`;
+    const hostname = new URL(link.url).hostname;
+    const network = ["facebook", "instagram", "linkedin"].find((name) => hostname === `${name}.com` || hostname.endsWith(`.${name}.com`));
+    if (network) {
+      const mark = document.createElement("span");
+      mark.className = `brand-icon brand-icon--${network}`;
+      const icon = document.createElement("img");
+      icon.src = `assets/icons/${network}.svg`;
+      icon.alt = "";
+      icon.width = 20;
+      icon.height = 20;
+      mark.append(icon);
+      anchor.append(mark);
+    }
+    const label = document.createElement("span");
+    label.textContent = `${link.label} ↗`;
+    anchor.append(label);
     return anchor;
   }));
   media.replaceChildren();
@@ -673,40 +703,6 @@ function trackPageView() {
   });
 }
 
-function installPlayfulMotion() {
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-  const portrait = document.querySelector(".portrait-frame");
-
-  if (!reducedMotion && finePointer && portrait) {
-    portrait.addEventListener("pointermove", (event) => {
-      const rect = portrait.getBoundingClientRect();
-      const x = ((event.clientX - rect.left) / rect.width - .5) * 8;
-      const y = ((event.clientY - rect.top) / rect.height - .5) * 8;
-      portrait.style.setProperty("--portrait-shift-x", `${x.toFixed(2)}px`);
-      portrait.style.setProperty("--portrait-shift-y", `${y.toFixed(2)}px`);
-    });
-    portrait.addEventListener("pointerleave", () => {
-      portrait.style.setProperty("--portrait-shift-x", "0px");
-      portrait.style.setProperty("--portrait-shift-y", "0px");
-    });
-  }
-
-  document.addEventListener("pointerdown", (event) => {
-    if (reducedMotion || event.button !== 0) return;
-    const host = event.target.closest(".button, .filter-button, .primary-nav a, .mobile-bottom-nav a, .sidebar-cta");
-    if (!host || host.hasAttribute("disabled")) return;
-    const rect = host.getBoundingClientRect();
-    const wave = document.createElement("span");
-    wave.className = "ripple-wave";
-    wave.style.left = `${event.clientX - rect.left}px`;
-    wave.style.top = `${event.clientY - rect.top}px`;
-    host.classList.add("ripple-host");
-    host.append(wave);
-    wave.addEventListener("animationend", () => wave.remove(), { once: true });
-  });
-}
-
 function init() {
   const storedTheme = localStorage.getItem("portfolio-theme");
   const preferredTheme = storedTheme || "dark";
@@ -724,33 +720,39 @@ function init() {
     if (cleanRoutesEnabled()) window.history.replaceState({ route: currentRoute }, "", routeUrl(currentRoute));
     updateDocumentMetadata();
   });
-  installPlayfulMotion();
 
   const navToggle = document.querySelector(".nav-toggle");
   const nav = document.querySelector(".site-sidebar");
   const backdrop = document.querySelector(".sidebar-backdrop");
   navToggle.addEventListener("click", () => {
     const open = nav.classList.toggle("open");
+    body.classList.toggle("menu-open", open);
     navToggle.setAttribute("aria-expanded", String(open));
     backdrop.hidden = !open;
   });
   backdrop.addEventListener("click", closeMobileNavigation);
+  window.matchMedia("(min-width: 921px)").addEventListener("change", (event) => {
+    if (event.matches) closeMobileNavigation();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && nav.classList.contains("open")) {
+      closeMobileNavigation();
+      navToggle.focus();
+    }
+  });
 
   document.querySelectorAll("[data-route-link]").forEach((link) => link.addEventListener("click", (event) => {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
     navigateToRoute(link.dataset.routeLink);
   }));
   window.addEventListener("popstate", () => setRoute(routeFromLocation()));
 
-  window.addEventListener("scroll", () => document.querySelector(".site-header").classList.toggle("scrolled", window.scrollY > 20), { passive: true });
+  document.querySelectorAll("[data-project-filter], [data-client-filter]").forEach((button) => {
+    button.setAttribute("aria-pressed", String(button.classList.contains("active")));
+  });
 
-  const revealObserver = new IntersectionObserver((entries) => entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add("visible");
-      revealObserver.unobserve(entry.target);
-    }
-  }), { threshold: 0.12 });
-  document.querySelectorAll(".reveal").forEach((element) => revealObserver.observe(element));
+  window.addEventListener("scroll", () => document.querySelector(".site-header").classList.toggle("scrolled", window.scrollY > 20), { passive: true });
 
   const counterObserver = new IntersectionObserver((entries) => entries.forEach((entry) => {
     if (entry.isIntersecting) {
@@ -761,7 +763,10 @@ function init() {
   document.querySelectorAll(".counter").forEach((counter) => counterObserver.observe(counter));
 
   document.querySelectorAll("[data-project-filter]").forEach((button) => button.addEventListener("click", () => {
-    document.querySelectorAll("[data-project-filter]").forEach((item) => item.classList.toggle("active", item === button));
+    document.querySelectorAll("[data-project-filter]").forEach((item) => {
+      item.classList.toggle("active", item === button);
+      item.setAttribute("aria-pressed", String(item === button));
+    });
     const filter = button.dataset.projectFilter;
     document.querySelectorAll(".project-card").forEach((card) => { card.hidden = filter !== "all" && card.dataset.category !== filter; });
   }));
@@ -770,7 +775,10 @@ function init() {
 
   document.querySelectorAll("[data-client-filter]").forEach((button) => button.addEventListener("click", () => {
     currentClientFilter = button.dataset.clientFilter;
-    document.querySelectorAll("[data-client-filter]").forEach((item) => item.classList.toggle("active", item === button));
+    document.querySelectorAll("[data-client-filter]").forEach((item) => {
+      item.classList.toggle("active", item === button);
+      item.setAttribute("aria-pressed", String(item === button));
+    });
     renderClients(currentClientFilter);
   }));
 
