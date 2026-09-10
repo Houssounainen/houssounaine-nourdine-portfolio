@@ -7,6 +7,9 @@ Portfolio personnel bilingue de Houssounaine Nourdine, Lead Community Manager sp
 - HTML5 sémantique et CSS3 moderne ;
 - responsive design mobile-first ;
 - thèmes clair et sombre ;
+- identité bleu profond, menthe, lilas et corail, avec contrastes adaptés aux deux thèmes ;
+- logos Facebook, Instagram, LinkedIn et WhatsApp servis localement ;
+- aperçu de trois créations dès l’accueil et galerie respectant le cadrage original des affiches ;
 - version française et anglaise ;
 - navigation en écrans distincts avec barre latérale fixe sur ordinateur et dock inférieur sur mobile ;
 - chiffres clés animés ;
@@ -21,6 +24,10 @@ Portfolio personnel bilingue de Houssounaine Nourdine, Lead Community Manager sp
 - préférences de confidentialité ;
 - métadonnées SEO et données structurées ;
 - accessibilité clavier et prise en charge de `prefers-reduced-motion`.
+
+La mise à jour graphique s’inspire du travail typographique et de la place donnée aux images dans la [sélection de portfolios Awwwards](https://www.awwwards.com/websites/portfolio/), notamment [Arturo Spatino](https://www.awwwards.com/sites/arturo-spatino) et [Milan Compain](https://www.awwwards.com/sites/milan-compain). Les photographies, réalisations et logos clients sont ceux du portfolio d’origine.
+
+Les transitions de page sont limitées aux sections de contenu. Les menus fixes restent stables et les liens conservent l’ouverture native dans un nouvel onglet avec Ctrl/Cmd. Sur mobile, les cinq accès principaux figurent dans le dock ; toutes les rubriques restent disponibles dans le menu.
 
 ## Fichiers
 
