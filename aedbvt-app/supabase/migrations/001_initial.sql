@@ -237,6 +237,24 @@ alter table public.governance_documents enable row level security;
 alter table public.audit_logs enable row level security;
 alter table public.app_settings enable row level security;
 
+revoke all on table public.profiles, public.members, public.payments, public.expenses,
+  public.quotes, public.invoices, public.articles, public.events, public.meetings,
+  public.governance_documents, public.audit_logs, public.app_settings from anon, authenticated;
+
+grant select, update on table public.profiles to authenticated;
+grant select, insert, update on table public.members to authenticated;
+grant select, insert, update on table public.payments to authenticated;
+grant select, insert, update, delete on table public.expenses to authenticated;
+grant select, insert, update, delete on table public.quotes to authenticated;
+grant select, insert, update, delete on table public.invoices to authenticated;
+grant select, insert, update, delete on table public.articles to authenticated;
+grant select, insert, update, delete on table public.events to authenticated;
+grant select, insert, update, delete on table public.meetings to authenticated;
+grant select, insert, update, delete on table public.governance_documents to authenticated;
+grant select on table public.audit_logs to authenticated;
+grant select, insert, update, delete on table public.app_settings to authenticated;
+grant usage, select on sequence public.receipt_seq, public.quote_seq, public.invoice_seq to authenticated;
+
 create policy profiles_read on public.profiles for select to authenticated using (id=auth.uid() or public.is_staff());
 create policy profiles_staff_update on public.profiles for update to authenticated using (public.is_staff()) with check (public.is_staff());
 
