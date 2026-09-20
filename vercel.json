@@ -3,22 +3,53 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/expertise", "destination": "/" },
-    { "source": "/journey", "destination": "/" },
-    { "source": "/projects", "destination": "/" },
-    { "source": "/works", "destination": "/" },
-    { "source": "/clients", "destination": "/" },
-    { "source": "/association", "destination": "/" },
-    { "source": "/contact", "destination": "/" }
+    {
+      "source": "/expertise",
+      "destination": "/"
+    },
+    {
+      "source": "/journey",
+      "destination": "/"
+    },
+    {
+      "source": "/projects",
+      "destination": "/"
+    },
+    {
+      "source": "/works",
+      "destination": "/"
+    },
+    {
+      "source": "/clients",
+      "destination": "/"
+    },
+    {
+      "source": "/association",
+      "destination": "/"
+    },
+    {
+      "source": "/contact",
+      "destination": "/"
+    }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
       ]
     }
-  ]
+  ],
+  "ignoreCommand": "if [ \"$VERCEL_PROJECT_PRODUCTION_URL\" != \"houssounainenourdine.vercel.app\" ]; then exit 0; fi; git diff --quiet HEAD^ HEAD -- index.html styles.css script.js motion.css motion.js association.css association.js assets robots.txt site.webmanifest sitemap.xml vercel.json; code=$?; if [ \"$code\" -eq 0 ]; then exit 0; else exit 1; fi"
 }
