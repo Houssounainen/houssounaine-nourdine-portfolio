@@ -238,7 +238,7 @@ language sql
 stable
 security definer
 set search_path=public
-as $
+as $$
   select id from public.members where profile_id=auth.uid() and status='active' limit 1
 $;
 
@@ -251,7 +251,7 @@ language sql
 stable
 security definer
 set search_path=public
-as $
+as $$
   select m.id,m.full_name,m.member_number,m.village
   from public.members m
   where m.status='active'
@@ -267,7 +267,7 @@ language sql
 stable
 security definer
 set search_path=public
-as $
+as $$
   select c.id,c.position_id,c.member_id,m.full_name,m.member_number,m.village,c.statement,c.status
   from public.election_candidates c
   join public.election_positions p on p.id=c.position_id
@@ -289,7 +289,7 @@ returns uuid
 language plpgsql
 security definer
 set search_path=public
-as $
+as $$
 declare
   grantor uuid;
   result_id uuid;
@@ -318,7 +318,7 @@ begin
   returning id into result_id;
 
   return result_id;
-end $;
+end $$;
 
 revoke all on function public.set_my_proxy(uuid,uuid) from public;
 grant execute on function public.set_my_proxy(uuid,uuid) to authenticated;
@@ -328,7 +328,7 @@ returns void
 language plpgsql
 security definer
 set search_path=public
-as $
+as $$
 declare holder uuid;
 begin
   if p_status not in ('accepted','rejected') then
@@ -343,7 +343,7 @@ begin
   update public.assembly_proxies
   set status=p_status, updated_at=now()
   where id=p_proxy_id and status='pending';
-end $;
+end $$;
 
 revoke all on function public.respond_to_proxy(uuid,text) from public;
 grant execute on function public.respond_to_proxy(uuid,text) to authenticated;
@@ -353,7 +353,7 @@ returns void
 language plpgsql
 security definer
 set search_path=public
-as $
+as $$
 begin
   update public.assembly_proxies
   set status='revoked', updated_at=now()
@@ -364,7 +364,7 @@ begin
   if not found then
     raise exception 'Procuration introuvable ou non révocable.';
   end if;
-end $;
+end $$;
 
 revoke all on function public.revoke_my_proxy(uuid) from public;
 grant execute on function public.revoke_my_proxy(uuid) to authenticated;
@@ -426,7 +426,7 @@ returns bigint
 language sql
 security definer
 set search_path=public
-as $
+as $$
   select case
     when m.vote_method='secret' then (select count(*) from public.motion_vote_receipts r where r.motion_id=m.id)
     else (select count(*) from public.recorded_motion_votes r where r.motion_id=m.id)
@@ -442,7 +442,7 @@ returns bigint
 language sql
 security definer
 set search_path=public
-as $
+as $$
   select count(*) from public.election_vote_receipts where position_id=p_position_id
 $;
 
@@ -597,7 +597,7 @@ create or replace function public.guard_assembly_status()
 returns trigger
 language plpgsql
 set search_path=public
-as $
+as $$
 begin
   if new.status is not distinct from old.status then
     return new;
@@ -611,7 +611,7 @@ begin
     raise exception 'Transition d’assemblée invalide : % vers %.',old.status,new.status;
   end if;
   return new;
-end $;
+end $$;
 
 drop trigger if exists guard_assembly_status on public.assemblies;
 create trigger guard_assembly_status before update of status on public.assemblies
@@ -621,7 +621,7 @@ create or replace function public.guard_motion_status()
 returns trigger
 language plpgsql
 set search_path=public
-as $
+as $$
 declare assembly_status text;
 declare quorum_met boolean;
 begin
@@ -647,7 +647,7 @@ begin
     end if;
   end if;
   return new;
-end $;
+end $$;
 
 drop trigger if exists guard_motion_status on public.motions;
 create trigger guard_motion_status before update of status on public.motions
@@ -657,7 +657,7 @@ create or replace function public.guard_election_status()
 returns trigger
 language plpgsql
 set search_path=public
-as $
+as $$
 begin
   if new.status is not distinct from old.status then
     return new;
@@ -686,7 +686,7 @@ begin
     end if;
   end if;
   return new;
-end $;
+end $$;
 
 drop trigger if exists guard_election_status on public.elections;
 create trigger guard_election_status before update of status on public.elections
