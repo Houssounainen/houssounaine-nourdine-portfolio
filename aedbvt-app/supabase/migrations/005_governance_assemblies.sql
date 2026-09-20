@@ -101,7 +101,7 @@ create table if not exists public.election_positions (
   id uuid primary key default gen_random_uuid(),
   election_id uuid not null references public.elections(id) on delete cascade,
   title text not null,
-  seats integer not null default 1 check (seats > 0),
+  seats integer not null default 1 check (seats = 1),
   sort_order integer not null default 0
 );
 
@@ -199,11 +199,20 @@ using (status <> 'draft' or public.is_staff());
 create policy elections_manage on public.elections for all to authenticated
 using (public.is_staff()) with check (public.is_staff());
 
-create policy election_positions_read on public.election_positions for select to authenticated using (true);
+create policy election_positions_read on public.election_positions for select to authenticated
+using (
+  public.is_staff()
+  or exists(select 1 from public.elections e where e.id=election_id and e.status <> 'draft')
+);
 create policy election_positions_manage on public.election_positions for all to authenticated
 using (public.is_staff()) with check (public.is_staff());
 
-create policy candidates_read on public.election_candidates for select to authenticated using (true);
+create policy candidates_read on public.election_candidates for select to authenticated
+using (
+  public.is_staff()
+  or status='approved'
+  or exists(select 1 from public.members m where m.id=member_id and m.profile_id=auth.uid())
+);
 create policy candidates_self_insert on public.election_candidates for insert to authenticated
 with check (
   status='pending'
@@ -321,6 +330,34 @@ end $$;
 revoke all on function public.cast_motion_vote(uuid,text) from public;
 grant execute on function public.cast_motion_vote(uuid,text) to authenticated;
 
+create or replace function public.get_motion_turnout(p_motion_id uuid)
+returns bigint
+language sql
+security definer
+set search_path=public
+as $
+  select case
+    when m.vote_method='secret' then (select count(*) from public.motion_vote_receipts r where r.motion_id=m.id)
+    else (select count(*) from public.recorded_motion_votes r where r.motion_id=m.id)
+  end
+  from public.motions m where m.id=p_motion_id
+$;
+
+revoke all on function public.get_motion_turnout(uuid) from public;
+grant execute on function public.get_motion_turnout(uuid) to authenticated;
+
+create or replace function public.get_election_turnout(p_position_id uuid)
+returns bigint
+language sql
+security definer
+set search_path=public
+as $
+  select count(*) from public.election_vote_receipts where position_id=p_position_id
+$;
+
+revoke all on function public.get_election_turnout(uuid) from public;
+grant execute on function public.get_election_turnout(uuid) to authenticated;
+
 create or replace function public.get_motion_results(p_motion_id uuid)
 returns table(choice text, votes bigint)
 language plpgsql
@@ -333,7 +370,7 @@ begin
   if not found then
     return;
   end if;
-  if m.status <> 'closed' and not public.is_staff() then
+  if m.status <> 'closed' then
     raise exception 'Résultats indisponibles avant clôture.';
   end if;
 
@@ -406,7 +443,7 @@ begin
   if election_status is null then
     return;
   end if;
-  if election_status <> 'closed' and not public.is_staff() then
+  if election_status <> 'closed' then
     raise exception 'Résultats indisponibles avant clôture.';
   end if;
 
