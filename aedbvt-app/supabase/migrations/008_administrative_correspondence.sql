@@ -61,6 +61,7 @@ create table if not exists public.administrative_issuances (
   presidency_approved_by uuid references public.profiles(id) on delete set null,
   presidency_approved_at timestamptz,
   issued_at timestamptz,
+  verification_token uuid not null default gen_random_uuid() unique,
   created_by uuid references public.profiles(id) on delete set null,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -362,6 +363,37 @@ end $$;
 
 revoke all on function public.issue_administrative_document(uuid) from public;
 grant execute on function public.issue_administrative_document(uuid) to authenticated;
+
+create or replace function public.verify_administrative_document(p_token uuid)
+returns table(
+  valid boolean,
+  number text,
+  subject text,
+  document_type text,
+  member_name text,
+  member_number text,
+  issued_at timestamptz
+)
+language sql
+stable
+security definer
+set search_path=public
+as $
+  select
+    true,
+    i.number,
+    i.subject,
+    i.document_type,
+    m.full_name,
+    m.member_number,
+    i.issued_at
+  from public.administrative_issuances i
+  left join public.members m on m.id=i.member_id
+  where i.verification_token=p_token and i.status='issued'
+$;
+
+revoke all on function public.verify_administrative_document(uuid) from public;
+grant execute on function public.verify_administrative_document(uuid) to anon, authenticated;
 
 create or replace function public.guard_administrative_final_state()
 returns trigger
