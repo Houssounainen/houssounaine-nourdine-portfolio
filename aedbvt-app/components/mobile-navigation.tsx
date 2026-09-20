@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { SignOutButton } from "@/components/sign-out-button";
 
 type NavLink=[string,string];
 
@@ -37,6 +38,7 @@ export function MobileNavigation({
       <aside id="mobile-menu" className="mobile-menu-drawer" onClick={(event)=>event.stopPropagation()}>
         <div className="mobile-menu-head"><div className="avatar">{profileName.split(" ").map(x=>x[0]).slice(0,2).join("").toUpperCase()}</div><span><b>{profileName}</b><small>{role}</small></span><button onClick={()=>setOpen(false)} aria-label="Fermer le menu">×</button></div>
         <nav>{links.map(([href,label])=><Link className={active(href)?"active":""} href={href} key={href}>{label}<span>›</span></Link>)}</nav>
+        <div className="mobile-menu-signout"><SignOutButton/></div>
       </aside>
     </div>}
   </>;
