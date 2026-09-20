@@ -273,7 +273,7 @@ returns trigger
 language plpgsql
 security definer
 set search_path=public
-as $
+as $$
 declare lead_id uuid;
 begin
   if old.status is distinct from new.status and new.status in ('blocked','done') then
@@ -307,7 +307,7 @@ begin
     end if;
   end if;
   return new;
-end $;
+end $$;
 
 drop trigger if exists notify_operational_task_state on public.operational_tasks;
 create trigger notify_operational_task_state
@@ -380,7 +380,7 @@ create or replace function public.guard_commission_closure()
 returns trigger
 language plpgsql
 set search_path=public
-as $
+as $$
 begin
   if old.status='active' and new.status='closed'
      and exists(
@@ -390,7 +390,7 @@ begin
     raise exception 'La commission possède encore des tâches ouvertes.';
   end if;
   return new;
-end $;
+end $$;
 
 drop trigger if exists guard_commission_closure on public.commissions;
 create trigger guard_commission_closure
@@ -401,7 +401,7 @@ create or replace function public.guard_closed_commission_membership()
 returns trigger
 language plpgsql
 set search_path=public
-as $
+as $$
 declare commission_status text;
 begin
   select status into commission_status
@@ -412,7 +412,7 @@ begin
     raise exception 'Une commission clôturée ne peut plus recevoir de membres.';
   end if;
   return coalesce(new,old);
-end $;
+end $$;
 
 drop trigger if exists guard_closed_commission_membership on public.commission_members;
 create trigger guard_closed_commission_membership
@@ -423,14 +423,14 @@ create or replace function public.guard_closed_commission_task()
 returns trigger
 language plpgsql
 set search_path=public
-as $
+as $$
 begin
   if new.commission_id is not null
      and exists(select 1 from public.commissions c where c.id=new.commission_id and c.status='closed') then
     raise exception 'Une tâche ne peut pas être affectée à une commission clôturée.';
   end if;
   return new;
-end $;
+end $$;
 
 drop trigger if exists guard_closed_commission_task on public.operational_tasks;
 create trigger guard_closed_commission_task
@@ -457,7 +457,7 @@ begin
     end if;
   end if;
   return new;
-end $;
+end $$;
 
 drop trigger if exists guard_operational_task_history on public.operational_tasks;
 create trigger guard_operational_task_history
