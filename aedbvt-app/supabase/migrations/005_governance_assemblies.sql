@@ -232,6 +232,45 @@ with check (
 create policy election_receipts_self on public.election_vote_receipts for select to authenticated
 using (user_id=auth.uid());
 
+create or replace function public.list_proxy_eligible_members()
+returns table(id uuid, full_name text, member_number text, village text)
+language sql
+stable
+security definer
+set search_path=public
+as $
+  select m.id,m.full_name,m.member_number,m.village
+  from public.members m
+  where m.status='active'
+  order by m.full_name
+$;
+
+revoke all on function public.list_proxy_eligible_members() from public;
+grant execute on function public.list_proxy_eligible_members() to authenticated;
+
+create or replace function public.list_election_candidates(p_election_id uuid)
+returns table(candidate_id uuid, position_id uuid, member_id uuid, full_name text, member_number text, village text, statement text, candidate_status text)
+language sql
+stable
+security definer
+set search_path=public
+as $
+  select c.id,c.position_id,c.member_id,m.full_name,m.member_number,m.village,c.statement,c.status
+  from public.election_candidates c
+  join public.election_positions p on p.id=c.position_id
+  join public.members m on m.id=c.member_id
+  where p.election_id=p_election_id
+    and (
+      c.status='approved'
+      or public.is_staff()
+      or m.profile_id=auth.uid()
+    )
+  order by p.sort_order,m.full_name
+$;
+
+revoke all on function public.list_election_candidates(uuid) from public;
+grant execute on function public.list_election_candidates(uuid) to authenticated;
+
 create or replace function public.respond_to_proxy(p_proxy_id uuid, p_status text)
 returns void
 language plpgsql
