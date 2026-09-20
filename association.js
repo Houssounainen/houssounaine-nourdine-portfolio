@@ -16,7 +16,8 @@
     del(key) { try { localStorage.removeItem(key); } catch { /* stockage indisponible */ } }
   };
 
-  const KEY = "aedbvt_state_v2";
+  const KEY = "aedbvt_state_v3";
+  const ADMIN_NAME = "Houssounaine Nourdine";
   const COTISATION = 30000;
   const LOGO = "assets/aedbvt-logo.webp";
   const ar = (n) => `${Number(n).toLocaleString("fr-FR")} Ar`;
@@ -37,6 +38,9 @@
     pay: '<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/>',
     alerts: '<path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 21h4"/>',
     info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>',
+    docs: '<path d="M6 3h9l3 3v15H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/>',
+    rules: '<path d="M5 4h14v16H5z"/><path d="M9 8h6M9 12h6M9 16h4"/>',
+    admin: '<circle cx="12" cy="8" r="3"/><path d="M5 20a7 7 0 0 1 14 0"/><path d="M18 4l1 1 2-1v3l-2 1-1-1z"/>',
     warn: '<path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17v.5"/>',
     circle: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>'
   };
@@ -44,7 +48,8 @@
 
   const TABS = [
     ["dash", "Accueil"], ["news", "Actualités"], ["events", "Événements"], ["meetings", "Réunions"], ["members", "Membres"],
-    ["org", "Organigramme"], ["pay", "Paiements"], ["alerts", "Alertes & annonces"], ["info", "Infos"]
+    ["org", "Organigramme"], ["pay", "Paiements"], ["docs", "Documents"], ["rules", "Statuts & règlement"],
+    ["alerts", "Alertes & annonces"], ["info", "Infos"], ["admin", "Administration"]
   ];
   const TAB_ORDER = TABS.map(([id]) => id);
   let transitionDir = 1;
@@ -132,7 +137,73 @@
     }]
   };
 
+  const STATUTES = [
+    ["Article 1 — Dénomination", "Il est proposé de constituer une association dénommée « Association des Étudiants de Darsalama et Bandrani-Vouani à Tuléar », sigle AEDBVT."],
+    ["Article 2 — Cadre juridique", "L’association a vocation à fonctionner conformément au régime général des associations applicable à Madagascar, notamment l’Ordonnance n°60-133 du 3 octobre 1960 modifiée, sous réserve des formalités de déclaration, d’enregistrement et de toute règle applicable à sa situation."],
+    ["Article 3 — Siège", "Le siège est fixé à Tuléar (Toliara), Madagascar. Son adresse précise est arrêtée par le Bureau et peut être transférée dans la même ville par décision du Bureau, sous réserve d’information de l’Assemblée générale."],
+    ["Article 4 — Durée", "La durée de l’association est illimitée, sauf dissolution décidée conformément aux présents statuts."],
+    ["Article 5 — Objet", "L’AEDBVT a pour objet de rassembler les étudiantes et étudiants originaires de Darsalama et de Bandrani-Vouani présents à Tuléar, de favoriser leur réussite académique, leur intégration, l’entraide, la solidarité, la représentation de leurs intérêts collectifs et la valorisation culturelle."],
+    ["Article 6 — Moyens d’action", "L’association peut organiser réunions, formations, accompagnements, activités culturelles et sportives, actions solidaires, événements, partenariats, campagnes d’information, collectes autorisées et outils numériques utiles à son objet."],
+    ["Article 7 — Composition", "L’association comprend des membres actifs, des membres du Bureau et, lorsque l’Assemblée générale le décide, des membres d’honneur ou partenaires sans droit de vote."],
+    ["Article 8 — Admission", "L’admission d’un membre actif suppose de remplir les conditions définies par le règlement intérieur, d’accepter les statuts et le règlement, de fournir les informations d’adhésion requises et de s’acquitter de la cotisation applicable, sauf dispense régulièrement accordée."],
+    ["Article 9 — Droits et devoirs", "Chaque membre actif peut participer aux activités et aux Assemblées selon les règles de vote. Il respecte les autres membres, protège les biens de l’association, préserve la confidentialité des données internes et s’abstient d’engager l’association sans mandat."],
+    ["Article 10 — Cotisations et ressources", "Le montant de la cotisation est proposé par le Bureau et approuvé par l’Assemblée générale. Les ressources peuvent comprendre cotisations, dons autorisés, subventions, partenariats, recettes d’activités compatibles avec l’objet et toute autre ressource licite."],
+    ["Article 11 — Perte de la qualité de membre", "La qualité de membre se perd par démission, décès, fin des conditions d’adhésion ou exclusion prononcée selon une procédure contradictoire prévue au règlement intérieur."],
+    ["Article 12 — Assemblée générale ordinaire", "L’Assemblée générale ordinaire réunit les membres ayant droit de vote. Elle examine le rapport moral, le rapport d’activité, les comptes, le budget, les orientations, la cotisation et les élections. La convocation, le quorum, les procurations et les majorités sont précisés au règlement intérieur."],
+    ["Article 13 — Assemblée générale extraordinaire", "Une Assemblée générale extraordinaire peut être convoquée pour modification des statuts, décision patrimoniale majeure, crise institutionnelle ou dissolution. Les règles de quorum et de majorité renforcée sont précisées au règlement intérieur."],
+    ["Article 14 — Bureau exécutif", "Le Bureau comprend au minimum un Président, un Vice-président si nécessaire, un Secrétaire général et un Trésorier. L’Assemblée peut créer d’autres responsabilités : communication, vie étudiante, cotisations, solidarité ou contrôle."],
+    ["Article 15 — Attributions", "Le Président représente l’association dans les limites de son mandat ; le Secrétaire assure convocations, procès-verbaux, registre et archives ; le Trésorier tient la caisse, les pièces et rapports financiers ; les responsables de commission exécutent les missions qui leur sont confiées."],
+    ["Article 16 — Administration numérique", "Les comptes numériques officiels sont administrés selon le principe du moindre privilège. Dans la présente simulation, Houssounaine Nourdine est l’administrateur principal de l’application. Dans l’application officielle, tout accès devra être nominatif, journalisé et révocable."],
+    ["Article 17 — Gestion financière et transparence", "Toute recette et dépense est tracée. Les paiements donnent lieu à une référence et, lorsque pertinent, à un reçu. Les dépenses importantes sont autorisées selon les seuils du règlement intérieur. Un état financier est présenté à l’Assemblée générale."],
+    ["Article 18 — Contrôle des comptes", "Un Commissaire aux comptes interne ou une commission de contrôle, distincte de la fonction de Trésorier, peut vérifier la caisse, les justificatifs, les écritures et la sincérité des informations financières puis rendre compte à l’Assemblée générale."],
+    ["Article 19 — Conflits d’intérêts", "Tout responsable signale une situation dans laquelle son intérêt personnel ou celui d’un proche peut interférer avec l’intérêt de l’association et s’abstient de participer à la décision concernée."],
+    ["Article 20 — Commissions", "Le Bureau ou l’Assemblée peut créer des commissions permanentes ou temporaires. Leur mandat, responsable, budget éventuel et obligation de compte rendu sont formalisés."],
+    ["Article 21 — Modification des statuts", "Toute modification est soumise à l’Assemblée générale extraordinaire dans les conditions prévues au règlement intérieur et, lorsque la réglementation l’exige, fait l’objet des formalités administratives correspondantes."],
+    ["Article 22 — Dissolution", "La dissolution ne peut être décidée que par une Assemblée générale extraordinaire. Après apurement des engagements, l’actif restant est affecté conformément à la réglementation et à la décision de l’Assemblée, sans partage entre les membres."],
+    ["Article 23 — Règlement intérieur", "Un règlement intérieur précise les modalités pratiques non détaillées par les statuts. Il est approuvé et modifié par l’organe compétent défini par les présents statuts."],
+    ["Article 24 — Entrée en vigueur", "Le présent texte constitue un projet de simulation. Sa version officielle n’entre en vigueur qu’après adoption régulière par les membres fondateurs ou l’Assemblée compétente et accomplissement des formalités nécessaires."]
+  ];
+
+  const INTERNAL_RULES = [
+    ["Article 1 — Objet du règlement", "Le présent règlement complète les statuts et organise le fonctionnement quotidien de l’AEDBVT."],
+    ["Article 2 — Dossier d’adhésion", "Le dossier comprend au minimum identité, village d’origine, filière, niveau d’étude, moyen de contact, acceptation des textes et consentements nécessaires au traitement des données."],
+    ["Article 3 — Carte et identifiant membre", "Chaque membre reçoit un identifiant interne unique. La carte ou attestation numérique n’est pas cessible et ne vaut pas document d’identité officiel."],
+    ["Article 4 — Cotisation", "La cotisation annuelle de démonstration est fixée à 30 000 Ar pour l’exercice 2026-2027. Tout changement pour une version officielle doit être approuvé selon les statuts."],
+    ["Article 5 — Paiements", "Les moyens autorisés sont définis par le Bureau. Dans la simulation : MVola, Orange Money, Airtel Money et espèces. Aucun paiement réel n’est traité par cette version du portfolio."],
+    ["Article 6 — Reçus, devis et factures", "Les documents financiers portent un numéro unique, une date, l’identité de l’association, l’objet, le montant et le statut. Un document annulé n’est pas supprimé de l’historique ; il est marqué annulé ou remplacé par un document correctif."],
+    ["Article 7 — Caisse et banque", "Les encaissements sont enregistrés sans délai. Les rapprochements de caisse sont périodiques. Dans l’application officielle, les comptes de paiement doivent être détenus ou mandatés au nom de la structure conformément aux règles applicables."],
+    ["Article 8 — Dépenses", "Toute dépense doit être liée à l’objet de l’association et justifiée. Les seuils d’autorisation sont fixés par décision du Bureau et les dépenses exceptionnelles sont soumises à validation renforcée."],
+    ["Article 9 — Remboursement de frais", "Un remboursement exige une demande, un justificatif et une validation par une personne différente du bénéficiaire lorsque cela est possible."],
+    ["Article 10 — Budget et suivi", "Le Trésorier prépare un budget prévisionnel, suit les réalisations et signale tout écart significatif au Bureau."],
+    ["Article 11 — Réunions", "Les convocations indiquent date, heure, lieu ou lien, ordre du jour et documents utiles. Les décisions sont consignées dans un procès-verbal."],
+    ["Article 12 — Assemblées et votes", "La liste des membres habilités à voter est arrêtée avant l’Assemblée. Les procurations, le quorum, le mode de scrutin et la conservation des résultats sont précisés dans la convocation ou une décision permanente."],
+    ["Article 13 — Comportement", "Sont exigés respect, courtoisie, non-discrimination, absence de harcèlement, sécurité lors des activités et respect des lois ainsi que des règles de l’établissement d’accueil."],
+    ["Article 14 — Discipline", "Toute mesure disciplinaire respecte une procédure contradictoire : information des faits reprochés, possibilité d’explication, décision motivée et possibilité de recours interne selon la gravité."],
+    ["Article 15 — Communication officielle", "Seules les personnes mandatées publient au nom de l’AEDBVT. Les communiqués importants sont relus par au moins deux responsables, sauf urgence."],
+    ["Article 16 — Données personnelles", "Seules les données nécessaires sont collectées. Les accès sont limités, les exports sont protégés, les informations sensibles ne sont pas publiées et une durée de conservation doit être définie pour l’application officielle."],
+    ["Article 17 — Sécurité numérique", "Les comptes d’administration utilisent des mots de passe uniques, l’authentification multifacteur lorsque disponible, des sauvegardes et une procédure de révocation immédiate lors d’un changement de responsable."],
+    ["Article 18 — Administrateur de l’application", "Pour la simulation, Houssounaine Nourdine est l’administrateur principal. Ce rôle technique ne remplace pas les compétences statutaires du Président, du Trésorier ou de l’Assemblée générale."],
+    ["Article 19 — Événements", "Chaque événement désigne un responsable, un budget éventuel, des règles de sécurité et un compte rendu financier lorsque des fonds sont engagés."],
+    ["Article 20 — Solidarité et aides", "Les aides sont accordées selon des critères transparents, dans la limite des ressources disponibles, avec respect de la dignité et de la confidentialité des bénéficiaires."],
+    ["Article 21 — Partenariats", "Tout partenariat significatif est formalisé par écrit : objet, durée, engagements, utilisation du nom/logo, aspects financiers et conditions de résiliation."],
+    ["Article 22 — Archivage", "Les statuts, règlements, procès-verbaux, registres, contrats et pièces financières sont archivés selon une arborescence et une politique de conservation définies par le Bureau."],
+    ["Article 23 — Continuité et passation", "À chaque changement de responsable, une passation documentée couvre accès numériques, dossiers, caisse, matériels, échéances, contrats et actions en cours."],
+    ["Article 24 — Révision", "Le règlement est revu au moins une fois par an ou lorsqu’un changement juridique, organisationnel ou technique le justifie. Toute version comporte une date et un numéro de version."]
+  ];
+
   let S = store.get(KEY, null) || seed();
+  function ensureState() {
+    S.accessibility ||= { font: 0, contrast: false, calm: false };
+    S.activity ||= [{ id: 1, date: "2026-09-20", text: "Initialisation de la simulation administrative AEDBVT" }];
+    S.quotes ||= [
+      { id: 1, ref: "DEV-2026-0001", date: "2026-09-20", client: "Partenaire local — démonstration", object: "Appui à l’accueil des nouveaux étudiants", status: "Brouillon", items: [{ label: "Contribution logistique", qty: 1, unit: 250000 }] }
+    ];
+    S.invoices ||= [
+      { id: 1, ref: "FAC-2026-0001", date: "2026-09-18", due: "2026-10-02", client: "Partenaire local — démonstration", object: "Contribution à la soirée culturelle", status: "Émise", items: [{ label: "Participation partenaire", qty: 1, unit: 180000 }] }
+    ];
+    S.adminName ||= ADMIN_NAME;
+  }
+  ensureState();
 
   /* ---------- Sélecteurs de données ---------- */
   const save = () => store.set(KEY, S);
@@ -147,7 +218,8 @@
   const daysTo = (date) => { const d = Math.ceil((parse(date) - new Date()) / 864e5); return d <= 0 ? "Aujourd’hui" : `J-${d}`; };
   const statusOf = (id) => { const p = paidBy(id); return p >= COTISATION ? ["Soldé", "aed-b-ok"] : p > 0 ? ["Partiel", "aed-b-part"] : ["En attente", "aed-b-no"]; };
   const initials = (name) => name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
-  const isBureau = () => S.role === "bureau";
+  const isAdmin = () => S.role === "admin";
+  const isBureau = () => S.role === "bureau" || isAdmin();
   const unseen = () => S.alerts.filter((a) => !S.seen.includes(a.id)).length;
   const todayKey = () => dayKey(new Date());
 
@@ -294,10 +366,20 @@
   /* ---------- Squelette, moteur de rendu ---------- */
   root.innerHTML = `
     <div class="aed-bar">
-      <div class="aed-seg" role="group" aria-label="Type de vue"><button type="button" data-aed="role" data-v="membre"><span aria-hidden="true">👤</span> Vue Membre</button><button type="button" data-aed="role" data-v="bureau"><span aria-hidden="true">🛡️</span> Vue Bureau</button></div>
+      <div class="aed-admin-cluster">
+        <div class="aed-seg" role="group" aria-label="Type de vue"><button type="button" data-aed="role" data-v="membre"><span aria-hidden="true">👤</span> Membre</button><button type="button" data-aed="role" data-v="bureau"><span aria-hidden="true">🛡️</span> Bureau</button><button type="button" data-aed="role" data-v="admin"><span aria-hidden="true">⚙️</span> Admin</button></div>
+        <span class="aed-admin-id"><b>Administrateur</b> ${ADMIN_NAME}</span>
+      </div>
       <div class="aed-row"><button class="aed-tool aed-bell-tool" type="button" data-aed="tab" data-v="alerts" aria-label="Alertes"><span aria-hidden="true">🔔</span><span class="aed-count" id="aed-bell" hidden>0</span></button><button class="aed-tool" type="button" data-aed="reset" title="Réinitialiser la démonstration">↻ Démo</button></div>
     </div>
     <div class="aed-ticker" aria-label="Alertes épinglées"><div id="aed-ticker"></div></div>
+    <nav class="aed-access" aria-label="Barre d’accessibilité">
+      <span>Accessibilité</span>
+      <button type="button" data-aed="a11y" data-v="font-down" title="Réduire la taille du texte" aria-label="Réduire la taille du texte">A−</button>
+      <button type="button" data-aed="a11y" data-v="font-up" title="Augmenter la taille du texte" aria-label="Augmenter la taille du texte">A+</button>
+      <button type="button" data-aed="a11y" data-v="contrast" title="Contraste renforcé" aria-label="Activer ou désactiver le contraste renforcé">◐</button>
+      <button type="button" data-aed="a11y" data-v="calm" title="Réduire les animations" aria-label="Activer ou désactiver les animations réduites">◌</button>
+    </nav>
     <div class="aed-tabs" id="aed-tabs" role="tablist" aria-label="Rubriques de l’association"><span class="aed-ind" id="aed-ind"></span></div>
     <div class="aed-panel" id="aed-panel" role="tabpanel" aria-live="polite"></div>`;
 
@@ -326,7 +408,7 @@
   function renderTabs() {
     const bar = $("#aed-tabs");
     $$(".aed-tab", bar).forEach((b) => b.remove());
-    TABS.forEach(([id, label]) => {
+    TABS.filter(([id]) => id !== "admin" || isAdmin()).forEach(([id, label]) => {
       const b = document.createElement("button");
       b.type = "button"; b.className = `aed-tab${S.tab === id ? " on" : ""}`; b.dataset.aed = "tab"; b.dataset.v = id;
       b.setAttribute("role", "tab"); b.setAttribute("aria-selected", String(S.tab === id));
@@ -452,7 +534,7 @@
   /* ---------- Actions ---------- */
   const A = {
     tab: (t) => go(t.dataset.v),
-    role: (t) => { S.role = t.dataset.v; save(); render(); toast(S.role === "bureau" ? "Vue Bureau : outils de gestion activés" : "Vue Membre"); },
+    role: (t) => { S.role = t.dataset.v; if (S.role !== "admin" && S.tab === "admin") S.tab = "dash"; save(); renderTabs(); render(); toast(S.role === "admin" ? `Mode administrateur — ${ADMIN_NAME}` : S.role === "bureau" ? "Vue Bureau : outils de gestion activés" : "Vue Membre"); },
     reset: () => { store.del(KEY); S = seed(); const b = nextEvent() ? parse(nextEvent().date) : new Date(); S.cal = { y: b.getFullYear(), m: b.getMonth() }; save(); renderTabs(); render(); toast("Démonstration réinitialisée"); },
     ncat: (t) => { S.newsCat = t.dataset.v; save(); render(); },
     mv: (t) => { S.memV = t.dataset.v; save(); render(); },
