@@ -54,16 +54,26 @@ export async function createCommission(formData:FormData){
   if(!user||!isStaff(role)) return;
   const name=String(formData.get("name")||"").trim();
   if(!name) return;
-  await supabase.from("commissions").insert({
+  const leadProfileId=String(formData.get("lead_profile_id")||"")||null;
+  const {data:commission}=await supabase.from("commissions").insert({
     name,
     description:String(formData.get("description")||"").trim()||null,
     mandate:String(formData.get("mandate")||"").trim()||null,
-    lead_profile_id:String(formData.get("lead_profile_id")||"")||null,
+    lead_profile_id:leadProfileId,
     decision_id:String(formData.get("decision_id")||"")||null,
     starts_on:String(formData.get("starts_on")||"")||null,
     ends_on:String(formData.get("ends_on")||"")||null,
     created_by:user.id,
-  });
+  }).select("id").single();
+
+  if(commission?.id&&leadProfileId){
+    await supabase.from("commission_members").upsert({
+      commission_id:commission.id,
+      profile_id:leadProfileId,
+      role:"responsable",
+      left_at:null,
+    },{onConflict:"commission_id,profile_id"});
+  }
   revalidatePath("/operations");
   revalidatePath("/organization");
 }
