@@ -1,15 +1,21 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const links = [
+const baseLinks = [
   ["/dashboard", "Tableau de bord"],
+  ["/news", "Actualités"],
+  ["/agenda", "Agenda"],
+  ["/announcements", "Annonces"],
   ["/members", "Membres"],
+  ["/organization", "Organigramme"],
   ["/finance", "Finances"],
   ["/documents", "Documents"],
   ["/governance", "Gouvernance"],
 ];
 
 export function AppShell({ children, profile }: { children: React.ReactNode; profile: { full_name?: string | null; role?: string | null } | null }) {
+  const links = profile?.role === "admin" ? [...baseLinks, ["/admin", "Administration"]] : baseLinks;
+
   return (
     <div className="app-frame">
       <aside className="sidebar">
