@@ -10,7 +10,7 @@ const translations = {
   fr: {
     skip: "Aller au contenu",
     navAbout: "À propos", navExpertise: "Expertises", navJourney: "Parcours", navProjects: "Projets", navWorks: "Créations", navClients: "Clients", navContact: "Me contacter", navAssociation: "Association", navAssociationShort: "AEDBVT",
-    assocKicker: "Engagement associatif", assocTitle: "AEDBVT — l’association qui rassemble nos étudiants à Tuléar.", assocLead: "Association des Étudiants de Darsalama et Bandrani-Vouani à Tuléar : actualités, événements, réunions, membres, organigramme, cotisations et annonces au même endroit.", assocDemo: "Simulation complète — données fictives, enregistrées uniquement dans votre navigateur",
+    assocKicker: "Engagement associatif", assocTitle: "AEDBVT — l’association qui rassemble nos étudiants à Tuléar.", assocLead: "Un espace associatif complet : actualités, événements, réunions, membres, organigramme, cotisations, devis, factures, reçus PDF, statuts, règlement et administration.", assocDemo: "Simulation officielle de travail — données fictives et documents marqués simulation",
     sidebarTagline: "Stratégie · Création · Influence", topbarLocation: "Toliara · Madagascar", heroGreeting: "Bonjour, je suis", themeDark: "Mode sombre", themeLight: "Mode clair",
     heroEyebrow: "Lead Community Manager · Toliara, Madagascar",
     heroRole: "Marketing digital, relationnel et d’influence",
@@ -63,7 +63,7 @@ const translations = {
   en: {
     skip: "Skip to content",
     navAbout: "About", navExpertise: "Expertise", navJourney: "Journey", navProjects: "Projects", navWorks: "Creative work", navClients: "Clients", navContact: "Contact me", navAssociation: "Association", navAssociationShort: "AEDBVT",
-    assocKicker: "Community engagement", assocTitle: "AEDBVT — the association that brings our students together in Toliara.", assocLead: "Association of Students from Darsalama and Bandrani-Vouani in Toliara: news, events, meetings, members, organisation chart, dues and announcements in one place. The section content is in French.", assocDemo: "Full simulation — fictional data, stored only in your browser",
+    assocKicker: "Community engagement", assocTitle: "AEDBVT — the association that brings our students together in Toliara.", assocLead: "A complete association workspace: news, events, meetings, members, organisation chart, dues, quotes, invoices, PDF receipts, statutes, internal rules and administration. The app content remains mainly in French.", assocDemo: "Official working simulation — fictional data and documents clearly marked as simulation",
     sidebarTagline: "Strategy · Creation · Influence", topbarLocation: "Toliara · Madagascar", heroGreeting: "Hello, I’m", themeDark: "Dark mode", themeLight: "Light mode",
     heroEyebrow: "Lead Community Manager · Toliara, Madagascar",
     heroRole: "Digital, relationship and influencer marketing",

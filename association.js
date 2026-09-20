@@ -16,7 +16,8 @@
     del(key) { try { localStorage.removeItem(key); } catch { /* stockage indisponible */ } }
   };
 
-  const KEY = "aedbvt_state_v2";
+  const KEY = "aedbvt_state_v3";
+  const ADMIN_NAME = "Houssounaine Nourdine";
   const COTISATION = 30000;
   const LOGO = "assets/aedbvt-logo.webp";
   const ar = (n) => `${Number(n).toLocaleString("fr-FR")} Ar`;
@@ -37,6 +38,9 @@
     pay: '<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/>',
     alerts: '<path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 21h4"/>',
     info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>',
+    docs: '<path d="M6 3h9l3 3v15H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/>',
+    rules: '<path d="M5 4h14v16H5z"/><path d="M9 8h6M9 12h6M9 16h4"/>',
+    admin: '<circle cx="12" cy="8" r="3"/><path d="M5 20a7 7 0 0 1 14 0"/><path d="M18 4l1 1 2-1v3l-2 1-1-1z"/>',
     warn: '<path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17v.5"/>',
     circle: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>'
   };
@@ -44,7 +48,8 @@
 
   const TABS = [
     ["dash", "Accueil"], ["news", "Actualités"], ["events", "Événements"], ["meetings", "Réunions"], ["members", "Membres"],
-    ["org", "Organigramme"], ["pay", "Paiements"], ["alerts", "Alertes & annonces"], ["info", "Infos"]
+    ["org", "Organigramme"], ["pay", "Paiements"], ["docs", "Documents"], ["rules", "Statuts & règlement"],
+    ["alerts", "Alertes & annonces"], ["info", "Infos"], ["admin", "Administration"]
   ];
   const TAB_ORDER = TABS.map(([id]) => id);
   let transitionDir = 1;
@@ -132,7 +137,85 @@
     }]
   };
 
+  const STATUTES = [
+    ["Article 1 — Dénomination", "Il est proposé de constituer une association dénommée « Association des Étudiants de Darsalama et Bandrani-Vouani à Tuléar », sigle AEDBVT."],
+    ["Article 2 — Cadre juridique et statut à vérifier", "L’association a vocation à fonctionner conformément au régime général applicable à Madagascar, notamment l’Ordonnance n°60-133 du 3 octobre 1960 modifiée. Compte tenu de la composition envisagée, le régime des associations étrangères doit être vérifié : l’article 16 vise notamment les groupements ayant des administrateurs étrangers ou au moins un quart de membres étrangers, et l’article 14 prévoit alors une autorisation préalable. Aucune version officielle ne doit être publiée avant validation de ce statut et des formalités requises auprès des autorités compétentes."],
+    ["Article 3 — Siège", "Le siège est fixé à Tuléar (Toliara), Madagascar. Son adresse précise est arrêtée par le Bureau et peut être transférée dans la même ville par décision du Bureau, sous réserve d’information de l’Assemblée générale."],
+    ["Article 4 — Durée", "La durée de l’association est illimitée, sauf dissolution décidée conformément aux présents statuts."],
+    ["Article 5 — Objet", "L’AEDBVT a pour objet de rassembler les étudiantes et étudiants originaires de Darsalama et de Bandrani-Vouani présents à Tuléar, de favoriser leur réussite académique, leur intégration, l’entraide, la solidarité, la représentation de leurs intérêts collectifs et la valorisation culturelle."],
+    ["Article 6 — Moyens d’action", "L’association peut organiser réunions, formations, accompagnements, activités culturelles et sportives, actions solidaires, événements, partenariats, campagnes d’information, collectes autorisées et outils numériques utiles à son objet."],
+    ["Article 7 — Composition", "L’association comprend des membres actifs, des membres du Bureau et, lorsque l’Assemblée générale le décide, des membres d’honneur ou partenaires sans droit de vote."],
+    ["Article 8 — Admission", "L’admission d’un membre actif suppose de remplir les conditions définies par le règlement intérieur, d’accepter les statuts et le règlement, de fournir les informations d’adhésion requises et de s’acquitter de la cotisation applicable, sauf dispense régulièrement accordée."],
+    ["Article 9 — Droits et devoirs", "Chaque membre actif peut participer aux activités et aux Assemblées selon les règles de vote. Il respecte les autres membres, protège les biens de l’association, préserve la confidentialité des données internes et s’abstient d’engager l’association sans mandat."],
+    ["Article 10 — Cotisations et ressources", "Le montant de la cotisation est proposé par le Bureau et approuvé par l’Assemblée générale. Les ressources peuvent comprendre cotisations, dons autorisés, subventions, partenariats, recettes d’activités compatibles avec l’objet et toute autre ressource licite."],
+    ["Article 11 — Perte de la qualité de membre", "La qualité de membre se perd par démission, décès, fin des conditions d’adhésion ou exclusion prononcée selon une procédure contradictoire prévue au règlement intérieur."],
+    ["Article 12 — Assemblée générale ordinaire", "L’Assemblée générale ordinaire réunit les membres ayant droit de vote au moins une fois par exercice. Elle examine le rapport moral, le rapport d’activité, les comptes, le budget, les orientations, la cotisation et les élections. En projet : convocation au moins sept jours avant, quorum de la moitié des membres à la première convocation et absence de quorum à la seconde convocation tenue au moins quarante-huit heures plus tard ; décisions à la majorité simple des suffrages exprimés, sauf disposition contraire."],
+    ["Article 13 — Assemblée générale extraordinaire", "Une Assemblée générale extraordinaire peut être convoquée pour modification des statuts, décision patrimoniale majeure, crise institutionnelle ou dissolution. En projet : quorum des deux tiers des membres à la première convocation puis de la moitié à la seconde ; décision à la majorité des deux tiers des suffrages exprimés. La dissolution peut être soumise à une majorité renforcée de trois quarts."],
+    ["Article 14 — Bureau exécutif", "Le Bureau comprend au minimum un Président, un Vice-président si nécessaire, un Secrétaire général et un Trésorier. L’Assemblée peut créer d’autres responsabilités : communication, vie étudiante, cotisations, solidarité ou contrôle. Le mandat proposé est d’une année universitaire, renouvelable, avec obligation de passation en fin de mandat."],
+    ["Article 15 — Attributions", "Le Président représente l’association dans les limites de son mandat ; le Secrétaire assure convocations, procès-verbaux, registre et archives ; le Trésorier tient la caisse, les pièces et rapports financiers ; les responsables de commission exécutent les missions qui leur sont confiées."],
+    ["Article 16 — Administration numérique", "Les comptes numériques officiels sont administrés selon le principe du moindre privilège. Dans la présente simulation, Houssounaine Nourdine est l’administrateur principal de l’application. Dans l’application officielle, tout accès devra être nominatif, journalisé et révocable."],
+    ["Article 17 — Gestion financière et transparence", "Toute recette et dépense est tracée. Les paiements donnent lieu à une référence et, lorsque pertinent, à un reçu. Les dépenses importantes sont autorisées selon les seuils du règlement intérieur. Un état financier est présenté à l’Assemblée générale."],
+    ["Article 18 — Contrôle des comptes", "Un Commissaire aux comptes interne ou une commission de contrôle, distincte de la fonction de Trésorier, peut vérifier la caisse, les justificatifs, les écritures et la sincérité des informations financières puis rendre compte à l’Assemblée générale."],
+    ["Article 19 — Conflits d’intérêts", "Tout responsable signale une situation dans laquelle son intérêt personnel ou celui d’un proche peut interférer avec l’intérêt de l’association et s’abstient de participer à la décision concernée."],
+    ["Article 20 — Commissions", "Le Bureau ou l’Assemblée peut créer des commissions permanentes ou temporaires. Leur mandat, responsable, budget éventuel et obligation de compte rendu sont formalisés."],
+    ["Article 21 — Modification des statuts", "Toute modification est soumise à l’Assemblée générale extraordinaire dans les conditions prévues au règlement intérieur et, lorsque la réglementation l’exige, fait l’objet des formalités administratives correspondantes."],
+    ["Article 22 — Dissolution", "La dissolution ne peut être décidée que par une Assemblée générale extraordinaire. Après apurement des engagements, l’actif restant est affecté conformément à la réglementation et à la décision de l’Assemblée, sans partage entre les membres."],
+    ["Article 23 — Règlement intérieur", "Un règlement intérieur précise les modalités pratiques non détaillées par les statuts. Il est approuvé et modifié par l’organe compétent défini par les présents statuts."],
+    ["Article 24 — Élections", "Les candidatures au Bureau sont présentées avant ou pendant l’Assemblée selon la procédure annoncée. Le scrutin secret est privilégié lorsqu’au moins deux candidatures s’opposent pour un même poste. En cas d’égalité, un second tour est organisé."],
+    ["Article 25 — Vacance d’un poste", "En cas de vacance, le Bureau peut désigner un intérimaire jusqu’à la prochaine Assemblée compétente. L’intérim et les accès associés sont consignés au procès-verbal."],
+    ["Article 26 — Exercice financier", "L’exercice financier proposé suit l’année universitaire du 1er septembre au 31 août, sauf décision différente de l’Assemblée générale. Les comptes sont arrêtés à la clôture puis soumis au contrôle et à l’approbation."],
+    ["Article 27 — Registres et archives", "L’association tient un registre des membres, un registre des procès-verbaux, un suivi des décisions, un inventaire des biens et des archives financières permettant de justifier recettes, dépenses et engagements."],
+    ["Article 28 — Éthique et prévention", "Une charte éthique complète les présents statuts : respect, intégrité, prévention du harcèlement, conflits d’intérêts, usage responsable des fonds, protection des personnes et mécanisme de signalement."],
+    ["Article 29 — Interprétation", "En cas de difficulté d’interprétation, le Bureau formule une proposition provisoire qui est soumise à l’Assemblée compétente. Aucune interprétation interne ne peut écarter une règle légale applicable."],
+    ["Article 30 — Entrée en vigueur", "Le présent texte constitue un projet de simulation. Sa version officielle n’entre en vigueur qu’après adoption régulière par les membres fondateurs ou l’Assemblée compétente et accomplissement des formalités nécessaires."]
+  ];
+
+  const INTERNAL_RULES = [
+    ["Article 1 — Objet du règlement", "Le présent règlement complète les statuts et organise le fonctionnement quotidien de l’AEDBVT."],
+    ["Article 2 — Dossier d’adhésion", "Le dossier comprend au minimum identité, village d’origine, filière, niveau d’étude, moyen de contact, acceptation des textes et consentements nécessaires au traitement des données."],
+    ["Article 3 — Carte et identifiant membre", "Chaque membre reçoit un identifiant interne unique. La carte ou attestation numérique n’est pas cessible et ne vaut pas document d’identité officiel."],
+    ["Article 4 — Cotisation", "La cotisation annuelle de démonstration est fixée à 30 000 Ar pour l’exercice 2026-2027. Tout changement pour une version officielle doit être approuvé selon les statuts."],
+    ["Article 5 — Paiements", "Les moyens autorisés sont définis par le Bureau. Dans la simulation : MVola, Orange Money, Airtel Money et espèces. Aucun paiement réel n’est traité par cette version du portfolio."],
+    ["Article 6 — Reçus, devis et factures", "Les documents financiers portent un numéro unique, une date, l’identité de l’association, l’objet, le montant et le statut. Un document annulé n’est pas supprimé de l’historique ; il est marqué annulé ou remplacé par un document correctif."],
+    ["Article 7 — Caisse et banque", "Les encaissements sont enregistrés sans délai. Les rapprochements de caisse sont périodiques. Dans l’application officielle, les comptes de paiement doivent être détenus ou mandatés au nom de la structure conformément aux règles applicables."],
+    ["Article 8 — Dépenses", "Toute dépense doit être liée à l’objet de l’association et justifiée. Les seuils d’autorisation sont fixés par décision du Bureau et les dépenses exceptionnelles sont soumises à validation renforcée."],
+    ["Article 9 — Remboursement de frais", "Un remboursement exige une demande, un justificatif et une validation par une personne différente du bénéficiaire lorsque cela est possible."],
+    ["Article 10 — Budget et suivi", "Le Trésorier prépare un budget prévisionnel, suit les réalisations et signale tout écart significatif au Bureau."],
+    ["Article 11 — Réunions", "Les convocations indiquent date, heure, lieu ou lien, ordre du jour et documents utiles. Les décisions sont consignées dans un procès-verbal."],
+    ["Article 12 — Assemblées et votes", "La liste des membres habilités à voter est arrêtée avant l’Assemblée. En projet, un membre ne peut détenir qu’une procuration. Les votes ordinaires sont acquis à la majorité simple des suffrages exprimés ; les abstentions ne comptent pas comme suffrages exprimés. Les résultats, le quorum et les procurations sont annexés au procès-verbal."],
+    ["Article 13 — Comportement", "Sont exigés respect, courtoisie, non-discrimination, absence de harcèlement, sécurité lors des activités et respect des lois ainsi que des règles de l’établissement d’accueil."],
+    ["Article 14 — Discipline", "Toute mesure disciplinaire respecte une procédure contradictoire : information des faits reprochés, possibilité d’explication, décision motivée et possibilité de recours interne selon la gravité."],
+    ["Article 15 — Communication officielle", "Seules les personnes mandatées publient au nom de l’AEDBVT. Les communiqués importants sont relus par au moins deux responsables, sauf urgence."],
+    ["Article 16 — Données personnelles", "Seules les données nécessaires sont collectées. Les accès sont limités, les exports sont protégés, les informations sensibles ne sont pas publiées et une durée de conservation doit être définie pour l’application officielle."],
+    ["Article 17 — Sécurité numérique", "Les comptes d’administration utilisent des mots de passe uniques, l’authentification multifacteur lorsque disponible, des sauvegardes et une procédure de révocation immédiate lors d’un changement de responsable."],
+    ["Article 18 — Administrateur de l’application", "Pour la simulation, Houssounaine Nourdine est l’administrateur principal. Ce rôle technique ne remplace pas les compétences statutaires du Président, du Trésorier ou de l’Assemblée générale."],
+    ["Article 19 — Événements", "Chaque événement désigne un responsable, un budget éventuel, des règles de sécurité et un compte rendu financier lorsque des fonds sont engagés."],
+    ["Article 20 — Solidarité et aides", "Les aides sont accordées selon des critères transparents, dans la limite des ressources disponibles, avec respect de la dignité et de la confidentialité des bénéficiaires."],
+    ["Article 21 — Partenariats", "Tout partenariat significatif est formalisé par écrit : objet, durée, engagements, utilisation du nom/logo, aspects financiers et conditions de résiliation."],
+    ["Article 22 — Archivage", "Les statuts, règlements, procès-verbaux, registres, contrats et pièces financières sont archivés selon une arborescence et une politique de conservation définies par le Bureau."],
+    ["Article 23 — Continuité et passation", "À chaque changement de responsable, une passation documentée couvre accès numériques, dossiers, caisse, matériels, échéances, contrats et actions en cours."],
+    ["Article 24 — Réclamations et signalements", "Tout membre peut adresser une réclamation ou un signalement confidentiel à un responsable non impliqué dans les faits. Le traitement, les mesures de protection et la décision sont tracés sans diffusion inutile d’informations personnelles."],
+    ["Article 25 — Inventaire et matériel", "Tout bien durable acheté ou reçu par l’association est inventorié avec numéro, description, état, localisation et responsable. Les prêts sont enregistrés et font l’objet d’une restitution."],
+    ["Article 26 — Achats et fournisseurs", "Pour les achats significatifs, plusieurs offres sont recherchées lorsque cela est raisonnablement possible. Le choix retient le coût, la qualité, les délais, la fiabilité et l’absence de conflit d’intérêts."],
+    ["Article 27 — Contrôle de caisse", "Un comptage périodique de la caisse est réalisé par le Trésorier et contrôlé par une seconde personne habilitée. Tout écart est documenté et signalé au Bureau."],
+    ["Article 28 — Numérotation documentaire", "Les documents suivent des séries distinctes : REC pour reçus, DEV pour devis, FAC pour factures, PV pour procès-verbaux et DEC pour décisions. Les numéros ne sont pas réutilisés."],
+    ["Article 29 — Validation à deux personnes", "Les opérations sensibles définies par le Bureau — paiements importants, changement de coordonnées de paiement, suppression de données, export massif ou modification des droits administrateur — exigent une seconde validation dans l’application officielle."],
+    ["Article 30 — Révision", "Le règlement est revu au moins une fois par an ou lorsqu’un changement juridique, organisationnel ou technique le justifie. Toute version comporte une date, un numéro de version, l’organe d’adoption et la date d’entrée en vigueur."]
+  ];
+
   let S = store.get(KEY, null) || seed();
+  function ensureState() {
+    S.accessibility ||= { font: 0, contrast: false, calm: false };
+    S.activity ||= [{ id: 1, date: "2026-09-20", text: "Initialisation de la simulation administrative AEDBVT" }];
+    S.quotes ||= [
+      { id: 1, ref: "DEV-2026-0001", date: "2026-09-20", client: "Partenaire local — démonstration", object: "Appui à l’accueil des nouveaux étudiants", status: "Brouillon", items: [{ label: "Contribution logistique", qty: 1, unit: 250000 }] }
+    ];
+    S.invoices ||= [
+      { id: 1, ref: "FAC-2026-0001", date: "2026-09-18", due: "2026-10-02", client: "Partenaire local — démonstration", object: "Contribution à la soirée culturelle", status: "Émise", items: [{ label: "Participation partenaire", qty: 1, unit: 180000 }] }
+    ];
+    S.adminName ||= ADMIN_NAME;
+  }
+  ensureState();
 
   /* ---------- Sélecteurs de données ---------- */
   const save = () => store.set(KEY, S);
@@ -147,7 +230,8 @@
   const daysTo = (date) => { const d = Math.ceil((parse(date) - new Date()) / 864e5); return d <= 0 ? "Aujourd’hui" : `J-${d}`; };
   const statusOf = (id) => { const p = paidBy(id); return p >= COTISATION ? ["Soldé", "aed-b-ok"] : p > 0 ? ["Partiel", "aed-b-part"] : ["En attente", "aed-b-no"]; };
   const initials = (name) => name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
-  const isBureau = () => S.role === "bureau";
+  const isAdmin = () => S.role === "admin";
+  const isBureau = () => S.role === "bureau" || isAdmin();
   const unseen = () => S.alerts.filter((a) => !S.seen.includes(a.id)).length;
   const todayKey = () => dayKey(new Date());
 
@@ -189,6 +273,104 @@
       html += `<button type="button" class="${key === today ? "today " : ""}${S.selDay === key ? "sel" : ""}" data-aed="day" data-v="${key}">${d}${mark.e || mark.m ? `<span class="dots">${mark.e ? "<s></s>" : ""}${mark.m ? '<s class="m"></s>' : ""}</span>` : ""}</button>`;
     }
     return `${html}</div><div class="aed-leg"><span><i></i>Événement</span><span><i class="m"></i>Réunion</span></div>`;
+  }
+
+  const docTotal = (d) => (d.items || []).reduce((sum, item) => sum + Number(item.qty || 0) * Number(item.unit || 0), 0);
+  const financialRef = (prefix, list) => `${prefix}-${new Date().getFullYear()}-${String(nextId(list)).padStart(4, "0")}`;
+  const docBadge = (status) => status === "Payée" || status === "Accepté" ? "aed-b-ok" : status === "Annulé" ? "aed-b-no" : status === "Brouillon" ? "aed-b-part" : "aed-b-info";
+  const addActivity = (text) => { S.activity.unshift({ id: nextId(S.activity), date: todayKey(), text }); S.activity = S.activity.slice(0, 40); };
+
+  function pdfClean(value) {
+    return String(value ?? "")
+      .replace(/[’‘]/g, "'").replace(/[“”]/g, '"').replace(/[–—]/g, "-")
+      .replace(/œ/g, "oe").replace(/Œ/g, "OE").replace(/…/g, "...")
+      .replace(/[^\x20-\xFF]/g, "?");
+  }
+  function pdfEsc(value) { return pdfClean(value).replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)"); }
+  function wrapPdf(value, width = 86) {
+    const words = pdfClean(value).split(/\s+/).filter(Boolean), lines = []; let line = "";
+    words.forEach((word) => {
+      const next = line ? `${line} ${word}` : word;
+      if (next.length > width && line) { lines.push(line); line = word; } else line = next;
+    });
+    if (line) lines.push(line);
+    return lines.length ? lines : [""];
+  }
+  function latin1Bytes(value) {
+    const bytes = new Uint8Array(value.length);
+    for (let i = 0; i < value.length; i++) bytes[i] = value.charCodeAt(i) & 255;
+    return bytes;
+  }
+  function downloadPdf(filename, title, lines) {
+    const prepared = [];
+    lines.forEach((line) => wrapPdf(line, 88).forEach((part) => prepared.push(part)));
+    const perPage = 45, chunks = [];
+    for (let i = 0; i < prepared.length; i += perPage) chunks.push(prepared.slice(i, i + perPage));
+    if (!chunks.length) chunks.push([""]);
+    const n = chunks.length, fontNo = 3 + 2 * n, objects = [];
+    objects[1] = "<< /Type /Catalog /Pages 2 0 R >>";
+    const kids = chunks.map((_, i) => `${3 + i} 0 R`).join(" ");
+    objects[2] = `<< /Type /Pages /Kids [${kids}] /Count ${n} >>`;
+    chunks.forEach((chunk, i) => {
+      const pageNo = 3 + i, contentNo = 3 + n + i;
+      objects[pageNo] = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 ${fontNo} 0 R >> >> /Contents ${contentNo} 0 R >>`;
+      const commands = [];
+      commands.push(`BT /F1 15 Tf 46 806 Td (${pdfEsc(title)}) Tj ET`);
+      commands.push(`BT /F1 8 Tf 46 789 Td (AEDBVT - SIMULATION - page ${i + 1}/${n}) Tj ET`);
+      let y = 765;
+      chunk.forEach((line) => { commands.push(`BT /F1 10 Tf 46 ${y} Td (${pdfEsc(line)}) Tj ET`); y -= 16; });
+      const stream = commands.join("\n");
+      objects[contentNo] = `<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`;
+    });
+    objects[fontNo] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>";
+    let pdf = "%PDF-1.4\n%âãÏÓ\n", offsets = [0];
+    for (let i = 1; i <= fontNo; i++) { offsets[i] = pdf.length; pdf += `${i} 0 obj\n${objects[i]}\nendobj\n`; }
+    const xref = pdf.length;
+    pdf += `xref\n0 ${fontNo + 1}\n0000000000 65535 f \n`;
+    for (let i = 1; i <= fontNo; i++) pdf += `${String(offsets[i]).padStart(10, "0")} 00000 n \n`;
+    pdf += `trailer\n<< /Size ${fontNo + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`;
+    const blob = new Blob([latin1Bytes(pdf)], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob), a = document.createElement("a");
+    a.href = url; a.download = filename; document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1200);
+  }
+  function receiptLines(p) {
+    const m = member(p.mid) || { name: "—", village: "—" };
+    return [
+      "Association des Etudiants de Darsalama et Bandrani-Vouani a Tulear (AEDBVT)",
+      "DOCUMENT DE SIMULATION - ne vaut pas justificatif fiscal officiel",
+      "", `Recu : ${p.ref}`, `Date : ${p.date}`, `Membre : ${m.name}`, `Village : ${m.village}`,
+      `Montant : ${ar(p.amount)}`, `Moyen : ${p.method}`, "Objet : Cotisation 2026-2027", "",
+      `Administrateur de la simulation : ${ADMIN_NAME}`
+    ];
+  }
+  function financialLines(kind, d) {
+    const label = kind === "quote" ? "DEVIS" : "FACTURE";
+    const lines = [
+      "Association des Etudiants de Darsalama et Bandrani-Vouani a Tulear (AEDBVT)",
+      "DOCUMENT DE SIMULATION - projet non fiscal", "", `${label} : ${d.ref}`, `Date : ${d.date}`,
+      `Destinataire : ${d.client}`, `Objet : ${d.object}`, `Statut : ${d.status}`
+    ];
+    if (kind === "invoice" && d.due) lines.push(`Echeance : ${d.due}`);
+    lines.push("");
+    (d.items || []).forEach((item) => lines.push(`${item.label} | ${item.qty} x ${ar(item.unit)} = ${ar(Number(item.qty) * Number(item.unit))}`));
+    lines.push("", `TOTAL : ${ar(docTotal(d))}`, "", `Administrateur de la simulation : ${ADMIN_NAME}`);
+    return lines;
+  }
+  function downloadJson() {
+    const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), simulation: true, administrator: ADMIN_NAME, state: S }, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob), a = document.createElement("a");
+    a.href = url; a.download = `aedbvt-sauvegarde-${todayKey()}.json`; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1200);
+  }
+  function applyAccessibility() {
+    const a = S.accessibility || { font: 0, contrast: false, calm: false };
+    root.classList.toggle("aed-font-small", a.font < 0);
+    root.classList.toggle("aed-font-large", a.font === 1);
+    root.classList.toggle("aed-font-xlarge", a.font >= 2);
+    root.classList.toggle("aed-high-contrast", !!a.contrast);
+    root.classList.toggle("aed-calm", !!a.calm);
+    $('.aed-access [data-v="contrast"]', root).forEach((b) => b.setAttribute("aria-pressed", String(!!a.contrast)));
+    $('.aed-access [data-v="calm"]', root).forEach((b) => b.setAttribute("aria-pressed", String(!!a.calm)));
   }
 
   const R = {};
@@ -268,6 +450,38 @@
       <p class="aed-note">Simulation : aucun vrai paiement n’est effectué.</p>`;
   };
 
+  R.docs = () => {
+    const quoteRows = S.quotes.map((d) => `<tr><td><b>${esc(d.ref)}</b><br><small class="aed-muted">${esc(d.object)}</small></td><td>${esc(d.client)}</td><td>${ar(docTotal(d))}</td><td><span class="aed-badge ${docBadge(d.status)}">${esc(d.status)}</span></td><td><div class="aed-row"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="download-doc" data-kind="quote" data-id="${d.id}">PDF</button>${isBureau() && d.status !== "Accepté" ? `<button class="aed-btn aed-primary aed-sm" type="button" data-aed="convert-quote" data-id="${d.id}">→ Facture</button>` : ""}</div></td></tr>`).join("");
+    const invoiceRows = S.invoices.map((d) => `<tr><td><b>${esc(d.ref)}</b><br><small class="aed-muted">${esc(d.object)}</small></td><td>${esc(d.client)}</td><td>${ar(docTotal(d))}</td><td><span class="aed-badge ${docBadge(d.status)}">${esc(d.status)}</span></td><td><div class="aed-row"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="download-doc" data-kind="invoice" data-id="${d.id}">PDF</button>${isBureau() && d.status !== "Payée" ? `<button class="aed-btn aed-primary aed-sm" type="button" data-aed="invoice-paid" data-id="${d.id}">Marquer payée</button>` : ""}</div></td></tr>`).join("");
+    const receipts = S.payments.slice().sort((a,b)=>b.id-a.id).map((p) => { const m = member(p.mid); return `<div class="aed-doc-card"><div><small>REÇU</small><b>${esc(p.ref)}</b><span>${m ? esc(m.name) : "—"} · ${ar(p.amount)}</span></div><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="download-receipt" data-id="${p.id}">Télécharger PDF</button></div>`; }).join("");
+    return `<div class="aed-ph"><div><h3>Documents & gestion</h3><p class="aed-muted">Devis, factures et reçus numérotés — simulation administrative.</p></div>${isBureau() ? '<div class="aed-row"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="open-quote">+ Devis</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="open-invoice">+ Facture</button></div>' : ""}</div>
+      <div class="aed-grid aed-g3"><div class="aed-card aed-stat"><small>Devis</small><span class="aed-num">${S.quotes.length}</span><small>historique conservé</small></div><div class="aed-card aed-stat" style="--c:var(--aed-gold)"><small>Factures</small><span class="aed-num">${S.invoices.length}</span><small>${S.invoices.filter(x=>x.status==="Payée").length} payée(s)</small></div><div class="aed-card aed-stat" style="--c:var(--aed-green)"><small>Reçus</small><span class="aed-num">${S.payments.length}</span><small>liés aux cotisations</small></div></div>
+      <h4 class="aed-h4">Devis</h4><div class="aed-card aed-tw" style="padding:8px 12px"><table class="aed-table"><thead><tr><th>Référence</th><th>Destinataire</th><th>Total</th><th>Statut</th><th></th></tr></thead><tbody>${quoteRows || '<tr><td colspan="5">Aucun devis.</td></tr>'}</tbody></table></div>
+      <h4 class="aed-h4">Factures</h4><div class="aed-card aed-tw" style="padding:8px 12px"><table class="aed-table"><thead><tr><th>Référence</th><th>Destinataire</th><th>Total</th><th>Statut</th><th></th></tr></thead><tbody>${invoiceRows || '<tr><td colspan="5">Aucune facture.</td></tr>'}</tbody></table></div>
+      <h4 class="aed-h4">Reçus de cotisation</h4><div class="aed-doc-grid">${receipts || '<div class="aed-empty">Aucun reçu.</div>'}</div>
+      <p class="aed-note">Les PDF portent la mention SIMULATION. La future application officielle devra intégrer les mentions légales, fiscales et d’identification réellement applicables à l’association.</p>`;
+  };
+
+  R.rules = () => {
+    const articles = (list, prefix) => list.map((a, i) => `<details class="aed-law" ${i === 0 ? "open" : ""}><summary><span>${String(i + 1).padStart(2, "0")}</span>${esc(a[0])}</summary><p>${esc(a[1])}</p></details>`).join("");
+    return `<div class="aed-ph"><div><h3>Statuts & règlement intérieur</h3><p class="aed-muted">Projet complet pour la simulation officielle AEDBVT.</p></div><div class="aed-row"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="download-rules" data-v="statutes">Statuts PDF</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="download-rules" data-v="rules">Règlement PDF</button></div></div>
+      <div class="aed-legal-banner"><b>⚖️ Projet à adopter et faire valider</b><span>Référence de travail : Ordonnance n°60-133 à Madagascar. Le régime des associations étrangères doit être vérifié avant lancement officiel, notamment en fonction de la nationalité des membres et administrateurs. Cette simulation ne prouve ni déclaration, ni autorisation, ni reconnaissance officielle de l’AEDBVT.</span></div>
+      <div class="aed-rule-meta"><span><b>Version</b> 0.3 — simulation</span><span><b>Administrateur technique</b> ${ADMIN_NAME}</span><span><b>Articles</b> ${STATUTES.length + INTERNAL_RULES.length}</span></div>
+      <div class="aed-governance-roadmap"><b>Centre de gouvernance à préparer pour l’application officielle</b><div><span>Code d’éthique</span><span>Registre d’intérêts</span><span>Politique de dons & financements</span><span>Rapports d’activité</span><span>États financiers</span><span>Rapport de contrôle des comptes</span><span>Manuel de procédures</span><span>Mécanisme de plaintes</span></div></div>
+      <div class="aed-law-grid"><section><h4>Statuts proposés</h4>${articles(STATUTES, "S")}</section><section><h4>Règlement intérieur proposé</h4>${articles(INTERNAL_RULES, "R")}</section></div>`;
+  };
+
+  R.admin = () => {
+    if (!isAdmin()) return '<div class="aed-empty">Accès administrateur requis.</div>';
+    const totalDocs = S.quotes.length + S.invoices.length + S.payments.length;
+    const log = S.activity.slice(0, 12).map((x) => `<li><time>${esc(x.date)}</time><span>${esc(x.text)}</span></li>`).join("");
+    return `<div class="aed-ph"><div><h3>Administration</h3><p class="aed-muted">Console de simulation — ${ADMIN_NAME}</p></div><span class="aed-badge aed-b-ok">Administrateur principal</span></div>
+      <div class="aed-grid aed-g4"><div class="aed-card aed-stat"><small>Membres</small><span class="aed-num">${S.members.length}</span><small>registre simulé</small></div><div class="aed-card aed-stat" style="--c:var(--aed-green)"><small>Trésorerie</small><span class="aed-num">${(totalPaid()-totalExpenses()).toLocaleString("fr-FR")}</span><small>Ariary</small></div><div class="aed-card aed-stat" style="--c:var(--aed-gold)"><small>Documents</small><span class="aed-num">${totalDocs}</span><small>référencés</small></div><div class="aed-card aed-stat" style="--c:var(--aed-red)"><small>Alertes</small><span class="aed-num">${S.alerts.length}</span><small>${unseen()} non lue(s)</small></div></div>
+      <div class="aed-split" style="margin-top:16px"><div class="aed-card"><h4 style="margin-top:0">Outils administrateur</h4><div class="aed-admin-actions"><button class="aed-btn aed-primary" type="button" data-aed="backup">Exporter la sauvegarde JSON</button><button class="aed-btn aed-ghost" type="button" data-aed="open-exp">Enregistrer une dépense</button><button class="aed-btn aed-ghost" type="button" data-aed="tab" data-v="docs">Gérer les documents</button><button class="aed-btn aed-ghost" type="button" data-aed="tab" data-v="rules">Voir les textes</button></div><p class="aed-note">Dans l’application officielle, ce rôle devra être protégé par authentification forte, journalisation serveur et permissions granulaires.</p></div>
+      <div class="aed-card"><h4 style="margin-top:0">Contrôles à prévoir avant mise en production</h4><ul class="aed-checklist"><li>Authentification + MFA administrateur</li><li>Base de données et sauvegardes automatiques</li><li>Permissions Président / Trésorier / Secrétaire / commissions</li><li>Journal d’audit immuable</li><li>Validation à deux personnes pour opérations sensibles</li><li>Politique de conservation des données</li><li>Passerelle de paiement officielle et rapprochement</li><li>Vérification du régime « association étrangère » et autorisation préalable si applicable</li></ul></div></div>
+      <div class="aed-card" style="margin-top:16px"><h4 style="margin-top:0">Journal d’activité</h4><ol class="aed-audit">${log || "<li>Aucune activité.</li>"}</ol></div>`;
+  };
+
   R.alerts = () => {
     const order = { urgent: 0, alerte: 1, info: 2 };
     const emoji = { urgent: "🚨", alerte: "⚠️", info: "📣" };
@@ -277,7 +491,7 @@
   };
 
   R.info = () => {
-    const docs = ["Statuts de l’association", "Règlement intérieur", "Modèle de compte rendu", "Fiche d’adhésion"];
+    const docs = [["Statuts proposés", "rules"], ["Règlement intérieur", "rules"], ["Devis, factures & reçus", "docs"], ["Console administrateur", "admin"]];
     const faq = [
       ["Comment adhérer à l’AEDBVT ?", "Toute étudiante ou tout étudiant originaire de Darsalama ou de Bandrani-Vouani à Tuléar peut adhérer en remplissant la fiche d’adhésion et en réglant sa cotisation."],
       ["Comment payer ma cotisation ?", "Par MVola, Orange Money, Airtel Money ou en espèces auprès de la trésorière. Un reçu numéroté vous est remis."],
@@ -286,18 +500,28 @@
     ];
     return `<div class="aed-ph"><h3>Informations</h3></div><div class="aed-split"><div class="aed-stack">
       <div class="aed-card"><h4 style="margin-top:0">Qui sommes-nous ?</h4><p>L’AEDBVT rassemble, soutient et accompagne les étudiants de Darsalama et de Bandrani-Vouani à Tuléar : entraide, vie associative, réussite académique et solidarité.</p></div>
-      <div class="aed-card"><h4 style="margin-top:0">Documents</h4><div class="aed-stack" style="margin-top:10px">${docs.map((d) => `<div class="aed-row" style="justify-content:space-between"><span>${d}</span><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="doc">Consulter</button></div>`).join("")}</div></div>
-      <div class="aed-card"><h4 style="margin-top:0">Contact</h4><p>Adresse e-mail, téléphone et permanences : à compléter par le bureau.</p></div>
+      <div class="aed-card"><h4 style="margin-top:0">Documents</h4><div class="aed-stack" style="margin-top:10px">${docs.filter((d) => d[1] !== "admin" || isAdmin()).map((d) => `<div class="aed-row" style="justify-content:space-between"><span>${d[0]}</span><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="doc" data-v="${d[1]}">Consulter</button></div>`).join("")}</div></div>
+      <div class="aed-card"><h4 style="margin-top:0">Contact & administration</h4><p><b>Localisation :</b> Tuléar (Toliara), Madagascar.<br><b>Administrateur de la simulation :</b> Houssounaine Nourdine.<br>Les coordonnées officielles, le siège précis et les permanences devront être validés par le Bureau avant publication.</p></div>
     </div><div class="aed-stack"><h4 class="aed-h4" style="margin:0">Questions fréquentes</h4>${faq.map((f) => `<details class="aed-faq"><summary>${f[0]}</summary><p>${f[1]}</p></details>`).join("")}</div></div>`;
   };
 
   /* ---------- Squelette, moteur de rendu ---------- */
   root.innerHTML = `
     <div class="aed-bar">
-      <div class="aed-seg" role="group" aria-label="Type de vue"><button type="button" data-aed="role" data-v="membre"><span aria-hidden="true">👤</span> Vue Membre</button><button type="button" data-aed="role" data-v="bureau"><span aria-hidden="true">🛡️</span> Vue Bureau</button></div>
+      <div class="aed-admin-cluster">
+        <div class="aed-seg" role="group" aria-label="Type de vue"><button type="button" data-aed="role" data-v="membre"><span aria-hidden="true">👤</span> Membre</button><button type="button" data-aed="role" data-v="bureau"><span aria-hidden="true">🛡️</span> Bureau</button><button type="button" data-aed="role" data-v="admin"><span aria-hidden="true">⚙️</span> Admin</button></div>
+        <span class="aed-admin-id"><b>Administrateur</b> ${ADMIN_NAME}</span>
+      </div>
       <div class="aed-row"><button class="aed-tool aed-bell-tool" type="button" data-aed="tab" data-v="alerts" aria-label="Alertes"><span aria-hidden="true">🔔</span><span class="aed-count" id="aed-bell" hidden>0</span></button><button class="aed-tool" type="button" data-aed="reset" title="Réinitialiser la démonstration">↻ Démo</button></div>
     </div>
     <div class="aed-ticker" aria-label="Alertes épinglées"><div id="aed-ticker"></div></div>
+    <nav class="aed-access" aria-label="Barre d’accessibilité">
+      <span>Accessibilité</span>
+      <button type="button" data-aed="a11y" data-v="font-down" title="Réduire la taille du texte" aria-label="Réduire la taille du texte">A−</button>
+      <button type="button" data-aed="a11y" data-v="font-up" title="Augmenter la taille du texte" aria-label="Augmenter la taille du texte">A+</button>
+      <button type="button" data-aed="a11y" data-v="contrast" title="Contraste renforcé" aria-label="Activer ou désactiver le contraste renforcé">◐</button>
+      <button type="button" data-aed="a11y" data-v="calm" title="Réduire les animations" aria-label="Activer ou désactiver les animations réduites">◌</button>
+    </nav>
     <div class="aed-tabs" id="aed-tabs" role="tablist" aria-label="Rubriques de l’association"><span class="aed-ind" id="aed-ind"></span></div>
     <div class="aed-panel" id="aed-panel" role="tabpanel" aria-live="polite"></div>`;
 
@@ -318,7 +542,8 @@
     $("#aed-ticker").innerHTML = text + text;
   }
   function paintChrome() {
-    $$('[data-aed="role"]', root).forEach((b) => { const on = b.dataset.v === S.role; b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); });
+    $('[data-aed="role"]', root).forEach((b) => { const on = b.dataset.v === S.role; b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); });
+    applyAccessibility();
     const n = unseen(), bell = $("#aed-bell");
     bell.hidden = !n; bell.textContent = n;
     paintTicker();
@@ -326,7 +551,7 @@
   function renderTabs() {
     const bar = $("#aed-tabs");
     $$(".aed-tab", bar).forEach((b) => b.remove());
-    TABS.forEach(([id, label]) => {
+    TABS.filter(([id]) => id !== "admin" || isAdmin()).forEach(([id, label]) => {
       const b = document.createElement("button");
       b.type = "button"; b.className = `aed-tab${S.tab === id ? " on" : ""}`; b.dataset.aed = "tab"; b.dataset.v = id;
       b.setAttribute("role", "tab"); b.setAttribute("aria-selected", String(S.tab === id));
@@ -355,7 +580,7 @@
     requestAnimationFrame(step);
   }
   function enhanceMotion(scope) {
-    const items = $$(".aed-card, .aed-ev, .aed-alert, .aed-faq, .aed-tree > ul > li, .aed-ph, .aed-chips", scope);
+    const items = $(".aed-card, .aed-ev, .aed-alert, .aed-faq, .aed-tree > ul > li, .aed-ph, .aed-chips, .aed-doc-card, .aed-law, .aed-governance-roadmap", scope);
     items.forEach((el, i) => {
       el.style.setProperty("--aed-i", Math.min(i, 12));
       el.classList.add("aed-motion-item");
@@ -442,18 +667,31 @@
   }
   function receiptHtml(p) {
     const m = member(p.mid) || { name: "—", village: "" };
-    return `<div class="aed-receipt"><span class="aed-stamp">SIMULATION</span><img class="aed-receipt-logo" src="${LOGO}" alt="AEDBVT" width="76" height="76"><h3>Reçu de cotisation</h3><div class="aed-receipt-ref">${esc(p.ref)}</div><dl><dt>Membre</dt><dd>${esc(m.name)}</dd><dt>Village</dt><dd>${esc(m.village)}</dd><dt>Montant</dt><dd>${ar(p.amount)}</dd><dt>Moyen</dt><dd>${esc(p.method)}</dd><dt>Date</dt><dd>${esc(p.date)}</dd><dt>Objet</dt><dd>Cotisation 2026-2027</dd></dl><p class="aed-receipt-org">Association des Étudiants de Darsalama et Bandrani-Vouani à Tuléar</p></div><div class="aed-row" style="justify-content:flex-end;margin-top:14px"><button class="aed-btn aed-primary aed-sm" type="button" data-aed="close">Fermer</button></div>`;
+    return `<div class="aed-receipt"><span class="aed-stamp">SIMULATION</span><img class="aed-receipt-logo" src="${LOGO}" alt="AEDBVT" width="76" height="76"><h3>Reçu de cotisation</h3><div class="aed-receipt-ref">${esc(p.ref)}</div><dl><dt>Membre</dt><dd>${esc(m.name)}</dd><dt>Village</dt><dd>${esc(m.village)}</dd><dt>Montant</dt><dd>${ar(p.amount)}</dd><dt>Moyen</dt><dd>${esc(p.method)}</dd><dt>Date</dt><dd>${esc(p.date)}</dd><dt>Objet</dt><dd>Cotisation 2026-2027</dd></dl><p class="aed-receipt-org">Association des Étudiants de Darsalama et Bandrani-Vouani à Tuléar</p></div><div class="aed-row" style="justify-content:flex-end;margin-top:14px"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="download-receipt" data-id="${p.id}">Télécharger PDF</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="close">Fermer</button></div>`;
   }
-  const pubForm = () => openModal(`<h3>Publier une actualité</h3><label class="aed-f">Titre<input class="aed-input" id="nt"></label><label class="aed-f">Catégorie<select class="aed-input" id="nc"><option>Vie associative</option><option>Académique</option><option>Solidarité</option><option>Annonce</option></select></label><label class="aed-f">Résumé<input class="aed-input" id="ne"></label><label class="aed-f">Contenu<textarea class="aed-input" id="nb" rows="4"></textarea></label><div class="aed-row" style="justify-content:flex-end"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="close">Annuler</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="do-pub">Publier</button></div>`);
+  const pubForm = () => openModal(`<h3>Publier une actualité</h3><label class="aed-f">Titre<input class="aed-input" id="nt"></label><label class="aed-f">Catégorie<select class="aed-input" id="nc"><option>Vie associative</option><option>Académique</option><option>Solidarité</option><option>Annonce</option><option>Gouvernance</option><option>Communiqué officiel</option></select></label><label class="aed-f">Résumé<input class="aed-input" id="ne"></label><label class="aed-f">Contenu<textarea class="aed-input" id="nb" rows="4"></textarea></label><div class="aed-row" style="justify-content:flex-end"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="close">Annuler</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="do-pub">Publier</button></div>`);
   const evForm = () => openModal(`<h3>Nouvel événement</h3><label class="aed-f">Titre<input class="aed-input" id="et"></label><label class="aed-f">Date et heure<input class="aed-input" id="ed" type="datetime-local"></label><label class="aed-f">Lieu<input class="aed-input" id="ep"></label><label class="aed-f">Type<select class="aed-input" id="ey"><option>Assemblée</option><option>Culturel</option><option>Sport</option><option>Solidarité</option><option>Académique</option></select></label><label class="aed-f">Description<textarea class="aed-input" id="es" rows="3"></textarea></label><div class="aed-row" style="justify-content:flex-end"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="close">Annuler</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="do-ev">Ajouter</button></div>`);
   const memForm = () => openModal(`<h3>Nouveau membre</h3><label class="aed-f">Nom complet<input class="aed-input" id="mn"></label><label class="aed-f">Village<select class="aed-input" id="mv"><option>Darsalama</option><option>Bandrani-Vouani</option></select></label><label class="aed-f">Filière<input class="aed-input" id="mf"></label><label class="aed-f">Niveau<input class="aed-input" id="ml" placeholder="Licence 1"></label><div class="aed-row" style="justify-content:flex-end"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="close">Annuler</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="do-mem">Ajouter</button></div>`);
   const alertForm = () => openModal(`<h3>Nouvelle annonce</h3><label class="aed-f">Titre<input class="aed-input" id="at"></label><label class="aed-f">Niveau<select class="aed-input" id="al"><option value="info">Information</option><option value="alerte">Alerte</option><option value="urgent">Urgent</option></select></label><label class="aed-f">Message<textarea class="aed-input" id="am" rows="3"></textarea></label><label class="aed-row" style="margin-bottom:12px;font-size:13px;font-weight:700"><input type="checkbox" id="ap" checked> Épingler dans le bandeau défilant</label><div class="aed-row" style="justify-content:flex-end"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="close">Annuler</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="do-alert">Diffuser</button></div>`);
+  let draftDocType = "quote";
+  function financialForm(kind) {
+    draftDocType = kind;
+    const title = kind === "quote" ? "Créer un devis" : "Créer une facture";
+    openModal(`<h3>${title}</h3><p class="aed-note">Document de simulation. Les mentions officielles seront configurées lors du déploiement de l’application dédiée.</p>
+      <label class="aed-f">Destinataire<input class="aed-input" id="dclient" placeholder="Nom du partenaire / bénéficiaire"></label>
+      <label class="aed-f">Objet<input class="aed-input" id="dobject" placeholder="Objet du document"></label>
+      <label class="aed-f">Ligne<input class="aed-input" id="dlabel" placeholder="Prestation, contribution ou article"></label>
+      <div class="aed-field2"><label class="aed-f">Quantité<input class="aed-input" id="dqty" type="number" min="1" value="1"></label><label class="aed-f">Prix unitaire (Ar)<input class="aed-input" id="dunit" type="number" min="0" step="1000" value="50000"></label></div>
+      ${kind === "invoice" ? '<label class="aed-f">Échéance<input class="aed-input" id="ddue" type="date"></label>' : ""}
+      <div class="aed-row" style="justify-content:flex-end"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="close">Annuler</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="do-financial">Enregistrer</button></div>`);
+  }
+  const expenseForm = () => openModal(`<h3>Enregistrer une dépense</h3><label class="aed-f">Libellé<input class="aed-input" id="xl"></label><label class="aed-f">Montant (Ar)<input class="aed-input" id="xa" type="number" min="1" step="1000"></label><label class="aed-f">Date<input class="aed-input" id="xd" type="date" value="${todayKey()}"></label><div class="aed-row" style="justify-content:flex-end"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="close">Annuler</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="do-exp">Enregistrer</button></div>`);
 
   /* ---------- Actions ---------- */
   const A = {
     tab: (t) => go(t.dataset.v),
-    role: (t) => { S.role = t.dataset.v; save(); render(); toast(S.role === "bureau" ? "Vue Bureau : outils de gestion activés" : "Vue Membre"); },
-    reset: () => { store.del(KEY); S = seed(); const b = nextEvent() ? parse(nextEvent().date) : new Date(); S.cal = { y: b.getFullYear(), m: b.getMonth() }; save(); renderTabs(); render(); toast("Démonstration réinitialisée"); },
+    role: (t) => { S.role = t.dataset.v; if (S.role !== "admin" && S.tab === "admin") S.tab = "dash"; save(); renderTabs(); render(); toast(S.role === "admin" ? `Mode administrateur — ${ADMIN_NAME}` : S.role === "bureau" ? "Vue Bureau : outils de gestion activés" : "Vue Membre"); },
+    reset: () => { store.del(KEY); S = seed(); ensureState(); const b = nextEvent() ? parse(nextEvent().date) : new Date(); S.cal = { y: b.getFullYear(), m: b.getMonth() }; save(); renderTabs(); render(); toast("Démonstration réinitialisée"); },
     ncat: (t) => { S.newsCat = t.dataset.v; save(); render(); },
     mv: (t) => { S.memV = t.dataset.v; save(); render(); },
     rsvp: (t) => { const k = t.dataset.id; if (S.rsvp[k]) { delete S.rsvp[k]; toast("Participation annulée"); } else { S.rsvp[k] = 1; toast("Participation enregistrée"); confetti(); } save(); render(); },
@@ -462,18 +700,42 @@
     org: (t) => { S.orgSel = t.dataset.id; save(); render(); },
     pin: (t) => { const a = S.alerts.find((x) => String(x.id) === t.dataset.id); if (a) a.pinned = !a.pinned; save(); render(); },
     del: (t) => { const k = t.dataset.k, id = parseInt(t.dataset.id, 10); S[k] = S[k].filter((x) => x.id !== id); save(); render(); toast("Supprimé"); },
-    doc: () => toast("Document de démonstration — bientôt disponible"),
+    doc: (t) => { const target = t.dataset.v || "rules"; go(target); },
     close: closeModal,
     "open-pay": payForm, "open-pub": pubForm, "open-ev": evForm, "open-mem": memForm, "open-alert": alertForm,
+    "open-quote": () => financialForm("quote"), "open-invoice": () => financialForm("invoice"), "open-exp": expenseForm,
     pm: (t) => { payMethod = t.dataset.v; $$(".aed-pm button", modal).forEach((b) => b.classList.toggle("on", b === t)); },
     receipt: (t) => { const p = S.payments.find((x) => String(x.id) === t.dataset.id); if (p) openModal(receiptHtml(p)); },
+    "download-receipt": (t) => { const p = S.payments.find((x) => String(x.id) === t.dataset.id); if (!p) return; downloadPdf(`${p.ref}.pdf`, "Reçu de cotisation", receiptLines(p)); toast("Reçu PDF téléchargé"); },
+    "download-doc": (t) => { const list = t.dataset.kind === "quote" ? S.quotes : S.invoices; const d = list.find((x) => String(x.id) === t.dataset.id); if (!d) return; const title = t.dataset.kind === "quote" ? "Devis" : "Facture"; downloadPdf(`${d.ref}.pdf`, title, financialLines(t.dataset.kind, d)); toast(`${title} PDF téléchargé`); },
+    "download-rules": (t) => { const list = t.dataset.v === "statutes" ? STATUTES : INTERNAL_RULES; const title = t.dataset.v === "statutes" ? "Statuts proposés AEDBVT" : "Règlement intérieur proposé AEDBVT"; const lines = ["PROJET DE SIMULATION - à adopter et faire valider", "", ...list.flatMap((a) => [a[0], a[1], ""])]; downloadPdf(`AEDBVT-${t.dataset.v === "statutes" ? "statuts" : "reglement"}-simulation.pdf`, title, lines); toast("Document PDF généré"); },
+    backup: () => { downloadJson(); toast("Sauvegarde JSON exportée"); },
+    a11y: (t) => {
+      const a = S.accessibility;
+      if (t.dataset.v === "font-up") a.font = Math.min(2, a.font + 1);
+      if (t.dataset.v === "font-down") a.font = Math.max(-1, a.font - 1);
+      if (t.dataset.v === "contrast") a.contrast = !a.contrast;
+      if (t.dataset.v === "calm") a.calm = !a.calm;
+      save(); applyAccessibility(); toast("Préférences d’accessibilité mises à jour");
+    },
+    "convert-quote": (t) => { const q = S.quotes.find((x) => String(x.id) === t.dataset.id); if (!q) return; const id = nextId(S.invoices); const inv = { id, ref: financialRef("FAC", S.invoices), date: todayKey(), due: "", client: q.client, object: q.object, status: "Émise", items: JSON.parse(JSON.stringify(q.items)) }; S.invoices.push(inv); q.status = "Accepté"; addActivity(`Devis ${q.ref} converti en facture ${inv.ref}`); save(); render(); toast("Devis converti en facture"); },
+    "invoice-paid": (t) => { const d = S.invoices.find((x) => String(x.id) === t.dataset.id); if (!d) return; d.status = "Payée"; addActivity(`Facture ${d.ref} marquée payée`); save(); render(); toast("Facture marquée payée"); },
+    "do-financial": () => {
+      const client = val("dclient"), object = val("dobject"), label = val("dlabel"), qty = parseInt(val("dqty"), 10) || 1, unit = parseInt(val("dunit"), 10);
+      if (!client || !object || !label || !Number.isFinite(unit) || unit < 0) { toast("Complétez correctement le document"); return; }
+      const list = draftDocType === "quote" ? S.quotes : S.invoices, prefix = draftDocType === "quote" ? "DEV" : "FAC";
+      const d = { id: nextId(list), ref: financialRef(prefix, list), date: todayKey(), client, object, status: draftDocType === "quote" ? "Brouillon" : "Émise", items: [{ label, qty, unit }] };
+      if (draftDocType === "invoice") d.due = val("ddue");
+      list.push(d); addActivity(`${draftDocType === "quote" ? "Devis" : "Facture"} ${d.ref} créé`); save(); closeModal(); render(); toast("Document créé"); confetti();
+    },
+    "do-exp": () => { const label = val("xl"), amount = parseInt(val("xa"), 10), date = val("xd") || todayKey(); if (!label || !amount || amount < 1) { toast("Libellé et montant requis"); return; } S.expenses.push({ id: nextId(S.expenses), label, amount, date }); addActivity(`Dépense enregistrée : ${label} — ${ar(amount)}`); save(); closeModal(); render(); toast("Dépense enregistrée"); },
     "do-pay": () => {
       const mid = parseInt(val("pmem"), 10), amount = parseInt(val("pamt"), 10);
       if (!amount || amount < 1000) { toast("Montant invalide"); return; }
       openModal(`<div style="text-align:center;padding:16px 0"><div class="aed-spin"></div><b>Traitement du paiement ${esc(payMethod)}…</b><br><small class="aed-muted">Simulation en cours</small></div>`);
       setTimeout(() => {
         const n = nextId(S.payments), p = { id: n, mid, amount, method: payMethod, date: todayKey(), ref: `AED-${new Date().getFullYear()}-${String(n).padStart(4, "0")}` };
-        S.payments.push(p); save();
+        S.payments.push(p); addActivity(`Paiement ${p.ref} enregistré — ${ar(p.amount)}`); save();
         openModal(`<div class="aed-pay-success"><span aria-hidden="true">✅</span><h3>Paiement enregistré !</h3></div>${receiptHtml(p)}`);
         confetti(); render();
       }, 1400);
