@@ -46,6 +46,8 @@
     ["dash", "Accueil"], ["news", "Actualités"], ["events", "Événements"], ["meetings", "Réunions"], ["members", "Membres"],
     ["org", "Organigramme"], ["pay", "Paiements"], ["alerts", "Alertes & annonces"], ["info", "Infos"]
   ];
+  const TAB_ORDER = TABS.map(([id]) => id);
+  let transitionDir = 1;
 
   /* ---------- Données de démonstration ---------- */
   function seed() {
@@ -350,27 +352,57 @@
     };
     requestAnimationFrame(step);
   }
+  function enhanceMotion(scope) {
+    const items = $(".aed-card, .aed-ev, .aed-alert, .aed-faq, .aed-tree > ul > li, .aed-ph, .aed-chips", scope);
+    items.forEach((el, i) => {
+      el.style.setProperty("--aed-i", Math.min(i, 12));
+      el.classList.add("aed-motion-item");
+    });
+  }
   function animateIn(scope) {
-    $$("[data-count]", scope).forEach(countUp);
+    enhanceMotion(scope);
+    $("[data-count]", scope).forEach(countUp);
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      $$(".aed-track i[data-w]", scope).forEach((b) => { b.style.width = `${b.dataset.w}%`; });
-      $$(".aed-ring-fg[data-off]", scope).forEach((r) => { r.style.strokeDashoffset = r.dataset.off; });
+      $(".aed-track i[data-w]", scope).forEach((b) => { b.style.width = `${b.dataset.w}%`; });
+      $(".aed-ring-fg[data-off]", scope).forEach((r) => { r.style.strokeDashoffset = r.dataset.off; });
+      scope.classList.add("is-entered");
     }));
   }
   function render() {
-    panel.style.animation = "none"; void panel.offsetWidth; panel.style.animation = "";
+    panel.classList.remove("is-entered", "from-left", "from-right");
+    panel.classList.add(transitionDir < 0 ? "from-left" : "from-right");
     panel.innerHTML = R[S.tab]();
     animateIn(panel);
     paintChrome();
     if (S.tab === "alerts" && unseen()) { S.seen = S.alerts.map((a) => a.id); save(); setTimeout(paintChrome, 700); }
   }
-  function go(tab) { S.tab = tab; save(); renderTabs(); render(); }
+  function go(tab) {
+    const from = TAB_ORDER.indexOf(S.tab), to = TAB_ORDER.indexOf(tab);
+    transitionDir = to === from ? transitionDir : (to > from ? 1 : -1);
+    S.tab = tab;
+    save();
+    renderTabs();
+    render();
+  }
 
   /* ---------- Fenêtres, notifications, confettis ---------- */
   let toastTimer;
   function toast(message) { toastEl.textContent = message; toastEl.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2600); }
-  function openModal(html) { sheet.innerHTML = html; modal.classList.add("open"); sheet.focus({ preventScroll: true }); }
-  function closeModal() { modal.classList.remove("open"); }
+  function openModal(html) {
+    sheet.innerHTML = html;
+    modal.classList.add("open");
+    modal.classList.remove("closing");
+    requestAnimationFrame(() => modal.classList.add("ready"));
+    sheet.focus({ preventScroll: true });
+  }
+  function closeModal() {
+    modal.classList.remove("ready");
+    modal.classList.add("closing");
+    window.setTimeout(() => {
+      modal.classList.remove("open", "closing");
+      sheet.innerHTML = "";
+    }, reduced ? 0 : 240);
+  }
   modal.addEventListener("click", (event) => { if (event.target === modal) closeModal(); });
   document.addEventListener("keydown", (event) => { if (event.key === "Escape" && modal.classList.contains("open")) closeModal(); });
   function confetti() {
@@ -409,7 +441,8 @@
   function receiptHtml(p) {
     const m = member(p.mid) || { name: "—", village: "" };
     return `<div class="aed-receipt"><span class="aed-stamp">SIMULATION</span><img src="${LOGO}" alt="AEDBVT" width="64" height="64"><h3 style="margin:8px 0 2px">Reçu de cotisation</h3><small class="aed-muted">${esc(p.ref)}</small><dl><dt>Membre</dt><dd>${esc(m.name)}</dd><dt>Village</dt><dd>${esc(m.village)}</dd><dt>Montant</dt><dd>${ar(p.amount)}</dd><dt>Moyen</dt><dd>${esc(p.method)}</dd><dt>Date</dt><dd>${esc(p.date)}</dd><dt>Objet</dt><dd>Cotisation 2026-2027</dd></dl><small class="aed-muted">Association des Étudiants de Darsalama et Bandrani-Vouani à Tuléar</small></div><div class="aed-row" style="justify-content:flex-end;margin-top:14px"><button class="aed-btn aed-primary aed-sm" type="button" data-aed="close">Fermer</button></div>`;
-  }+  const pubForm = () => openModal(`<h3>Publier une actualité</h3><label class="aed-f">Titre<input class="aed-input" id="nt"></label><label class="aed-f">Catégorie<select class="aed-input" id="nc"><option>Vie associative</option><option>Académique</option><option>Solidarité</option><option>Annonce</option></select></label><label class="aed-f">Résumé<input class="aed-input" id="ne"></label><label class="aed-f">Contenu<textarea class="aed-input" id="nb" rows="4"></textarea></label><div class="aed-row" style="justify-content:flex-end"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="close">Annuler</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="do-pub">Publier</button></div>`);
+  }
+  const pubForm = () => openModal(`<h3>Publier une actualité</h3><label class="aed-f">Titre<input class="aed-input" id="nt"></label><label class="aed-f">Catégorie<select class="aed-input" id="nc"><option>Vie associative</option><option>Académique</option><option>Solidarité</option><option>Annonce</option></select></label><label class="aed-f">Résumé<input class="aed-input" id="ne"></label><label class="aed-f">Contenu<textarea class="aed-input" id="nb" rows="4"></textarea></label><div class="aed-row" style="justify-content:flex-end"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="close">Annuler</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="do-pub">Publier</button></div>`);
   const evForm = () => openModal(`<h3>Nouvel événement</h3><label class="aed-f">Titre<input class="aed-input" id="et"></label><label class="aed-f">Date et heure<input class="aed-input" id="ed" type="datetime-local"></label><label class="aed-f">Lieu<input class="aed-input" id="ep"></label><label class="aed-f">Type<select class="aed-input" id="ey"><option>Assemblée</option><option>Culturel</option><option>Sport</option><option>Solidarité</option><option>Académique</option></select></label><label class="aed-f">Description<textarea class="aed-input" id="es" rows="3"></textarea></label><div class="aed-row" style="justify-content:flex-end"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="close">Annuler</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="do-ev">Ajouter</button></div>`);
   const memForm = () => openModal(`<h3>Nouveau membre</h3><label class="aed-f">Nom complet<input class="aed-input" id="mn"></label><label class="aed-f">Village<select class="aed-input" id="mv"><option>Darsalama</option><option>Bandrani-Vouani</option></select></label><label class="aed-f">Filière<input class="aed-input" id="mf"></label><label class="aed-f">Niveau<input class="aed-input" id="ml" placeholder="Licence 1"></label><div class="aed-row" style="justify-content:flex-end"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="close">Annuler</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="do-mem">Ajouter</button></div>`);
   const alertForm = () => openModal(`<h3>Nouvelle annonce</h3><label class="aed-f">Titre<input class="aed-input" id="at"></label><label class="aed-f">Niveau<select class="aed-input" id="al"><option value="info">Information</option><option value="alerte">Alerte</option><option value="urgent">Urgent</option></select></label><label class="aed-f">Message<textarea class="aed-input" id="am" rows="3"></textarea></label><label class="aed-row" style="margin-bottom:12px;font-size:13px;font-weight:700"><input type="checkbox" id="ap" checked> Épingler dans le bandeau défilant</label><div class="aed-row" style="justify-content:flex-end"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="close">Annuler</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="do-alert">Diffuser</button></div>`);
@@ -468,11 +501,58 @@
       $("#aed-memcount").textContent = list.length;
     }
   });
+  root.addEventListener("pointermove", (event) => {
+    if (reduced || event.pointerType === "touch") return;
+    const app = event.target.closest(".aed-app");
+    if (app) {
+      const r = app.getBoundingClientRect();
+      app.style.setProperty("--aed-x", `${event.clientX - r.left}px`);
+      app.style.setProperty("--aed-y", `${event.clientY - r.top}px`);
+    }
+    const card = event.target.closest(".aed-card, .aed-ev, .aed-node");
+    if (card && root.contains(card)) {
+      const r = card.getBoundingClientRect();
+      const x = (event.clientX - r.left) / r.width - .5;
+      const y = (event.clientY - r.top) / r.height - .5;
+      card.style.setProperty("--aed-rx", `${(-y * 2.2).toFixed(2)}deg`);
+      card.style.setProperty("--aed-ry", `${(x * 2.8).toFixed(2)}deg`);
+      card.style.setProperty("--aed-cx", `${event.clientX - r.left}px`);
+      card.style.setProperty("--aed-cy", `${event.clientY - r.top}px`);
+    }
+  });
+  root.addEventListener("pointerout", (event) => {
+    const card = event.target.closest(".aed-card, .aed-ev, .aed-node");
+    if (!card || (event.relatedTarget && card.contains(event.relatedTarget))) return;
+    card.style.removeProperty("--aed-rx");
+    card.style.removeProperty("--aed-ry");
+  });
+  document.addEventListener("pointerdown", (event) => {
+    if (reduced) return;
+    const control = event.target.closest(".aed-btn, .aed-tool, .aed-tab, .filter-button, .aed-node, .aed-seg button");
+    if (!control || !(root.contains(control) || modal.contains(control))) return;
+    const r = control.getBoundingClientRect();
+    const ripple = document.createElement("span");
+    ripple.className = "aed-ripple";
+    ripple.style.left = `${event.clientX - r.left}px`;
+    ripple.style.top = `${event.clientY - r.top}px`;
+    control.append(ripple);
+    ripple.addEventListener("animationend", () => ripple.remove(), { once: true });
+  });
+
   window.addEventListener("resize", () => moveIndicator(false));
   /* La rubrique est masquée au chargement : on recale l'indicateur dès qu'elle devient visible. */
   const section = root.closest("[data-route]");
   if (section && "MutationObserver" in window) {
-    new MutationObserver(() => { if (!section.hidden) requestAnimationFrame(() => moveIndicator(true)); }).observe(section, { attributes: true, attributeFilter: ["hidden"] });
+    new MutationObserver(() => {
+      root.classList.toggle("is-live", !section.hidden);
+      if (!section.hidden) requestAnimationFrame(() => {
+        moveIndicator(true);
+        root.classList.remove("is-live");
+        void root.offsetWidth;
+        root.classList.add("is-live");
+      });
+    }).observe(section, { attributes: true, attributeFilter: ["hidden"] });
+    root.classList.toggle("is-live", !section.hidden);
   }
 
   renderTabs();
