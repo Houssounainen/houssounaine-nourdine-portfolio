@@ -178,17 +178,8 @@ create policy assembly_proxies_self_insert on public.assembly_proxies for insert
 with check (
   exists(select 1 from public.members m where m.id=grantor_member_id and m.profile_id=auth.uid())
 );
-create policy assembly_proxies_update on public.assembly_proxies for update to authenticated
-using (
-  public.is_staff()
-  or exists(select 1 from public.members m where m.id=grantor_member_id and m.profile_id=auth.uid())
-  or exists(select 1 from public.members m where m.id=holder_member_id and m.profile_id=auth.uid())
-)
-with check (
-  public.is_staff()
-  or exists(select 1 from public.members m where m.id=grantor_member_id and m.profile_id=auth.uid())
-  or exists(select 1 from public.members m where m.id=holder_member_id and m.profile_id=auth.uid())
-);
+create policy assembly_proxies_staff_update on public.assembly_proxies for update to authenticated
+using (public.is_staff()) with check (public.is_staff());
 
 create policy motions_read on public.motions for select to authenticated
 using (
@@ -218,17 +209,65 @@ with check (
   status='pending'
   and exists(select 1 from public.members m where m.id=member_id and m.profile_id=auth.uid() and m.status='active')
 );
-create policy candidates_manage on public.election_candidates for update to authenticated
+create policy candidates_staff_update on public.election_candidates for update to authenticated
+using (public.is_staff()) with check (public.is_staff());
+
+create policy candidates_self_withdraw on public.election_candidates for update to authenticated
 using (
-  public.is_staff()
-  or exists(select 1 from public.members m where m.id=member_id and m.profile_id=auth.uid())
+  exists(select 1 from public.members m where m.id=member_id and m.profile_id=auth.uid())
 )
 with check (
-  public.is_staff()
-  or exists(select 1 from public.members m where m.id=member_id and m.profile_id=auth.uid())
+  status='withdrawn'
+  and exists(select 1 from public.members m where m.id=member_id and m.profile_id=auth.uid())
 );
 create policy election_receipts_self on public.election_vote_receipts for select to authenticated
 using (user_id=auth.uid());
+
+create or replace function public.respond_to_proxy(p_proxy_id uuid, p_status text)
+returns void
+language plpgsql
+security definer
+set search_path=public
+as $
+declare holder uuid;
+begin
+  if p_status not in ('accepted','rejected') then
+    raise exception 'Réponse de procuration invalide.';
+  end if;
+
+  select holder_member_id into holder from public.assembly_proxies where id=p_proxy_id for update;
+  if holder is null or holder <> public.current_member_id() then
+    raise exception 'Seul le mandataire peut répondre à cette procuration.';
+  end if;
+
+  update public.assembly_proxies
+  set status=p_status, updated_at=now()
+  where id=p_proxy_id and status='pending';
+end $;
+
+revoke all on function public.respond_to_proxy(uuid,text) from public;
+grant execute on function public.respond_to_proxy(uuid,text) to authenticated;
+
+create or replace function public.revoke_my_proxy(p_proxy_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path=public
+as $
+begin
+  update public.assembly_proxies
+  set status='revoked', updated_at=now()
+  where id=p_proxy_id
+    and grantor_member_id=public.current_member_id()
+    and status in ('pending','accepted');
+
+  if not found then
+    raise exception 'Procuration introuvable ou non révocable.';
+  end if;
+end $;
+
+revoke all on function public.revoke_my_proxy(uuid) from public;
+grant execute on function public.revoke_my_proxy(uuid) to authenticated;
 
 create or replace function public.current_member_id()
 returns uuid
