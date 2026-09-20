@@ -280,7 +280,7 @@ returns void
 language plpgsql
 security definer
 set search_path=public
-as $
+as $$
 begin
   if not public.is_staff() then
     raise exception 'Accès secrétariat requis.';
@@ -293,7 +293,7 @@ begin
   if not found then
     raise exception 'Ce courrier entrant ne peut pas être mis en traitement.';
   end if;
-end $;
+end $$;
 
 revoke all on function public.start_incoming_correspondence_review(uuid) from public;
 grant execute on function public.start_incoming_correspondence_review(uuid) to authenticated;
