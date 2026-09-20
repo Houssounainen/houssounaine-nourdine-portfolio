@@ -21,7 +21,8 @@ export default async function GovernancePage() {
       <div className="governance-hero-grid">
         <article className="panel governance-hero-card"><span className="eyebrow">Assemblées générales</span><strong>{assemblies?.length||0}</strong><p>Convocations, quorum, procurations, motions et procès-verbaux.</p><a href="#assemblees">Voir les assemblées ↓</a></article>
         <article className="panel governance-hero-card"><span className="eyebrow">Élections</span><strong>{elections?.length||0}</strong><p>Candidatures, scrutins secrets, participation et résultats après clôture.</p><a href="#elections">Voir les élections ↓</a></article>
-        <article className="panel governance-hero-card"><span className="eyebrow">Textes officiels</span><strong>{docs?.length||0}</strong><p>Statuts, règlement intérieur, éthique, procédures et documents publiés.</p><a href="#textes">Voir les textes ↓</a></article>
+        <article className="panel governance-hero-card"><span className="eyebrow">Textes officiels</span><strong>{docs?.length||0}</strong><p>Versions, validations, amendements et archives institutionnelles.</p><Link href="/governance/documents">Centre documentaire →</Link></article>
+        <article className="panel governance-hero-card"><span className="eyebrow">Décisions</span><strong>REG</strong><p>Motions, publications, amendements et résultats consignés dans un registre durable.</p><Link href="/governance/decisions">Registre des décisions →</Link></article>
       </div>
 
       {staff&&<div className="content-grid governance-create-grid">
@@ -67,7 +68,7 @@ export default async function GovernancePage() {
 
       <section id="textes" className="governance-section">
         <div className="section-heading-row"><div><span className="eyebrow">Référentiel</span><h2>Textes & politiques</h2></div></div>
-        <div className="governance-grid">{(docs||[]).map(d=><article className="panel gov-card" key={d.id}><span className="eyebrow">{d.category}</span><h2>{d.title}</h2><p>Version {d.version} · {d.published?"publiée":"brouillon"}</p><small>Dernière mise à jour : {new Date(d.updated_at).toLocaleDateString("fr-FR")}</small></article>)}</div>
+        <div className="governance-grid">{(docs||[]).map(d=><Link className="panel gov-card" href={"/governance/documents/"+d.id} key={d.id}><span className="eyebrow">{d.category}</span><h2>{d.title}</h2><p>Version {d.version} · {d.published?"publiée":"brouillon"}</p><small>Dernière mise à jour : {new Date(d.updated_at).toLocaleDateString("fr-FR")}</small></Link>)}</div>
       </section>
 
       <article className="panel warning"><h2>Paramètres juridiques à valider</h2><p>Les règles de quorum, majorité, procuration, éligibilité et organisation des élections sont configurables dans l’application. Elles doivent être alignées sur les statuts et le règlement intérieur effectivement adoptés avant utilisation institutionnelle.</p></article>

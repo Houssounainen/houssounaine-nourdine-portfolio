@@ -240,7 +240,7 @@ security definer
 set search_path=public
 as $$
   select id from public.members where profile_id=auth.uid() and status='active' limit 1
-$;
+$$;
 
 revoke all on function public.current_member_id() from public;
 grant execute on function public.current_member_id() to authenticated;
@@ -256,7 +256,7 @@ as $$
   from public.members m
   where m.status='active'
   order by m.full_name
-$;
+$$;
 
 revoke all on function public.list_proxy_eligible_members() from public;
 grant execute on function public.list_proxy_eligible_members() to authenticated;
@@ -279,7 +279,7 @@ as $$
       or m.profile_id=auth.uid()
     )
   order by p.sort_order,m.full_name
-$;
+$$;
 
 revoke all on function public.list_election_candidates(uuid) from public;
 grant execute on function public.list_election_candidates(uuid) to authenticated;
@@ -432,7 +432,7 @@ as $$
     else (select count(*) from public.recorded_motion_votes r where r.motion_id=m.id)
   end
   from public.motions m where m.id=p_motion_id
-$;
+$$;
 
 revoke all on function public.get_motion_turnout(uuid) from public;
 grant execute on function public.get_motion_turnout(uuid) to authenticated;
@@ -444,7 +444,7 @@ security definer
 set search_path=public
 as $$
   select count(*) from public.election_vote_receipts where position_id=p_position_id
-$;
+$$;
 
 revoke all on function public.get_election_turnout(uuid) from public;
 grant execute on function public.get_election_turnout(uuid) to authenticated;
@@ -692,7 +692,7 @@ drop trigger if exists guard_election_status on public.elections;
 create trigger guard_election_status before update of status on public.elections
 for each row execute function public.guard_election_status();
 
-do $
+do $$
 declare t text;
 begin
   foreach t in array array['assemblies','assembly_proxies','motions','recorded_motion_votes','elections','election_positions','election_candidates']

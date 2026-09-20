@@ -61,7 +61,7 @@ export default async function AssemblyDetailPage({params}:{params:Promise<{id:st
   const motionMetaMap=new Map(motionMeta.map(x=>[x.id,x]));
 
   return <section className="page">
-    <header className="page-header"><div><Link className="back-link" href="/governance">← Gouvernance</Link><span className="eyebrow">{assembly.assembly_type==="extraordinary"?"Assemblée extraordinaire":"Assemblée ordinaire"}</span><h1>{assembly.title}</h1></div><span className={"status-pill status-"+assembly.status}>{assembly.status}</span></header>
+    <header className="page-header"><div><Link className="back-link" href="/governance">← Gouvernance</Link><span className="eyebrow">{assembly.assembly_type==="extraordinary"?"Assemblée extraordinaire":"Assemblée ordinaire"}</span><h1>{assembly.title}</h1></div><div className="header-actions"><a className="button secondary" href={"/api/governance/assemblies/"+assembly.id+"/minutes"}>PV PDF</a><span className={"status-pill status-"+assembly.status}>{assembly.status}</span></div></header>
 
     <div className="assembly-summary-grid">
       <article className="panel"><small>Date & heure</small><strong>{new Date(assembly.starts_at).toLocaleString("fr-FR",{dateStyle:"long",timeStyle:"short"})}</strong><span>{assembly.location||assembly.mode}</span></article>
