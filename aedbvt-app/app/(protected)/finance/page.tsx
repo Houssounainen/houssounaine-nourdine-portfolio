@@ -1,8 +1,13 @@
+import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { addExpense, addPayment } from "./actions";
 
 export default async function FinancePage() {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id",user!.id).single();
+  if (!["admin","bureau","tresorier"].includes(profile?.role || "")) notFound();
+
   const [{ data: members }, { data: payments }, { data: expenses }] = await Promise.all([
     supabase.from("members").select("id,full_name").eq("status","active").order("full_name"),
     supabase.from("payments").select("id,amount,method,receipt_number,paid_at,members(full_name)").order("paid_at",{ascending:false}).limit(20),
