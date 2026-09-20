@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { addInvoiceItem, cancelInvoice, recordInvoicePayment } from "../../actions";
+import { uploadFinancialAttachment } from "@/lib/financial-files";
 
 const fmt=(value:number)=>value.toLocaleString("fr-FR")+" Ar";
 
@@ -12,11 +13,12 @@ export default async function InvoiceDetailPage({params}:{params:Promise<{id:str
   const {data:profile}=await supabase.from("profiles").select("role").eq("id",user!.id).single();
   if(!["admin","bureau","tresorier"].includes(profile?.role||"")) notFound();
 
-  const [{data:invoice},{data:items},{data:payments},{data:accounts}]=await Promise.all([
+  const [{data:invoice},{data:items},{data:payments},{data:accounts},{data:attachments}]=await Promise.all([
     supabase.from("invoices").select("id,quote_id,number,recipient_name,recipient_email,recipient_phone,recipient_address,subject,total,status,issued_at,due_at,notes,currency").eq("id",id).maybeSingle(),
     supabase.from("invoice_items").select("id,position,description,quantity,unit_price").eq("invoice_id",id).order("position"),
     supabase.from("invoice_payments").select("id,amount,method,external_reference,receipt_number,paid_at,account_id,notes").eq("invoice_id",id).order("paid_at",{ascending:false}),
     supabase.from("cash_accounts").select("id,name,provider").eq("active",true).order("name"),
+    supabase.from("financial_attachments").select("id,file_name,content_type,size_bytes,created_at").eq("entity_type","invoice").eq("entity_id",id).order("created_at",{ascending:false}),
   ]);
   if(!invoice) notFound();
 
@@ -57,6 +59,15 @@ export default async function InvoiceDetailPage({params}:{params:Promise<{id:str
           <button className="button secondary">Ajouter la ligne</button>
         </form>}
 
+        <form action={uploadFinancialAttachment} className="panel form-stack" encType="multipart/form-data">
+          <input type="hidden" name="entity_type" value="invoice"/>
+          <input type="hidden" name="entity_id" value={invoice.id}/>
+          <div><span className="eyebrow">Justificatif</span><h2>Ajouter une pièce</h2></div>
+          <label>PDF ou image<input name="file" type="file" accept="application/pdf,image/jpeg,image/png,image/webp" required/></label>
+          <small className="muted">5 Mo maximum. Le fichier reste privé.</small>
+          <button className="button secondary">Téléverser</button>
+        </form>
+
         {invoice.status!=="paid"&&invoice.status!=="cancelled"&&remaining>0&&<form action={recordInvoicePayment} className="panel form-stack">
           <input type="hidden" name="invoice_id" value={invoice.id}/>
           <div><span className="eyebrow">Règlement</span><h2>Enregistrer un paiement</h2></div>
@@ -70,6 +81,11 @@ export default async function InvoiceDetailPage({params}:{params:Promise<{id:str
         </form>}
       </aside>
     </div>
+
+    <article className="panel attachment-panel">
+      <div className="panel-head"><div><span className="eyebrow">Pièces jointes</span><h2>Documents privés</h2></div><span>{attachments?.length||0}</span></div>
+      <div className="attachment-list">{(attachments||[]).map((file)=><a href={"/api/financial-files/"+file.id} key={file.id}><span><b>{file.file_name}</b><small>{file.content_type||"fichier"} · {Math.max(1,Math.round(Number(file.size_bytes||0)/1024))} Ko</small></span><strong>↓</strong></a>)}{!attachments?.length&&<p>Aucune pièce jointe.</p>}</div>
+    </article>
 
     <article className="panel payment-history">
       <div className="panel-head"><div><span className="eyebrow">Encaissements</span><h2>Historique des règlements</h2></div><strong>{fmt(paid)}</strong></div>
