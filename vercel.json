@@ -8,6 +8,7 @@
     { "source": "/projects", "destination": "/" },
     { "source": "/works", "destination": "/" },
     { "source": "/clients", "destination": "/" },
+    { "source": "/association", "destination": "/" },
     { "source": "/contact", "destination": "/" }
   ],
   "headers": [
