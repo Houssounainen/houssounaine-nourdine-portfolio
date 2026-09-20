@@ -265,6 +265,52 @@ create trigger notify_operational_task_assignment
 after insert or update of assignee_id on public.operational_tasks
 for each row execute function public.notify_operational_task_assignment();
 
+create or replace function public.notify_operational_task_state()
+returns trigger
+language plpgsql
+security definer
+set search_path=public
+as $
+declare lead_id uuid;
+begin
+  if old.status is distinct from new.status and new.status in ('blocked','done') then
+    if new.created_by is not null and new.created_by is distinct from auth.uid() then
+      insert into public.internal_notifications(recipient_id,kind,title,message,href,source_task_id)
+      values(
+        new.created_by,
+        case when new.status='blocked' then 'warning' else 'task' end,
+        case when new.status='blocked' then 'Tâche bloquée' else 'Tâche terminée' end,
+        new.title,
+        '/operations/tasks/' || new.id,
+        new.id
+      );
+    end if;
+
+    if new.commission_id is not null then
+      select lead_profile_id into lead_id from public.commissions where id=new.commission_id;
+      if lead_id is not null
+         and lead_id is distinct from new.created_by
+         and lead_id is distinct from auth.uid() then
+        insert into public.internal_notifications(recipient_id,kind,title,message,href,source_task_id)
+        values(
+          lead_id,
+          case when new.status='blocked' then 'warning' else 'task' end,
+          case when new.status='blocked' then 'Action de commission bloquée' else 'Action de commission terminée' end,
+          new.title,
+          '/operations/tasks/' || new.id,
+          new.id
+        );
+      end if;
+    end if;
+  end if;
+  return new;
+end $;
+
+drop trigger if exists notify_operational_task_state on public.operational_tasks;
+create trigger notify_operational_task_state
+after update of status on public.operational_tasks
+for each row execute function public.notify_operational_task_state();
+
 create or replace function public.create_followup_task_from_decision()
 returns trigger
 language plpgsql
