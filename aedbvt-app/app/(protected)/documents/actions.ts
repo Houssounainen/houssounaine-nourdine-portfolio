@@ -142,6 +142,7 @@ export async function recordInvoicePayment(formData: FormData) {
     method: String(formData.get("method") || "Espèces"),
     external_reference: String(formData.get("external_reference") || "").trim() || null,
     account_id: String(formData.get("account_id") || "") || null,
+    category_id: String(formData.get("category_id") || "") || null,
     notes: String(formData.get("notes") || "").trim() || null,
     paid_at: String(formData.get("paid_at") || "") ? new Date(String(formData.get("paid_at")) + "T12:00:00+03:00").toISOString() : new Date().toISOString(),
     created_by: user.id,
