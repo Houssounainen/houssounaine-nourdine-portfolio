@@ -16,8 +16,10 @@ for(const file of files){
   if(!sql.trim().endsWith("commit;")) errors.push(file+": transaction COMMIT manquante");
 
   lines.forEach((line,index)=>{
-    const trimmed=line.trim();
-    if(trimmed==="as $"||trimmed==="end $;") errors.push(file+":"+(index+1)+": délimiteur PostgreSQL incomplet");
+    const t=line.trim();
+    if(t==="as $"||t==="end $;"||t==="$;"||t==="do $"||t.endsWith(" as $")){
+      errors.push(file+":"+(index+1)+": délimiteur PostgreSQL incomplet");
+    }
   });
 }
 
