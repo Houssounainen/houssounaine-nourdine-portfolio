@@ -726,3 +726,14 @@ html[data-theme="dark"] .aed-high-contrast {
   .aed-audit li { grid-template-columns:1fr; gap:3px; }
   .aed-law p { padding-left:13px; }
 }
+
+.aed-governance-roadmap {
+  margin:0 0 18px;
+  padding:16px;
+  border:1px solid rgba(16,185,129,.28);
+  border-radius:15px;
+  background:linear-gradient(135deg,rgba(16,185,129,.08),rgba(42,91,215,.05));
+}
+.aed-governance-roadmap > b { display:block; margin-bottom:10px; font-size:13px; }
+.aed-governance-roadmap > div { display:flex; flex-wrap:wrap; gap:7px; }
+.aed-governance-roadmap span { padding:6px 9px; border:1px solid var(--border); border-radius:999px; background:var(--surface-strong); color:var(--text-muted); font-size:11px; font-weight:700; }
