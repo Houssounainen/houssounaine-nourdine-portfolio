@@ -232,6 +232,19 @@ with check (
 create policy election_receipts_self on public.election_vote_receipts for select to authenticated
 using (user_id=auth.uid());
 
+create or replace function public.current_member_id()
+returns uuid
+language sql
+stable
+security definer
+set search_path=public
+as $
+  select id from public.members where profile_id=auth.uid() and status='active' limit 1
+$;
+
+revoke all on function public.current_member_id() from public;
+grant execute on function public.current_member_id() to authenticated;
+
 create or replace function public.list_proxy_eligible_members()
 returns table(id uuid, full_name text, member_number text, village text)
 language sql
@@ -270,6 +283,45 @@ $;
 
 revoke all on function public.list_election_candidates(uuid) from public;
 grant execute on function public.list_election_candidates(uuid) to authenticated;
+
+create or replace function public.set_my_proxy(p_assembly_id uuid, p_holder_member_id uuid)
+returns uuid
+language plpgsql
+security definer
+set search_path=public
+as $
+declare
+  grantor uuid;
+  result_id uuid;
+  assembly_status text;
+begin
+  grantor := public.current_member_id();
+  if grantor is null then
+    raise exception 'Adhésion active requise.';
+  end if;
+  if grantor=p_holder_member_id then
+    raise exception 'Vous ne pouvez pas vous donner procuration à vous-même.';
+  end if;
+  if not exists(select 1 from public.members where id=p_holder_member_id and status='active') then
+    raise exception 'Mandataire invalide.';
+  end if;
+
+  select status into assembly_status from public.assemblies where id=p_assembly_id;
+  if assembly_status not in ('published','open') then
+    raise exception 'Les procurations ne sont pas ouvertes pour cette assemblée.';
+  end if;
+
+  insert into public.assembly_proxies(assembly_id,grantor_member_id,holder_member_id,status,updated_at)
+  values(p_assembly_id,grantor,p_holder_member_id,'pending',now())
+  on conflict(assembly_id,grantor_member_id) do update
+    set holder_member_id=excluded.holder_member_id,status='pending',updated_at=now()
+  returning id into result_id;
+
+  return result_id;
+end $;
+
+revoke all on function public.set_my_proxy(uuid,uuid) from public;
+grant execute on function public.set_my_proxy(uuid,uuid) to authenticated;
 
 create or replace function public.respond_to_proxy(p_proxy_id uuid, p_status text)
 returns void
@@ -547,11 +599,16 @@ language plpgsql
 set search_path=public
 as $
 begin
-  if old.status in ('closed','archived') and new.status is distinct from old.status then
-    raise exception 'Une assemblée clôturée ou archivée ne peut pas être rouverte.';
+  if new.status is not distinct from old.status then
+    return new;
   end if;
-  if new.status='archived' and old.status <> 'closed' then
-    raise exception 'Une assemblée doit être clôturée avant archivage.';
+  if not (
+    (old.status='draft' and new.status='published')
+    or (old.status='published' and new.status='open')
+    or (old.status='open' and new.status='closed')
+    or (old.status='closed' and new.status='archived')
+  ) then
+    raise exception 'Transition d’assemblée invalide : % vers %.',old.status,new.status;
   end if;
   return new;
 end $;
@@ -568,11 +625,17 @@ as $
 declare assembly_status text;
 declare quorum_met boolean;
 begin
-  if old.status in ('closed','cancelled') and new.status is distinct from old.status then
-    raise exception 'Une motion clôturée ou annulée ne peut pas être rouverte.';
+  if new.status is not distinct from old.status then
+    return new;
+  end if;
+  if not (
+    (old.status='draft' and new.status in ('open','cancelled'))
+    or (old.status='open' and new.status='closed')
+  ) then
+    raise exception 'Transition de motion invalide : % vers %.',old.status,new.status;
   end if;
 
-  if new.status='open' and old.status is distinct from 'open' then
+  if new.status='open' then
     select status into assembly_status from public.assemblies where id=new.assembly_id;
     select q.met into quorum_met from public.get_assembly_quorum(new.assembly_id) q limit 1;
 
@@ -596,10 +659,20 @@ language plpgsql
 set search_path=public
 as $
 begin
-  if old.status in ('closed','cancelled') and new.status is distinct from old.status then
-    raise exception 'Un scrutin clôturé ou annulé ne peut pas être rouvert.';
+  if new.status is not distinct from old.status then
+    return new;
   end if;
-  if new.status='open' and old.status is distinct from 'open' then
+  if not (
+    (old.status='draft' and new.status in ('published','cancelled'))
+    or (old.status='published' and new.status in ('open','cancelled'))
+    or (old.status='open' and new.status='closed')
+  ) then
+    raise exception 'Transition de scrutin invalide : % vers %.',old.status,new.status;
+  end if;
+  if new.status='open' then
+    if now() < new.starts_at or now() >= new.ends_at then
+      raise exception 'Le scrutin ne peut être ouvert qu’entre sa date de début et sa date de clôture.';
+    end if;
     if not exists(select 1 from public.election_positions p where p.election_id=new.id) then
       raise exception 'Ajoutez au moins un poste avant d’ouvrir le scrutin.';
     end if;
