@@ -129,8 +129,17 @@ language plpgsql
 set search_path=public
 as $$
 begin
-  if tg_op='UPDATE' and old.status in ('published','superseded') then
-    raise exception 'Une version publiée ou remplacée est immuable.';
+  if tg_op='UPDATE' and old.status='superseded' then
+    raise exception 'Une version remplacée est immuable.';
+  end if;
+  if tg_op='UPDATE' and old.status='published' then
+    if new.status='superseded'
+       and new.body is not distinct from old.body
+       and new.title is not distinct from old.title
+       and new.version_label is not distinct from old.version_label then
+      return new;
+    end if;
+    raise exception 'Une version publiée est immuable, sauf passage en version remplacée.';
   end if;
   if tg_op='UPDATE' and old.status='approved' and (
     new.body is distinct from old.body
