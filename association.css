@@ -1,0 +1,236 @@
+/* Rubrique Association (AEDBVT) — utilise les variables du thème existant (clair/sombre). */
+.association {
+  --aed-blue: #2a5bd7;
+  --aed-blue-ink: #2a5bd7;
+  --aed-gold: #f8b900;
+  --aed-gold-ink: #9a6700;
+  --aed-red: #e5384f;
+  --aed-green: #10b981;
+  --aed-ink-on-accent: #06130f;
+  overflow: hidden;
+  isolation: isolate;
+}
+html[data-theme="dark"] .association { --aed-blue-ink: #8fb0ff; --aed-gold-ink: #f8b900; }
+.association::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background:
+    radial-gradient(520px circle at 92% 6%, rgba(42, 91, 215, .16), transparent 70%),
+    radial-gradient(460px circle at 4% 40%, rgba(248, 185, 0, .1), transparent 70%);
+  pointer-events: none;
+}
+
+/* En-tête */
+.aed-hero { display: grid; grid-template-columns: auto 1fr; gap: clamp(22px, 4vw, 48px); align-items: center; margin-bottom: 34px; }
+.aed-logo {
+  position: relative;
+  width: clamp(120px, 16vw, 176px);
+  aspect-ratio: 1;
+  padding: 7px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 22px 54px rgba(10, 42, 107, .32);
+  animation: aedBob 5.5s ease-in-out infinite;
+}
+.aed-logo img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.aed-logo::after { content: ""; position: absolute; inset: -9px; border-radius: 50%; border: 2px solid var(--aed-gold); opacity: .6; animation: aedPulse 3.2s ease-out infinite; }
+@keyframes aedBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+@keyframes aedPulse { 0% { transform: scale(1); opacity: .7; } 100% { transform: scale(1.2); opacity: 0; } }
+.aed-hero h2 { max-width: 780px; margin-bottom: 14px; font-size: clamp(32px, 4.2vw, 54px); line-height: 1.08; }
+.aed-lead { max-width: 640px; margin: 0; color: var(--text-muted); }
+.aed-demo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 7px 13px;
+  border: 1px dashed var(--aed-gold);
+  border-radius: 12px;
+  background: rgba(248, 185, 0, .12);
+  font-size: 12px;
+  font-weight: 700;
+}
+.aed-demo::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--aed-gold); animation: livePulse 2.2s ease-out infinite; }
++/* Application */
+.aed-app { overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface-strong); box-shadow: var(--shadow-lg); }
+.aed-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--border); background: linear-gradient(90deg, rgba(42, 91, 215, .12), transparent); }
+.aed-seg { display: inline-flex; padding: 3px; border-radius: 999px; background: var(--surface-muted); }
+.aed-seg button { padding: 8px 15px; border: 0; border-radius: 999px; background: transparent; color: var(--text-muted); font-size: 12px; font-weight: 800; cursor: pointer; transition: background var(--transition), color var(--transition); }
+.aed-seg button.on { background: var(--shell-accent); color: var(--aed-ink-on-accent); }
+.aed-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.aed-tool { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 38px; min-width: 38px; padding: 0 13px; border: 1px solid var(--border-strong); border-radius: 999px; background: transparent; font-size: 12px; font-weight: 800; cursor: pointer; transition: border-color var(--transition), transform var(--transition); }
+.aed-tool:hover { border-color: var(--shell-accent); transform: translateY(-1px); }
+.aed-tool svg, .aed-tab svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.aed-count { position: absolute; top: -5px; right: -5px; display: grid; place-items: center; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; background: var(--aed-red); color: #fff; font-size: 10px; font-weight: 800; animation: aedPop 500ms; }
+.aed-count[hidden] { display: none; }
+@keyframes aedPop { 0% { transform: scale(0); } 70% { transform: scale(1.3); } 100% { transform: scale(1); } }
+
+.aed-ticker { overflow: hidden; padding: 9px 0; background: #0a2a6b; color: #fff; font-size: 13px; white-space: nowrap; }
+.aed-ticker > div { display: inline-flex; gap: 64px; padding-left: 100%; animation: aedTick 34s linear infinite; }
+.aed-ticker:hover > div { animation-play-state: paused; }
+@keyframes aedTick { to { transform: translateX(-100%); } }
+
+.aed-tabs { position: relative; display: flex; gap: 4px; overflow-x: auto; padding: 10px 12px; border-bottom: 1px solid var(--border); scrollbar-width: none; }
+.aed-tabs::-webkit-scrollbar { display: none; }
+.aed-tab { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 7px; flex: none; padding: 10px 14px; border: 0; border-radius: 999px; background: transparent; color: var(--text-muted); font-size: 13px; font-weight: 700; white-space: nowrap; cursor: pointer; transition: color var(--transition); }
+.aed-tab.on { color: var(--aed-ink-on-accent); }
+.aed-ind { position: absolute; z-index: 0; top: 10px; left: 0; height: calc(100% - 20px); border-radius: 999px; background: var(--shell-accent); transition: transform 380ms cubic-bezier(.2, .8, .2, 1), width 380ms cubic-bezier(.2, .8, .2, 1); }
+
+.aed-panel { min-height: 440px; padding: 24px 20px 30px; animation: aedPanel 520ms cubic-bezier(.2, .7, .2, 1); }
+@keyframes aedPanel { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+.aed-ph { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 18px; }
+.aed-ph h3 { margin: 0; font-size: 24px; letter-spacing: -.03em; }
+.aed-h4 { margin: 26px 0 12px; font-size: 16px; }
+
+.aed-grid { display: grid; gap: 16px; }
+.aed-g2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.aed-g3 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); }
+.aed-g4 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
+.aed-split { display: grid; grid-template-columns: 1.1fr .9fr; gap: 18px; }
+.aed-stack { display: flex; flex-direction: column; gap: 12px; }
+@media (max-width: 860px) { .aed-split { grid-template-columns: 1fr; } .aed-hero { grid-template-columns: 1fr; justify-items: center; text-align: center; } .aed-lead { margin-inline: auto; } }
+
+.aed-card { position: relative; padding: 20px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface-strong); transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition); }
+.aed-card.aed-hov:hover { transform: translateY(-4px); border-color: rgba(16, 185, 129, .5); box-shadow: var(--shadow-sm); }
+.aed-muted, .aed-meta { color: var(--text-muted); }
+.aed-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; font-size: 12px; }
+.aed-card h4 { margin: 8px 0 4px; font-size: 17px; letter-spacing: -.02em; }
+.aed-card p { margin: 0; color: var(--text-muted); font-size: 14px; }
+
+.aed-stat { display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+.aed-stat::after { content: ""; position: absolute; right: -26px; top: -26px; width: 92px; height: 92px; border-radius: 50%; background: var(--c, var(--aed-blue)); opacity: .14; pointer-events: none; }
+.aed-stat small { color: var(--text-muted); font-weight: 600; }
+.aed-num { font-family: "Manrope", "Inter", sans-serif; font-size: 34px; font-weight: 800; line-height: 1.05; letter-spacing: -.04em; }
+
+.aed-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 800; }
+.aed-b-ok { background: rgba(16, 185, 129, .15); color: var(--aed-green); }
+.aed-b-part { background: rgba(248, 185, 0, .2); color: var(--aed-gold-ink); }
+.aed-b-no { background: rgba(229, 56, 79, .14); color: var(--aed-red); }
+.aed-b-info { background: rgba(42, 91, 215, .15); color: var(--aed-blue-ink); }
+
+.aed-track { height: 10px; overflow: hidden; border-radius: 6px; background: var(--surface-muted); }
+.aed-track i { display: block; width: 0; height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--aed-blue), var(--aed-gold)); transition: width 1300ms cubic-bezier(.2, .8, .2, 1); }
+.aed-ring { position: relative; width: 96px; height: 96px; flex: none; }
+.aed-ring svg { transform: rotate(-90deg); }
+.aed-ring b { position: absolute; inset: 0; display: grid; place-items: center; font-family: "Manrope", sans-serif; }
+.aed-ring-bg { stroke: var(--surface-muted); }
+.aed-ring-fg { stroke: var(--aed-gold); stroke-linecap: round; transition: stroke-dashoffset 1400ms cubic-bezier(.2, .8, .2, 1); }
+
+.aed-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.aed-input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border-strong); border-radius: 12px; background: var(--surface); color: var(--text); outline: none; transition: border-color var(--transition), box-shadow var(--transition); }
+.aed-input:focus { border-color: var(--shell-accent); box-shadow: 0 0 0 4px rgba(79, 209, 163, .2); }
+.aed-search { margin-bottom: 12px; }
+
+.aed-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 10px 20px; border: 0; border-radius: 999px; font-size: 13px; font-weight: 800; cursor: pointer; transition: transform var(--transition), background var(--transition), box-shadow var(--transition); }
+.aed-btn:hover { transform: translateY(-2px); }
+.aed-primary { background: var(--shell-accent); color: var(--aed-ink-on-accent); box-shadow: 0 10px 24px rgba(79, 209, 163, .24); }
+.aed-ghost { border: 1.5px solid var(--border-strong); background: transparent; color: var(--text); }
+.aed-ghost:hover { border-color: var(--shell-accent); }
+.aed-danger { background: rgba(229, 56, 79, .12); color: var(--aed-red); }
+.aed-sm { min-height: 36px; padding: 7px 14px; font-size: 12px; }
+
+.aed-news summary, .aed-doc-sum { cursor: pointer; color: var(--aed-blue-ink); font-size: 13px; font-weight: 800; list-style: none; }
+.aed-news summary::-webkit-details-marker { display: none; }
+.aed-news p { margin-top: 8px; }
+
+.aed-ev { display: grid; grid-template-columns: 62px 1fr auto; gap: 14px; align-items: center; padding: 14px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface-strong); transition: transform var(--transition), border-color var(--transition); }
+.aed-ev:hover { transform: translateX(4px); border-color: var(--shell-accent); }
+.aed-ev.past { opacity: .6; }
+.aed-date { padding: 8px 0; border-radius: 14px; background: #0a2a6b; color: #fff; text-align: center; line-height: 1.1; }
+.aed-date b { display: block; font-family: "Manrope", sans-serif; font-size: 22px; }
+.aed-date small { color: var(--aed-gold); font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+@media (max-width: 560px) { .aed-ev { grid-template-columns: 54px 1fr; } .aed-ev .aed-act { grid-column: 1 / -1; } }
+
+.aed-cal-h { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; text-transform: capitalize; }
+.aed-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+.aed-dn { padding: 4px 0; color: var(--text-muted); font-size: 11px; font-weight: 800; }
+.aed-cal button { position: relative; aspect-ratio: 1; border: 0; border-radius: 12px; background: transparent; font-size: 13px; cursor: pointer; transition: background var(--transition), transform var(--transition); }
+.aed-cal button:hover { background: var(--surface-muted); transform: scale(1.06); }
+.aed-cal button.today { box-shadow: inset 0 0 0 1.5px var(--shell-accent); }
+.aed-cal button.sel { background: var(--shell-accent); color: var(--aed-ink-on-accent); font-weight: 800; }
+.aed-cal .dots { position: absolute; bottom: 5px; left: 50%; display: flex; gap: 2px; transform: translateX(-50%); }
+.aed-cal .dots s { width: 5px; height: 5px; border-radius: 50%; background: var(--aed-gold); text-decoration: none; }
+.aed-cal .dots s.m { background: var(--aed-red); }
+.aed-leg { display: flex; gap: 14px; margin-top: 12px; color: var(--text-muted); font-size: 12px; }
+.aed-leg i { display: inline-block; width: 8px; height: 8px; margin-right: 6px; border-radius: 50%; background: var(--aed-gold); }
+.aed-leg i.m { background: var(--aed-red); }
+
+.aed-mem { display: flex; align-items: center; gap: 12px; }
+.aed-mav { display: grid; place-items: center; width: 48px; height: 48px; flex: none; border-radius: 50%; color: #fff; font-family: "Manrope", sans-serif; font-weight: 800; }
+.aed-mav.dar { background: linear-gradient(135deg, #2a5bd7, #0a2a6b); }
+.aed-mav.ban { background: linear-gradient(135deg, #f8b900, #d98a00); }
+.aed-mem b { display: block; line-height: 1.25; }
+.aed-mem small { color: var(--text-muted); font-size: 12px; }
+
+.aed-tree { display: flex; overflow-x: auto; padding: 6px 0 18px; }
+.aed-tree ul { position: relative; display: flex; justify-content: center; margin: 0; padding: 22px 0 0; }
+.aed-tree > ul { margin-inline: auto; padding-top: 0; }
+.aed-tree li { position: relative; padding: 22px 7px 0; list-style: none; text-align: center; }
+.aed-tree li::before, .aed-tree li::after { content: ""; position: absolute; top: 0; right: 50%; width: 50%; height: 22px; border-top: 2px solid var(--border-strong); }
+.aed-tree li::after { right: auto; left: 50%; border-left: 2px solid var(--border-strong); }
+.aed-tree li:only-child::before, .aed-tree li:only-child::after { display: none; }
+.aed-tree li:only-child { padding-top: 0; }
+.aed-tree li:first-child::before, .aed-tree li:last-child::after { border: 0; }
+.aed-tree li:last-child::before { border-right: 2px solid var(--border-strong); border-radius: 0 10px 0 0; }
+.aed-tree li:first-child::after { border-radius: 10px 0 0 0; }
+.aed-tree ul ul::before { content: ""; position: absolute; top: 0; left: 50%; height: 22px; border-left: 2px solid var(--border-strong); }
+.aed-node { display: inline-flex; flex-direction: column; gap: 2px; min-width: 132px; max-width: 172px; padding: 10px 12px; border: 1.5px solid var(--border-strong); border-radius: 14px; background: var(--surface-strong); color: var(--text); cursor: pointer; transition: transform var(--transition), border-color var(--transition), background var(--transition); }
+.aed-node:hover, .aed-node.on { transform: translateY(-3px); border-color: var(--aed-gold); }
+.aed-node.on { background: rgba(248, 185, 0, .14); }
+.aed-node b { font-family: "Manrope", sans-serif; font-size: 12px; }
+.aed-node span { color: var(--text-muted); font-size: 12px; }
+.aed-node.root { border-color: #0a2a6b; background: #0a2a6b; color: #fff; }
+.aed-node.root span { color: var(--aed-gold); }
+
+.aed-tw { overflow-x: auto; }
+.aed-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.aed-table th { padding: 8px 10px; color: var(--text-muted); font-size: 11px; letter-spacing: .06em; text-align: left; text-transform: uppercase; }
+.aed-table td { padding: 10px; border-top: 1px solid var(--border); }
+
+.aed-alert { display: flex; gap: 14px; padding: 16px; border: 1px solid var(--border); border-left: 5px solid var(--aed-blue); border-radius: 16px; background: var(--surface-strong); animation: aedPanel 520ms both; }
+.aed-alert.alerte { border-left-color: var(--aed-gold); }
+.aed-alert.urgent { border-left-color: var(--aed-red); background: rgba(229, 56, 79, .06); }
+.aed-alert > svg { width: 26px; height: 26px; flex: none; fill: none; stroke: var(--aed-blue-ink); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.aed-alert.alerte > svg { stroke: var(--aed-gold-ink); }
+.aed-alert.urgent > svg { stroke: var(--aed-red); animation: aedShake 2s infinite; }
+@keyframes aedShake { 0%, 88%, 100% { transform: rotate(0); } 90% { transform: rotate(-14deg); } 93% { transform: rotate(12deg); } 96% { transform: rotate(-7deg); } }
+
+.aed-faq { overflow: hidden; border: 1px solid var(--border); border-radius: 14px; background: var(--surface-strong); }
+.aed-faq summary { display: flex; justify-content: space-between; gap: 10px; padding: 14px 16px; font-weight: 700; cursor: pointer; list-style: none; }
+.aed-faq summary::-webkit-details-marker { display: none; }
+.aed-faq summary::after { content: "+"; color: var(--shell-accent); font-size: 22px; line-height: 1; transition: transform var(--transition); }
+.aed-faq[open] summary::after { transform: rotate(45deg); }
+.aed-faq p { margin: 0; padding: 0 16px 16px; color: var(--text-muted); }
+.aed-empty { padding: 30px; color: var(--text-muted); text-align: center; }
+.aed-note { margin: 14px 0 0; color: var(--text-muted); font-size: 12px; }
+
+/* Fenêtres, notifications, confettis (ajoutés au <body>) */
+.aed-modal { position: fixed; z-index: 2200; inset: 0; display: none; place-items: center; padding: 16px; background: rgba(4, 10, 24, .66); backdrop-filter: blur(6px); }
+.aed-modal.open { display: grid; animation: aedFade 260ms; }
+@keyframes aedFade { from { opacity: 0; } }
+.aed-sheet { width: min(520px, 100%); max-height: 90vh; overflow: auto; padding: 24px; border: 1px solid var(--border); border-radius: 22px; background: var(--surface-strong); color: var(--text); box-shadow: 0 30px 80px rgba(0, 0, 0, .45); animation: aedSheet 420ms cubic-bezier(.2, .8, .2, 1); }
+@keyframes aedSheet { from { opacity: 0; transform: translateY(28px) scale(.96); } }
+.aed-sheet h3 { margin: 0 0 14px; font-size: 22px; }
+.aed-f { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; font-size: 13px; font-weight: 700; }
+.aed-pm { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.aed-pm button { padding: 11px; border: 1.5px solid var(--border-strong); border-radius: 12px; background: transparent; color: var(--text); font-size: 13px; font-weight: 700; cursor: pointer; transition: border-color var(--transition), background var(--transition); }
+.aed-pm button.on { border-color: var(--aed-gold); background: rgba(248, 185, 0, .16); }
+.aed-spin { width: 44px; height: 44px; margin: 20px auto; border: 4px solid var(--surface-muted); border-top-color: var(--aed-gold); border-radius: 50%; animation: aedSpin .8s linear infinite; }
+@keyframes aedSpin { to { transform: rotate(360deg); } }
+.aed-receipt { position: relative; padding: 18px; border: 2px dashed var(--border-strong); border-radius: 16px; text-align: center; }
+.aed-receipt img { display: inline-block; width: 64px; height: 64px; border-radius: 50%; }
+.aed-receipt dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 14px 0; font-size: 14px; text-align: left; }
+.aed-receipt dt { color: var(--text-muted); }
+.aed-receipt dd { margin: 0; font-weight: 700; text-align: right; }
+.aed-stamp { position: absolute; top: 10px; right: 10px; padding: 2px 8px; border: 2px solid var(--aed-red); border-radius: 6px; color: var(--aed-red); font-size: 9px; font-weight: 800; letter-spacing: .1em; opacity: .75; transform: rotate(12deg); }
+.aed-toast { position: fixed; z-index: 2300; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); left: 50%; max-width: 90vw; padding: 12px 20px; border-radius: 14px; background: #0a2a6b; color: #fff; font-size: 14px; font-weight: 700; opacity: 0; pointer-events: none; transform: translate(-50%, 30px); transition: opacity 400ms, transform 400ms; box-shadow: 0 12px 30px rgba(0, 0, 0, .35); }
+.aed-toast.show { opacity: 1; transform: translate(-50%, 0); }
+.aed-conf { position: fixed; z-index: 2400; top: -14px; width: 9px; height: 14px; pointer-events: none; animation: aedFall linear forwards; }
+@keyframes aedFall { to { opacity: .9; transform: translate(var(--x), 105vh) rotate(720deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .aed-logo, .aed-logo::after, .aed-ticker > div, .aed-panel, .aed-alert, .aed-alert.urgent > svg, .aed-count, .aed-conf { animation: none !important; }
+  .aed-track i, .aed-ring-fg, .aed-ind { transition: none; }
+}

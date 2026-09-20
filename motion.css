@@ -1,0 +1,113 @@
+/* Couche d'animations additive — n'écrase aucune règle existante.
+   Toutes les animations sont désactivées avec prefers-reduced-motion. */
+
+/* Barre de progression de lecture */
+.motion-progress {
+  position: fixed;
+  z-index: 2100;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  pointer-events: none;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, var(--shell-accent, #4fd1a3), #f8b900 62%, #e5384f);
+  transition: transform 120ms linear;
+}
+
+/* Halo qui suit le curseur (souris uniquement) */
+.motion-cursor {
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 420px;
+  height: 420px;
+  margin: -210px 0 0 -210px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle, rgba(79, 209, 163, .085), transparent 62%);
+  transition: opacity 400ms ease;
+  will-change: transform;
+}
+.motion-cursor.on { opacity: 1; }
+
+/* Apparition échelonnée : s'ajoute à la transition .reveal existante.
+   `backwards` = l'animation ne retient pas l'état final, donc les effets au survol restent intacts. */
+@keyframes motionRise {
+  from { opacity: 0; transform: translateY(26px) scale(.985); }
+  to   { opacity: 1; transform: none; }
+}
+.reveal.visible {
+  animation: motionRise 760ms cubic-bezier(.2, .8, .2, 1) backwards;
+  animation-delay: calc(min(var(--stagger, 0), 8) * 75ms);
+}
+
+/* Entrée des liens du menu latéral */
+@keyframes motionNavIn {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: none; }
+}
+.site-sidebar .primary-nav a { animation: motionNavIn 560ms cubic-bezier(.2, .8, .2, 1) backwards; }
+.site-sidebar .primary-nav a:nth-child(1) { animation-delay: 80ms; }
+.site-sidebar .primary-nav a:nth-child(2) { animation-delay: 140ms; }
+.site-sidebar .primary-nav a:nth-child(3) { animation-delay: 200ms; }
+.site-sidebar .primary-nav a:nth-child(4) { animation-delay: 260ms; }
+.site-sidebar .primary-nav a:nth-child(5) { animation-delay: 320ms; }
+.site-sidebar .primary-nav a:nth-child(6) { animation-delay: 380ms; }
+.site-sidebar .primary-nav a:nth-child(7) { animation-delay: 440ms; }
+.site-sidebar .primary-nav a:nth-child(8) { animation-delay: 500ms; }
+
+/* Éclairage des cartes sous le pointeur */
+.spot-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgba(79, 209, 163, .16), transparent 62%);
+  transition: opacity 260ms ease;
+}
+.has-spot:hover > .spot-glow { opacity: 1; }
+
+/* Photo « À propos » : léger zoom qui se pose à l'apparition */
+@keyframes motionSettle {
+  from { transform: scale(1.09); filter: saturate(.85); }
+  to   { transform: scale(1); filter: none; }
+}
+.reveal.visible .about-portrait img { animation: motionSettle 1500ms cubic-bezier(.2, .8, .2, 1) backwards; }
+
+/* Trait animé sous les intitulés de section */
+.section-heading .kicker { position: relative; }
+.section-heading .kicker::after {
+  content: "";
+  display: block;
+  width: 0;
+  height: 2px;
+  margin-top: 8px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--shell-accent, #4fd1a3), #f8b900);
+  transition: width 900ms cubic-bezier(.2, .8, .2, 1) 200ms;
+}
+.reveal.visible .kicker::after,
+.reveal.visible.section-heading .kicker::after { width: 46px; }
+
+/* Ondulation douce des pastilles de valeurs */
+@keyframes motionBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+.value-row span:nth-child(odd)  { animation: motionBob 4.6s ease-in-out infinite; }
+.value-row span:nth-child(even) { animation: motionBob 4.6s ease-in-out -2.3s infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-progress, .motion-cursor, .spot-glow { display: none; }
+  .reveal.visible,
+  .site-sidebar .primary-nav a,
+  .reveal.visible .about-portrait img,
+  .value-row span { animation: none !important; }
+  .section-heading .kicker::after { transition: none; width: 46px; }
+}
