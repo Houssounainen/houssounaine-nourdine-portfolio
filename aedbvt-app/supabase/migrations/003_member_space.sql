@@ -28,6 +28,15 @@ create table if not exists public.member_service_requests (
 
 alter table public.member_service_requests enable row level security;
 
+drop policy if exists members_read on public.members;
+create policy members_staff_read on public.members
+for select to authenticated
+using (public.is_staff());
+
+create policy members_self_read on public.members
+for select to authenticated
+using (profile_id = auth.uid());
+
 revoke all on table public.member_service_requests from anon, authenticated;
 grant select, insert, update on table public.member_service_requests to authenticated;
 
