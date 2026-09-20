@@ -64,6 +64,7 @@ export default async function AdministrationPage(){
         <label>Sens<select name="direction"><option value="incoming">Entrant</option><option value="outgoing">Sortant</option></select></label>
         <label>Catégorie<input name="category" defaultValue="general"/></label>
         <label>Objet<input name="subject" required/></label>
+        <label>Modèle de lettre<select name="template_id"><option value="">— Aucun —</option>{(templates||[]).filter((t:any)=>t.document_type==="letter").map((t:any)=><option key={t.id} value={t.id}>{t.code} · {t.title}</option>)}</select></label>
         <label>Correspondant<input name="correspondent_name" required/></label>
         <label>Coordonnées<input name="correspondent_contact"/></label>
         <label>Responsable<select name="assigned_to"><option value="">— Non attribué —</option>{(profiles||[]).map((p:any)=><option key={p.id} value={p.id}>{p.full_name} · {p.role}</option>)}</select></label>
