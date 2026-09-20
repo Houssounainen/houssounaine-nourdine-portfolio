@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isStaff } from "@/lib/auth";
-import { closeCorrespondence, dispatchCorrespondence, reviewCorrespondence, submitCorrespondence, updateCorrespondenceDraft, uploadAdministrativeAttachment } from "../../actions";
+import { closeCorrespondence, dispatchCorrespondence, reviewCorrespondence, startIncomingCorrespondenceReview, submitCorrespondence, updateCorrespondenceDraft, uploadAdministrativeAttachment } from "../../actions";
 
 export default async function CorrespondenceDetailPage({params}:{params:Promise<{id:string}>}){
   const {id}=await params;
@@ -65,6 +65,8 @@ export default async function CorrespondenceDetailPage({params}:{params:Promise<
           <label>Note<textarea name="notes" rows={3} defaultValue={item.notes||""}/></label>
           <button className="button secondary">Enregistrer</button>
         </form>}
+
+        {item.direction==="incoming"&&item.status==="registered"&&<form action={startIncomingCorrespondenceReview} className="panel"><input type="hidden" name="correspondence_id" value={item.id}/><button className="button primary">Mettre en traitement</button></form>}
 
         {item.direction==="outgoing"&&item.status==="draft"&&<form action={submitCorrespondence} className="panel"><input type="hidden" name="correspondence_id" value={item.id}/><button className="button primary">Soumettre en validation</button></form>}
 
