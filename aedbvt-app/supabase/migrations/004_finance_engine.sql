@@ -96,6 +96,7 @@ create table if not exists public.invoice_payments (
   receipt_number text unique,
   paid_at timestamptz not null default now(),
   account_id uuid references public.cash_accounts(id) on delete set null,
+  category_id uuid references public.finance_categories(id) on delete set null,
   notes text,
   created_by uuid references public.profiles(id) on delete set null,
   created_at timestamptz not null default now()
@@ -476,7 +477,7 @@ select
   i.subject,
   ip.amount,
   0::numeric,
-  null::uuid,
+  ip.category_id,
   ip.account_id
 from public.invoice_payments ip
 join public.invoices i on i.id=ip.invoice_id
