@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isStaff } from "@/lib/auth";
-import { dispatchCorrespondence, reviewCorrespondence, submitCorrespondence, updateCorrespondenceDraft, uploadAdministrativeAttachment } from "../../actions";
+import { closeCorrespondence, dispatchCorrespondence, reviewCorrespondence, submitCorrespondence, updateCorrespondenceDraft, uploadAdministrativeAttachment } from "../../actions";
 
 export default async function CorrespondenceDetailPage({params}:{params:Promise<{id:string}>}){
   const {id}=await params;
@@ -73,6 +73,8 @@ export default async function CorrespondenceDetailPage({params}:{params:Promise<
         {item.direction==="outgoing"&&item.status==="review"&&item.secretary_approved_at&&canPresidency&&<article className="panel"><span className="eyebrow">Validation 2</span><h2>Présidence / Bureau</h2><div className="review-actions"><form action={reviewCorrespondence}><input type="hidden" name="correspondence_id" value={item.id}/><input type="hidden" name="stage" value="presidency"/><button className="button primary" name="approve" value="true">Approuver</button></form><form action={reviewCorrespondence}><input type="hidden" name="correspondence_id" value={item.id}/><input type="hidden" name="stage" value="presidency"/><button className="button secondary" name="approve" value="false">Rejeter</button></form></div></article>}
 
         {item.direction==="outgoing"&&item.status==="approved"&&<form action={dispatchCorrespondence} className="panel form-stack"><input type="hidden" name="correspondence_id" value={item.id}/><div><span className="eyebrow">Envoi</span><h2>Marquer envoyé</h2></div><label>Date d’envoi<input name="sent_on" type="date" defaultValue={new Date().toISOString().slice(0,10)}/></label><button className="button primary">Confirmer l’envoi</button></form>}
+
+        {((item.direction==="incoming"&&["registered","review"].includes(item.status))||(item.direction==="outgoing"&&item.status==="dispatched"))&&<form action={closeCorrespondence} className="panel"><input type="hidden" name="correspondence_id" value={item.id}/><button className="button secondary">Clôturer le dossier</button></form>}
 
         <form action={uploadAdministrativeAttachment} className="panel form-stack" encType="multipart/form-data">
           <input type="hidden" name="entity_type" value="correspondence"/><input type="hidden" name="entity_id" value={item.id}/>
