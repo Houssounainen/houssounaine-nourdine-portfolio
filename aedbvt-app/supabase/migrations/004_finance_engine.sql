@@ -265,6 +265,63 @@ create trigger audit_invoice_payments after insert or update or delete on public
 drop trigger if exists audit_financial_attachments on public.financial_attachments;
 create trigger audit_financial_attachments after insert or update or delete on public.financial_attachments for each row execute function public.audit_row();
 
+create or replace function public.convert_quote_to_invoice(
+  p_quote_id uuid,
+  p_due_at date default null
+)
+returns uuid
+language plpgsql
+security definer
+set search_path=public
+as $
+declare
+  q public.quotes%rowtype;
+  new_invoice_id uuid;
+begin
+  if not public.is_finance() then
+    raise exception 'Accès financier requis.';
+  end if;
+
+  select * into q from public.quotes where id=p_quote_id for update;
+  if not found then
+    raise exception 'Devis introuvable.';
+  end if;
+
+  if q.status='cancelled' then
+    raise exception 'Un devis annulé ne peut pas être facturé.';
+  end if;
+
+  if exists(select 1 from public.invoices where quote_id=p_quote_id) then
+    select id into new_invoice_id from public.invoices where quote_id=p_quote_id limit 1;
+    return new_invoice_id;
+  end if;
+
+  insert into public.invoices(
+    quote_id, recipient_name, subject, total, status, issued_at, due_at,
+    payload, created_by, recipient_email, recipient_phone, recipient_address,
+    notes, currency
+  )
+  values(
+    q.id, q.recipient_name, q.subject, q.total, 'issued', current_date, p_due_at,
+    q.payload, auth.uid(), q.recipient_email, q.recipient_phone, q.recipient_address,
+    q.notes, q.currency
+  )
+  returning id into new_invoice_id;
+
+  insert into public.invoice_items(invoice_id,position,description,quantity,unit_price)
+  select new_invoice_id, position, description, quantity, unit_price
+  from public.quote_items
+  where quote_id=p_quote_id
+  order by position,id;
+
+  update public.quotes set status='accepted' where id=p_quote_id;
+
+  return new_invoice_id;
+end $;
+
+revoke all on function public.convert_quote_to_invoice(uuid,date) from public;
+grant execute on function public.convert_quote_to_invoice(uuid,date) to authenticated;
+
 create or replace view public.finance_ledger
 with (security_invoker=true)
 as
