@@ -280,7 +280,7 @@ returns void
 language plpgsql
 security definer
 set search_path=public
-as $
+as $$
 begin
   if not public.is_staff() then
     raise exception 'Accès secrétariat requis.';
@@ -297,7 +297,7 @@ begin
   if not found then
     raise exception 'Ce courrier ne peut pas être clôturé dans son état actuel.';
   end if;
-end $;
+end $$;
 
 revoke all on function public.close_correspondence(uuid) from public;
 grant execute on function public.close_correspondence(uuid) to authenticated;
@@ -416,7 +416,7 @@ language sql
 stable
 security definer
 set search_path=public
-as $
+as $$
   select
     true,
     i.number,
@@ -428,7 +428,7 @@ as $
   from public.administrative_issuances i
   left join public.members m on m.id=i.member_id
   where i.verification_token=p_token and i.status='issued'
-$;
+$$;
 
 revoke all on function public.verify_administrative_document(uuid) from public;
 grant execute on function public.verify_administrative_document(uuid) to anon, authenticated;
@@ -437,7 +437,7 @@ create or replace function public.guard_administrative_status_transition()
 returns trigger
 language plpgsql
 set search_path=public
-as $
+as $$
 begin
   if new.status is not distinct from old.status then
     return new;
@@ -468,7 +468,7 @@ begin
     end if;
   end if;
   return new;
-end $;
+end $$;
 
 drop trigger if exists guard_correspondence_status_transition on public.correspondence_register;
 create trigger guard_correspondence_status_transition
