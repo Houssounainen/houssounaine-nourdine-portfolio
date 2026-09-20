@@ -9,7 +9,7 @@ export default function OfflinePage(){
       <h1>Connexion indisponible</h1>
       <p>Les données privées de l’association ne sont volontairement pas enregistrées dans le cache du téléphone. Reconnectez-vous pour accéder aux membres, finances, documents, décisions et autres espaces sécurisés.</p>
       <div className="offline-actions">
-        <button className="button primary" onClick={undefined}>Réessayer depuis le navigateur</button>
+        <a className="button primary" href="/dashboard">Réessayer</a>
         <Link className="button secondary" href="/">Accueil public</Link>
       </div>
       <small>Les ressources visuelles de base restent disponibles afin que l’application puisse afficher cet écran en toute sécurité.</small>
