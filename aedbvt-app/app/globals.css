@@ -214,3 +214,5 @@ textarea{font:inherit;resize:vertical}
 
 .side-nav-count{display:inline-grid;place-items:center;min-width:21px;height:21px;margin-left:auto;padding:0 6px;border-radius:999px;background:var(--red);color:#fff;font-size:.65rem;font-weight:900}
 .mobile-nav-icon{position:relative}.mobile-nav-icon i{position:absolute;right:-8px;top:-6px;display:grid;place-items:center;min-width:17px;height:17px;padding:0 4px;border:2px solid #fff;border-radius:999px;background:var(--red);color:#fff;font-size:.54rem;font-style:normal;line-height:1}
+
+.button:disabled,.ghost-button:disabled{opacity:.55;cursor:not-allowed;transform:none!important;box-shadow:none!important}
