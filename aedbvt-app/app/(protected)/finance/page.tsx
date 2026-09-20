@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { addExpense, addPayment, approveBudget, createBudget, saveBudgetLine } from "./actions";
+import { uploadFinancialAttachment } from "@/lib/financial-files";
 
 const fmt = (value: number) => value.toLocaleString("fr-FR") + " Ar";
 
@@ -18,6 +19,7 @@ export default async function FinancePage() {
     { data: accounts },
     { data: budgets },
     { data: ledger },
+    { data: expenseAttachments },
   ] = await Promise.all([
     supabase.from("members").select("id,full_name,member_number").eq("status","active").order("full_name"),
     supabase.from("payments").select("id,amount,method,receipt_number,paid_at,account_id,category_id,members(full_name,member_number)").order("paid_at",{ascending:false}).limit(30),
@@ -26,6 +28,7 @@ export default async function FinancePage() {
     supabase.from("cash_accounts").select("id,name,kind,provider,active").eq("active",true).order("name"),
     supabase.from("budget_years").select("id,label,starts_on,ends_on,status,approved_at").order("starts_on",{ascending:false}),
     supabase.from("finance_ledger").select("id,entry_date,source_type,reference,label,income,expense,category_id,account_id").order("entry_date",{ascending:false}).limit(120),
+    supabase.from("financial_attachments").select("id,entity_id,file_name,size_bytes").eq("entity_type","expense").order("created_at",{ascending:false}),
   ]);
 
   const activeBudget = budgets?.[0] || null;
@@ -38,6 +41,8 @@ export default async function FinancePage() {
   const categoryMap=new Map((categories||[]).map((x)=>[x.id,x]));
   const accountMap=new Map((accounts||[]).map((x)=>[x.id,x]));
   const lineMap=new Map(budgetLines.map((x)=>[x.category_id,x]));
+  const expenseFiles=new Map<string,typeof expenseAttachments>();
+  (expenseAttachments||[]).forEach((file)=>expenseFiles.set(file.entity_id,[...(expenseFiles.get(file.entity_id)||[]),file]));
 
   const allLedger=ledger||[];
   const totalIncome=allLedger.reduce((sum,row)=>sum+Number(row.income||0),0);
@@ -124,7 +129,7 @@ export default async function FinancePage() {
 
       <div className="content-grid">
         <article className="panel"><h2>Dernières cotisations</h2><div className="feed">{(payments||[]).map((p:any)=><div key={p.id}><span><b>{Array.isArray(p.members)?p.members[0]?.full_name:p.members?.full_name||"Membre"}</b><small>{p.receipt_number||"reçu en génération"} · {accountMap.get(p.account_id)?.name||p.method}</small></span><strong>+ {fmt(Number(p.amount))}</strong></div>)}</div></article>
-        <article className="panel"><h2>Dernières dépenses</h2><div className="feed">{(expenses||[]).map(e=><div key={e.id}><span><b>{e.label}</b><small>{e.reference||e.spent_at} · {accountMap.get(e.account_id)?.name||e.payment_method||"—"}</small></span><strong className="negative">− {fmt(Number(e.amount))}</strong></div>)}</div></article>
+        <article className="panel"><h2>Dernières dépenses</h2><div className="expense-stack">{(expenses||[]).map(e=>{const files=expenseFiles.get(e.id)||[];return <div className="expense-row" key={e.id}><div className="expense-main"><span><b>{e.label}</b><small>{e.reference||e.spent_at} · {accountMap.get(e.account_id)?.name||e.payment_method||"—"}</small></span><strong className="negative">− {fmt(Number(e.amount))}</strong></div><div className="expense-files">{files.map((file)=><a key={file.id} href={"/api/financial-files/"+file.id}>{file.file_name}</a>)}</div><form action={uploadFinancialAttachment} encType="multipart/form-data" className="expense-upload"><input type="hidden" name="entity_type" value="expense"/><input type="hidden" name="entity_id" value={e.id}/><input name="file" type="file" accept="application/pdf,image/jpeg,image/png,image/webp" required/><button className="button secondary">Joindre</button></form></div>})}</div></article>
       </div>
 
       <article className="panel ledger-panel">
