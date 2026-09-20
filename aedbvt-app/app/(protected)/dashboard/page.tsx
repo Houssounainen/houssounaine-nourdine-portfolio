@@ -53,7 +53,7 @@ export default async function DashboardPage() {
   const quickLinks=[
     ["/me","Mon espace","Carte & suivi","Profil, cotisations, reçus et demandes."],
     ["/agenda","Agenda","Vie associative","Événements, réunions et participations."],
-    ...(staff?[["/operations","Pilotage","Centre opérationnel","Décisions, tâches, commissions et mandats."],["/members","Membres","Registre & adhésions","Numéros, filières, rôles et accès."]]:[]),
+    ...(staff?[["/operations","Pilotage","Centre opérationnel","Décisions, tâches, commissions et mandats."],["/administration","Secrétariat","Courriers & attestations","Registre, modèles, validations et documents officiels."],["/members","Membres","Registre & adhésions","Numéros, filières, rôles et accès."]]:[]),
     ...(finance?[["/finance","Finances","Trésorerie & budget","Comptes, budget, grand livre et caisse."]]:[]),
     ["/organization","Organisation","Bureau & missions","Organigramme et titulaires."],
     ["/governance","Gouvernance","Textes & transparence","Statuts, décisions, assemblées et élections."],
