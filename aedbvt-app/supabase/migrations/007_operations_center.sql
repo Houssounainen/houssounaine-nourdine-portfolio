@@ -304,6 +304,29 @@ create trigger create_followup_task_from_decision
 after insert on public.decision_register
 for each row execute function public.create_followup_task_from_decision();
 
+insert into public.operational_tasks(
+  title,description,status,priority,progress,decision_id,assembly_id,auto_generated,created_by
+)
+select
+  case
+    when d.outcome='elected' then 'Formaliser la décision : ' || d.title
+    else 'Mettre en œuvre : ' || d.title
+  end,
+  d.summary,
+  'backlog',
+  'normal',
+  0,
+  d.id,
+  d.assembly_id,
+  true,
+  d.created_by
+from public.decision_register d
+where d.outcome in ('adopted','elected')
+  and not exists(
+    select 1 from public.operational_tasks t
+    where t.decision_id=d.id and t.auto_generated=true
+  );
+
 create or replace function public.guard_operational_task_history()
 returns trigger
 language plpgsql
