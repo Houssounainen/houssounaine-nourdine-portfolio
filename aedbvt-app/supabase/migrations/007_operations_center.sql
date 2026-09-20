@@ -184,6 +184,9 @@ begin
   if p_status not in ('backlog','in_progress','blocked','done','cancelled') then
     raise exception 'Statut de tâche invalide.';
   end if;
+  if p_status='cancelled' and not public.is_staff() then
+    raise exception 'Seul le Bureau peut annuler une tâche.';
+  end if;
   if p_progress < 0 or p_progress > 100 then
     raise exception 'Progression invalide.';
   end if;
@@ -373,6 +376,46 @@ where d.outcome in ('adopted','elected')
     where t.decision_id=d.id and t.auto_generated=true
   );
 
+create or replace function public.guard_closed_commission_membership()
+returns trigger
+language plpgsql
+set search_path=public
+as $
+declare commission_status text;
+begin
+  select status into commission_status
+  from public.commissions
+  where id=coalesce(new.commission_id,old.commission_id);
+
+  if commission_status='closed' and (tg_op='INSERT' or new.left_at is null) then
+    raise exception 'Une commission clôturée ne peut plus recevoir de membres.';
+  end if;
+  return coalesce(new,old);
+end $;
+
+drop trigger if exists guard_closed_commission_membership on public.commission_members;
+create trigger guard_closed_commission_membership
+before insert or update on public.commission_members
+for each row execute function public.guard_closed_commission_membership();
+
+create or replace function public.guard_closed_commission_task()
+returns trigger
+language plpgsql
+set search_path=public
+as $
+begin
+  if new.commission_id is not null
+     and exists(select 1 from public.commissions c where c.id=new.commission_id and c.status='closed') then
+    raise exception 'Une tâche ne peut pas être affectée à une commission clôturée.';
+  end if;
+  return new;
+end $;
+
+drop trigger if exists guard_closed_commission_task on public.operational_tasks;
+create trigger guard_closed_commission_task
+before insert or update of commission_id on public.operational_tasks
+for each row execute function public.guard_closed_commission_task();
+
 create or replace function public.guard_operational_task_history()
 returns trigger
 language plpgsql
@@ -380,15 +423,20 @@ set search_path=public
 as $$
 begin
   if old.status in ('done','cancelled') then
-    if new.title is distinct from old.title
+    if new.status is distinct from old.status
+       or new.title is distinct from old.title
        or new.description is distinct from old.description
        or new.decision_id is distinct from old.decision_id
-       or new.assembly_id is distinct from old.assembly_id then
+       or new.assembly_id is distinct from old.assembly_id
+       or new.commission_id is distinct from old.commission_id
+       or new.assignee_id is distinct from old.assignee_id
+       or new.priority is distinct from old.priority
+       or new.due_on is distinct from old.due_on then
       raise exception 'Une tâche terminée ou annulée conserve son historique.';
     end if;
   end if;
   return new;
-end $$;
+end $;
 
 drop trigger if exists guard_operational_task_history on public.operational_tasks;
 create trigger guard_operational_task_history
