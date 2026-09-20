@@ -135,6 +135,102 @@ insert into public.cash_accounts(name,kind,provider) values
 ('Airtel Money AEDBVT','mobile_money','Airtel Money')
 on conflict (name) do nothing;
 
+create or replace function public.guard_budget_line_write()
+returns trigger language plpgsql set search_path=public as $
+declare target_budget uuid;
+declare budget_status text;
+begin
+  target_budget := coalesce(new.budget_id,old.budget_id);
+  select status into budget_status from public.budget_years where id=target_budget;
+  if budget_status is distinct from 'draft' then
+    raise exception 'Un budget approuvé ou clôturé ne peut plus être modifié.';
+  end if;
+  return coalesce(new,old);
+end $;
+
+drop trigger if exists guard_budget_line_write on public.budget_lines;
+create trigger guard_budget_line_write before insert or update or delete on public.budget_lines
+for each row execute function public.guard_budget_line_write();
+
+create or replace function public.guard_quote_item_write()
+returns trigger language plpgsql set search_path=public as $
+declare target_quote uuid;
+declare quote_status public.document_status;
+begin
+  target_quote := coalesce(new.quote_id,old.quote_id);
+  select status into quote_status from public.quotes where id=target_quote;
+  if quote_status not in ('draft','issued') then
+    raise exception 'Les lignes de ce devis sont verrouillées.';
+  end if;
+  return coalesce(new,old);
+end $;
+
+drop trigger if exists guard_quote_item_write on public.quote_items;
+create trigger guard_quote_item_write before insert or update or delete on public.quote_items
+for each row execute function public.guard_quote_item_write();
+
+create or replace function public.guard_invoice_item_write()
+returns trigger language plpgsql set search_path=public as $
+declare target_invoice uuid;
+declare invoice_status public.document_status;
+begin
+  target_invoice := coalesce(new.invoice_id,old.invoice_id);
+  select status into invoice_status from public.invoices where id=target_invoice;
+  if invoice_status in ('paid','cancelled') or exists(select 1 from public.invoice_payments where invoice_id=target_invoice) then
+    raise exception 'Les lignes d’une facture réglée ou partiellement réglée sont verrouillées.';
+  end if;
+  return coalesce(new,old);
+end $;
+
+drop trigger if exists guard_invoice_item_write on public.invoice_items;
+create trigger guard_invoice_item_write before insert or update or delete on public.invoice_items
+for each row execute function public.guard_invoice_item_write();
+
+create or replace function public.validate_invoice_payment()
+returns trigger language plpgsql set search_path=public as $
+declare invoice_total numeric(14,2);
+declare invoice_status public.document_status;
+declare already_paid numeric(14,2);
+begin
+  select total,status into invoice_total,invoice_status from public.invoices where id=new.invoice_id for update;
+  if invoice_status='cancelled' then
+    raise exception 'Une facture annulée ne peut pas être réglée.';
+  end if;
+  if invoice_total <= 0 then
+    raise exception 'Une facture sans montant ne peut pas être réglée.';
+  end if;
+
+  select coalesce(sum(amount),0) into already_paid
+  from public.invoice_payments
+  where invoice_id=new.invoice_id and id is distinct from new.id;
+
+  if already_paid + new.amount > invoice_total then
+    raise exception 'Le règlement dépasse le reste à payer.';
+  end if;
+  return new;
+end $;
+
+drop trigger if exists validate_invoice_payment on public.invoice_payments;
+create trigger validate_invoice_payment before insert or update on public.invoice_payments
+for each row execute function public.validate_invoice_payment();
+
+create or replace function public.guard_invoice_status_update()
+returns trigger language plpgsql set search_path=public as $
+begin
+  if new.status='cancelled' and old.status is distinct from 'cancelled'
+     and exists(select 1 from public.invoice_payments where invoice_id=old.id) then
+    raise exception 'Une facture ayant un règlement ne peut pas être annulée.';
+  end if;
+  if old.status='paid' and new.status is distinct from old.status then
+    raise exception 'Une facture payée est verrouillée.';
+  end if;
+  return new;
+end $;
+
+drop trigger if exists guard_invoice_status_update on public.invoices;
+create trigger guard_invoice_status_update before update of status on public.invoices
+for each row execute function public.guard_invoice_status_update();
+
 create or replace function public.refresh_quote_total()
 returns trigger language plpgsql set search_path=public as $$
 declare target_id uuid;
@@ -317,6 +413,9 @@ begin
 
   if q.status='cancelled' then
     raise exception 'Un devis annulé ne peut pas être facturé.';
+  end if;
+  if q.total <= 0 or not exists(select 1 from public.quote_items where quote_id=p_quote_id) then
+    raise exception 'Le devis doit contenir au moins une ligne avant facturation.';
   end if;
 
   if exists(select 1 from public.invoices where quote_id=p_quote_id) then
