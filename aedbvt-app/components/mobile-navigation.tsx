@@ -11,7 +11,8 @@ export function MobileNavigation({
   links,
   profileName,
   role,
-}:{links:NavLink[];profileName:string;role:string}){
+  unreadCount=0,
+}:{links:NavLink[];profileName:string;role:string;unreadCount?:number}){
   const pathname=usePathname();
   const [open,setOpen]=useState(false);
 
@@ -30,7 +31,7 @@ export function MobileNavigation({
 
   return <>
     <nav className="mobile-bottom-nav" aria-label="Navigation mobile">
-      {primary.map(([href,label])=><Link className={active(href)?"active":""} href={href} key={href}><span aria-hidden="true">{href==="/dashboard"?"⌂":href==="/agenda"?"▦":href==="/notifications"?"●":"◎"}</span><small>{label}</small></Link>)}
+      {primary.map(([href,label])=><Link className={active(href)?"active":""} href={href} key={href}><span className="mobile-nav-icon" aria-hidden="true">{href==="/dashboard"?"⌂":href==="/agenda"?"▦":href==="/notifications"?"●":"◎"}{href==="/notifications"&&unreadCount>0?<i>{Math.min(unreadCount,99)}</i>:null}</span><small>{label}</small></Link>)}
       <button type="button" className={open?"active":""} onClick={()=>setOpen((value)=>!value)} aria-expanded={open} aria-controls="mobile-menu"><span aria-hidden="true">≡</span><small>Menu</small></button>
     </nav>
 
