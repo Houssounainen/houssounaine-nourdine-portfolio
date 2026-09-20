@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isStaff } from "@/lib/auth";
 import { processRequest } from "./actions";
+import { createIssuanceFromRequest } from "../administration/actions";
 
 const labels: Record<string,string>={attestation:"Attestation",information:"Information",correction:"Correction",aide:"Aide",document:"Document",autre:"Autre"};
 const statusLabels: Record<string,string>={pending:"Reçue",in_review:"En traitement",completed:"Terminée",rejected:"Refusée"};
@@ -9,15 +10,17 @@ const statusLabels: Record<string,string>={pending:"Reçue",in_review:"En traite
 export default async function RequestsPage(){
   const supabase=await createClient();
   const {data:{user}}=await supabase.auth.getUser();
-  const [{data:profile},{data:requests}]=await Promise.all([
+  const [{data:profile},{data:requests},{data:issuances}]=await Promise.all([
     supabase.from("profiles").select("role").eq("id",user!.id).single(),
-    supabase.from("member_service_requests").select("id,request_type,subject,details,status,response,created_at,updated_at,members(full_name,member_number,village)").order("created_at",{ascending:false})
+    supabase.from("member_service_requests").select("id,request_type,subject,details,status,response,created_at,updated_at,members(full_name,member_number,village)").order("created_at",{ascending:false}),
+    supabase.from("administrative_issuances").select("id,service_request_id,status").not("service_request_id","is",null)
   ]);
   if(!isStaff(profile?.role)) notFound();
 
   const rows=requests||[];
   const pending=rows.filter((x)=>x.status==="pending").length;
   const inReview=rows.filter((x)=>x.status==="in_review").length;
+  const issuanceByRequest=new Map((issuances||[]).map((x:any)=>[x.service_request_id,x]));
 
   return <section className="page">
     <header className="page-header"><div><span className="eyebrow">Secrétariat</span><h1>Demandes des membres</h1></div><span className="status-pill">{pending} reçue(s) · {inReview} en traitement</span></header>
@@ -30,6 +33,8 @@ export default async function RequestsPage(){
           <h2>{request.subject}</h2>
           <p>{request.details||"Aucun détail fourni."}</p>
           <div className="request-member"><b>{member?.full_name||"Membre"}</b><small>{[member?.member_number,member?.village].filter(Boolean).join(" · ")}</small></div>
+          {request.request_type==="attestation"&&!issuanceByRequest.has(request.id)&&!["completed","rejected"].includes(request.status)&&<form action={createIssuanceFromRequest} className="request-document-action"><input type="hidden" name="request_id" value={request.id}/><button className="button primary">Préparer l’attestation</button></form>}
+          {issuanceByRequest.has(request.id)&&<a className="button secondary" href={"/administration/issuances/"+issuanceByRequest.get(request.id)?.id}>Ouvrir le document</a>}
           <form action={processRequest} className="form-stack">
             <input type="hidden" name="id" value={request.id}/>
             <label>Statut<select name="status" defaultValue={request.status}><option value="pending">Reçue</option><option value="in_review">En traitement</option><option value="completed">Terminée</option><option value="rejected">Refusée</option></select></label>
