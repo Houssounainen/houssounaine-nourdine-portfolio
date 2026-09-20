@@ -9,7 +9,8 @@ const RESUME_URL = "";
 const translations = {
   fr: {
     skip: "Aller au contenu",
-    navAbout: "À propos", navExpertise: "Expertises", navJourney: "Parcours", navProjects: "Projets", navWorks: "Créations", navClients: "Clients", navContact: "Me contacter",
+    navAbout: "À propos", navExpertise: "Expertises", navJourney: "Parcours", navProjects: "Projets", navWorks: "Créations", navClients: "Clients", navContact: "Me contacter", navAssociation: "Association", navAssociationShort: "AEDBVT",
+    assocKicker: "Engagement associatif", assocTitle: "AEDBVT — l’association qui rassemble nos étudiants à Tuléar.", assocLead: "Association des Étudiants de Darsalama et Bandrani-Vouani à Tuléar : actualités, événements, réunions, membres, organigramme, cotisations et annonces au même endroit.", assocDemo: "Simulation complète — données fictives, enregistrées uniquement dans votre navigateur",
     sidebarTagline: "Stratégie · Création · Influence", topbarLocation: "Toliara · Madagascar", heroGreeting: "Bonjour, je suis", themeDark: "Mode sombre", themeLight: "Mode clair",
     heroEyebrow: "Lead Community Manager · Toliara, Madagascar",
     heroRole: "Marketing digital, relationnel et d’influence",
@@ -61,7 +62,8 @@ const translations = {
   },
   en: {
     skip: "Skip to content",
-    navAbout: "About", navExpertise: "Expertise", navJourney: "Journey", navProjects: "Projects", navWorks: "Creative work", navClients: "Clients", navContact: "Contact me",
+    navAbout: "About", navExpertise: "Expertise", navJourney: "Journey", navProjects: "Projects", navWorks: "Creative work", navClients: "Clients", navContact: "Contact me", navAssociation: "Association", navAssociationShort: "AEDBVT",
+    assocKicker: "Community engagement", assocTitle: "AEDBVT — the association that brings our students together in Toliara.", assocLead: "Association of Students from Darsalama and Bandrani-Vouani in Toliara: news, events, meetings, members, organisation chart, dues and announcements in one place. The section content is in French.", assocDemo: "Full simulation — fictional data, stored only in your browser",
     sidebarTagline: "Strategy · Creation · Influence", topbarLocation: "Toliara · Madagascar", heroGreeting: "Hello, I’m", themeDark: "Dark mode", themeLight: "Light mode",
     heroEyebrow: "Lead Community Manager · Toliara, Madagascar",
     heroRole: "Digital, relationship and influencer marketing",
@@ -295,11 +297,11 @@ let currentWorkId = null;
 let visibleWorks = [];
 let currentRoute = "about";
 
-const ROUTES = Object.freeze(["about", "expertise", "journey", "projects", "works", "clients", "contact"]);
-const ROUTE_PATHS = Object.freeze({ about: "", expertise: "expertise", journey: "journey", projects: "projects", works: "works", clients: "clients", contact: "contact" });
+const ROUTES = Object.freeze(["about", "expertise", "journey", "projects", "works", "clients", "association", "contact"]);
+const ROUTE_PATHS = Object.freeze({ about: "", expertise: "expertise", journey: "journey", projects: "projects", works: "works", clients: "clients", association: "association", contact: "contact" });
 const ROUTE_TITLES = Object.freeze({
-  fr: { about: "À propos", expertise: "Expertises", journey: "Parcours", projects: "Projets", works: "Créations", clients: "Clients", contact: "Contact" },
-  en: { about: "About", expertise: "Expertise", journey: "Journey", projects: "Projects", works: "Creative work", clients: "Clients", contact: "Contact" }
+  fr: { about: "À propos", expertise: "Expertises", journey: "Parcours", projects: "Projets", works: "Créations", clients: "Clients", association: "Association AEDBVT", contact: "Contact" },
+  en: { about: "About", expertise: "Expertise", journey: "Journey", projects: "Projects", works: "Creative work", clients: "Clients", association: "AEDBVT association", contact: "Contact" }
 });
 
 function localeIndex() { return currentLanguage === "fr" ? 0 : 1; }
