@@ -5,11 +5,11 @@ import { isStaff } from "@/lib/auth";
 import { createCorrespondence, createIssuance, createTemplate } from "./actions";
 
 const correspondenceStatus:Record<string,string>={
-  draft:"Brouillon",registered:"Enregistré",review:"En revue",approved:"Approuvé",
+  draft:"Brouillon",registered:"Enregistré",review:"En traitement / validation",approved:"Approuvé",
   dispatched:"Envoyé",closed:"Clôturé",rejected:"Rejeté"
 };
 const issuanceStatus:Record<string,string>={
-  draft:"Brouillon",review:"En revue",approved:"Approuvé",issued:"Délivré",rejected:"Rejeté",cancelled:"Annulé"
+  draft:"Brouillon",review:"En validation",approved:"Approuvé",issued:"Délivré",rejected:"Rejeté",cancelled:"Annulé"
 };
 
 export default async function AdministrationPage(){
