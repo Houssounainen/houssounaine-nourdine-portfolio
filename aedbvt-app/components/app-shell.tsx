@@ -3,6 +3,7 @@ import Link from "next/link";
 
 const baseLinks = [
   ["/dashboard", "Tableau de bord"],
+  ["/me", "Mon espace"],
   ["/news", "Actualités"],
   ["/agenda", "Agenda"],
   ["/announcements", "Annonces"],
@@ -14,7 +15,12 @@ const baseLinks = [
 ];
 
 export function AppShell({ children, profile }: { children: React.ReactNode; profile: { full_name?: string | null; role?: string | null } | null }) {
-  const links = profile?.role === "admin" ? [...baseLinks, ["/admin", "Administration"]] : baseLinks;
+  const staff = ["admin","bureau","tresorier","secretaire"].includes(profile?.role || "");
+  const links = [
+    ...baseLinks,
+    ...(staff ? [["/requests","Demandes"]] : []),
+    ...(profile?.role === "admin" ? [["/admin","Administration"]] : []),
+  ];
 
   return (
     <div className="app-frame">
