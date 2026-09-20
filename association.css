@@ -53,7 +53,7 @@ html[data-theme="dark"] .association { --aed-blue-ink: #8fb0ff; --aed-gold-ink: 
   font-weight: 700;
 }
 .aed-demo::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--aed-gold); animation: livePulse 2.2s ease-out infinite; }
-+/* Application */
+/* Application */
 .aed-app { overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface-strong); box-shadow: var(--shadow-lg); }
 .aed-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--border); background: linear-gradient(90deg, rgba(42, 91, 215, .12), transparent); }
 .aed-seg { display: inline-flex; padding: 3px; border-radius: 999px; background: var(--surface-muted); }
@@ -233,4 +233,237 @@ html[data-theme="dark"] .association { --aed-blue-ink: #8fb0ff; --aed-gold-ink: 
 @media (prefers-reduced-motion: reduce) {
   .aed-logo, .aed-logo::after, .aed-ticker > div, .aed-panel, .aed-alert, .aed-alert.urgent > svg, .aed-count, .aed-conf { animation: none !important; }
   .aed-track i, .aed-ring-fg, .aed-ind { transition: none; }
+}
+
+
+/* --- Mouvement inspiré de la référence vidéo --- */
+.aed-app {
+  position: relative;
+  transform: translateZ(0);
+  transition: box-shadow 500ms cubic-bezier(.2,.8,.2,1), border-color 500ms ease;
+}
+.aed-app::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  width: 420px;
+  height: 420px;
+  left: var(--aed-x, 50%);
+  top: var(--aed-y, 120px);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: .52;
+  background: radial-gradient(circle, rgba(79,209,163,.11), rgba(42,91,215,.05) 38%, transparent 70%);
+  transform: translate(-50%, -50%);
+  transition: opacity 300ms ease;
+}
+.aed-app > * { position: relative; z-index: 1; }
+.aed-app:hover { border-color: color-mix(in srgb, var(--shell-accent) 35%, var(--border)); }
+
+.aed-app.is-live,
+#aed-app.is-live {
+  animation: aedAppReveal 760ms cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes aedAppReveal {
+  from { opacity: 0; transform: translateY(24px) scale(.985); filter: saturate(.86); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+.aed-bar {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.aed-seg button,
+.aed-tool,
+.aed-tab,
+.aed-btn,
+.filter-button,
+.aed-node {
+  overflow: hidden;
+  isolation: isolate;
+  -webkit-tap-highlight-color: transparent;
+}
+.aed-seg button:active,
+.aed-tool:active,
+.aed-tab:active,
+.aed-btn:active,
+.filter-button:active,
+.aed-node:active { transform: scale(.97); }
+
+.aed-ripple {
+  position: absolute;
+  z-index: -1;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  pointer-events: none;
+  background: currentColor;
+  opacity: .16;
+  transform: translate(-50%, -50%) scale(0);
+  animation: aedRipple 620ms cubic-bezier(.16,1,.3,1);
+}
+@keyframes aedRipple {
+  55% { opacity: .12; }
+  to { opacity: 0; transform: translate(-50%, -50%) scale(18); }
+}
+
+.aed-ind {
+  box-shadow: 0 8px 24px rgba(79,209,163,.22);
+  transition:
+    transform 520ms cubic-bezier(.16,1,.3,1),
+    width 520ms cubic-bezier(.16,1,.3,1),
+    box-shadow 300ms ease;
+}
+.aed-tab svg { transition: transform 420ms cubic-bezier(.16,1,.3,1); }
+.aed-tab.on svg { transform: translateY(-1px) scale(1.08); }
+.aed-tab:hover svg { transform: translateY(-2px); }
+
+.aed-panel { animation: none; perspective: 1200px; }
+.aed-panel > * { transform-origin: 50% 24%; }
+.aed-panel.from-right:not(.is-entered) { opacity: 0; transform: translateX(18px); }
+.aed-panel.from-left:not(.is-entered) { opacity: 0; transform: translateX(-18px); }
+.aed-panel.is-entered {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 420ms ease, transform 560ms cubic-bezier(.16,1,.3,1);
+}
+.aed-motion-item {
+  animation: aedCascade 640ms cubic-bezier(.16,1,.3,1) both;
+  animation-delay: calc(var(--aed-i, 0) * 48ms);
+}
+@keyframes aedCascade {
+  from { opacity: 0; transform: translateY(18px) scale(.985); }
+  to { opacity: 1; transform: none; }
+}
+
+.aed-card,
+.aed-ev,
+.aed-node {
+  transform: perspective(900px) rotateX(var(--aed-rx, 0deg)) rotateY(var(--aed-ry, 0deg)) translateZ(0);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.aed-card::before,
+.aed-ev::before,
+.aed-node::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(220px circle at var(--aed-cx, 50%) var(--aed-cy, 50%), rgba(255,255,255,.12), transparent 65%);
+  transition: opacity 260ms ease;
+}
+.aed-card:hover::before,
+.aed-ev:hover::before,
+.aed-node:hover::before { opacity: 1; }
+.aed-card > *,
+.aed-ev > *,
+.aed-node > * { position: relative; z-index: 1; }
+
+.aed-stat::after {
+  transition: transform 700ms cubic-bezier(.16,1,.3,1), opacity 300ms ease;
+}
+.aed-stat:hover::after { transform: translate(-10px, 10px) scale(1.18); opacity: .2; }
+.aed-num { font-variant-numeric: tabular-nums; }
+
+.aed-date {
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 9px 22px rgba(10,42,107,.18);
+}
+.aed-date::after {
+  content: "";
+  position: absolute;
+  inset: -70% -25%;
+  background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.22) 48%, transparent 62%);
+  transform: translateX(-65%) rotate(12deg);
+  transition: transform 720ms cubic-bezier(.16,1,.3,1);
+}
+.aed-ev:hover .aed-date::after { transform: translateX(65%) rotate(12deg); }
+
+.aed-mav {
+  box-shadow: 0 8px 22px rgba(10,42,107,.16);
+  transition: transform 420ms cubic-bezier(.16,1,.3,1), box-shadow 420ms ease;
+}
+.aed-mem:hover .aed-mav { transform: translateY(-2px) rotate(-3deg) scale(1.05); box-shadow: 0 14px 30px rgba(10,42,107,.22); }
+
+.aed-track { position: relative; }
+.aed-track::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.36), transparent);
+  transform: translateX(-100%);
+  animation: aedTrackShine 2.8s ease-in-out infinite 1.3s;
+}
+@keyframes aedTrackShine { 55%,100% { transform: translateX(100%); } }
+
+.aed-ring-fg { filter: drop-shadow(0 0 5px rgba(248,185,0,.28)); }
+
+.aed-alert.urgent { animation: aedUrgentGlow 2.6s ease-in-out infinite; }
+@keyframes aedUrgentGlow {
+  0%,100% { box-shadow: 0 0 0 rgba(229,56,79,0); }
+  50% { box-shadow: 0 14px 34px rgba(229,56,79,.12); }
+}
+
+.aed-faq summary { transition: background 240ms ease, padding 260ms ease; }
+.aed-faq[open] summary { background: rgba(79,209,163,.07); }
+.aed-faq[open] p { animation: aedFaqIn 360ms cubic-bezier(.16,1,.3,1); }
+@keyframes aedFaqIn { from { opacity: 0; transform: translateY(-6px); } }
+
+.aed-modal {
+  display: grid;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 220ms ease, visibility 0s linear 220ms;
+}
+.aed-modal.open {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 220ms ease;
+}
+.aed-modal.open:not(.ready) .aed-sheet { opacity: 0; transform: translateY(28px) scale(.965); }
+.aed-modal.ready .aed-sheet {
+  opacity: 1;
+  transform: none;
+  transition: opacity 320ms ease, transform 460ms cubic-bezier(.16,1,.3,1);
+}
+.aed-modal.closing { opacity: 0; }
+.aed-sheet { animation: none; transform-origin: 50% 70%; }
+
+.aed-toast {
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.aed-toast.show { animation: aedToastPop 420ms cubic-bezier(.16,1,.3,1); }
+@keyframes aedToastPop {
+  0% { transform: translate(-50%, 22px) scale(.96); }
+  70% { transform: translate(-50%, -2px) scale(1.015); }
+  100% { transform: translate(-50%, 0) scale(1); }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .aed-app::before { display: none; }
+  .aed-card, .aed-ev, .aed-node { transform: none !important; }
+  .aed-card.aed-hov:hover, .aed-ev:hover, .aed-node:hover { transform: translateY(-2px); }
+}
+
+@media (max-width: 680px) {
+  .aed-bar { position: sticky; top: 0; z-index: 7; }
+  .aed-tabs { scroll-snap-type: x proximity; padding-inline: 10px; }
+  .aed-tab { scroll-snap-align: center; padding-inline: 12px; }
+  .aed-panel { padding: 20px 14px 24px; }
+  .aed-motion-item { animation-delay: calc(var(--aed-i, 0) * 32ms); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aed-app.is-live, #aed-app.is-live,
+  .aed-motion-item, .aed-ripple, .aed-track::after,
+  .aed-alert.urgent, .aed-toast.show { animation: none !important; }
+  .aed-panel, .aed-sheet, .aed-ind, .aed-tab svg, .aed-mav,
+  .aed-card, .aed-ev, .aed-node { transition: none !important; transform: none !important; }
+  .aed-app::before, .aed-card::before, .aed-ev::before, .aed-node::before { display: none; }
 }
