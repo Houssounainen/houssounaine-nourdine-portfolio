@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { isStaff } from "@/lib/auth";
 import { renderAdministrativeTemplate } from "@/lib/admin-template";
+import { sendPushToProfiles } from "@/lib/push";
 
 async function ctx(){
   const supabase=await createClient();
@@ -83,6 +84,12 @@ export async function createCorrespondence(formData:FormData){
       message:subject,
       href:"/administration/correspondence/"+data.id,
     });
+    await sendPushToProfiles([assignedTo],{
+      title:"Courrier AEDBVT attribué",
+      body:subject,
+      url:"/administration/correspondence/"+data.id,
+      tag:"administration",
+    },"administration").catch(()=>undefined);
   }
   if(data?.id) redirect("/administration/correspondence/"+data.id);
 }
@@ -287,13 +294,23 @@ export async function issueDocument(formData:FormData){
   await supabase.rpc("issue_administrative_document",{p_issuance_id:id});
 
   const {data:issuance}=await supabase.from("administrative_issuances")
-    .select("service_request_id").eq("id",id).maybeSingle();
+    .select("service_request_id,subject,members(profile_id)").eq("id",id).maybeSingle();
   if(issuance?.service_request_id){
     await supabase.from("member_service_requests").update({
       status:"completed",
       response:"Document administratif délivré. Il est disponible dans votre espace membre.",
       updated_at:new Date().toISOString(),
     }).eq("id",issuance.service_request_id);
+  }
+
+  const member=Array.isArray(issuance?.members)?issuance?.members[0]:issuance?.members;
+  if(member?.profile_id){
+    await sendPushToProfiles([member.profile_id],{
+      title:"Document AEDBVT disponible",
+      body:issuance?.subject||"Votre document administratif a été délivré.",
+      url:"/me",
+      tag:"administrative-document",
+    },"administration").catch(()=>undefined);
   }
 
   revalidatePath("/administration");
