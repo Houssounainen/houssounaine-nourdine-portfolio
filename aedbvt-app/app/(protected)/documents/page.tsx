@@ -1,7 +1,13 @@
+import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isStaff } from "@/lib/auth";
 
 export default async function DocumentsPage() {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id",user!.id).single();
+  if (!isStaff(profile?.role)) notFound();
+
   const [{ data: quotes }, { data: invoices }, { data: payments }] = await Promise.all([
     supabase.from("quotes").select("id,number,recipient_name,subject,total,status,issued_at").order("issued_at",{ascending:false}),
     supabase.from("invoices").select("id,number,recipient_name,subject,total,status,issued_at,due_at").order("issued_at",{ascending:false}),

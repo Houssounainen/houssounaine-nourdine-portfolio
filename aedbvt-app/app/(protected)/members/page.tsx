@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isStaff } from "@/lib/auth";
 import { addMember } from "./actions";
@@ -9,6 +10,7 @@ export default async function MembersPage() {
     supabase.from("profiles").select("role").eq("id", user!.id).single(),
     supabase.from("members").select("id, member_number, full_name, village, program, study_level, phone, status").order("full_name"),
   ]);
+  if (!isStaff(profile?.role)) notFound();
 
   return (
     <section className="page">
