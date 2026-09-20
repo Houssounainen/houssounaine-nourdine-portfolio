@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#07162f"/>
+  <circle cx="256" cy="256" r="176" fill="#ffffff"/>
+  <circle cx="256" cy="256" r="158" fill="#0a2a6b"/>
+  <path d="M154 321 256 128l102 193h-55l-18-36h-58l-18 36h-55Zm96-79h25l-12-27-13 27Z" fill="#f8b900"/>
+  <text x="256" y="386" text-anchor="middle" font-family="Arial, sans-serif" font-size="54" font-weight="700" fill="#ffffff">AEDBVT</text>
+</svg>

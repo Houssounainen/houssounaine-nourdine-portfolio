@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { isStaff } from "@/lib/auth";
+import { sendPushToAll } from "@/lib/push";
 
 function toToliaraIso(value: string) {
   if (!value) return new Date().toISOString();
@@ -24,15 +25,25 @@ export async function createEvent(formData: FormData) {
   const starts = String(formData.get("starts_at") || "").trim();
   if (!title || !starts) return;
 
-  await supabase.from("events").insert({
+  const description=String(formData.get("description") || "").trim();
+  const location=String(formData.get("location") || "").trim();
+  const {error}=await supabase.from("events").insert({
     title,
-    description: String(formData.get("description") || "").trim(),
-    location: String(formData.get("location") || "").trim(),
+    description,
+    location,
     category: String(formData.get("category") || "Vie associative"),
     starts_at: toToliaraIso(starts),
     published: true,
     created_by: user.id,
   });
+  if(!error){
+    await sendPushToAll({
+      title:"Nouvel événement AEDBVT",
+      body:title+(location?" · "+location:""),
+      url:"/agenda",
+      tag:"agenda-event",
+    },"agenda").catch(()=>undefined);
+  }
   revalidatePath("/agenda");
   revalidatePath("/dashboard");
 }
@@ -45,15 +56,24 @@ export async function createMeeting(formData: FormData) {
   if (!title || !starts) return;
 
   const agenda = String(formData.get("agenda") || "").split("\n").map((x) => x.trim()).filter(Boolean);
-  await supabase.from("meetings").insert({
+  const location=String(formData.get("location") || "").trim();
+  const {error}=await supabase.from("meetings").insert({
     title,
     starts_at: toToliaraIso(starts),
-    location: String(formData.get("location") || "").trim(),
+    location,
     mode: String(formData.get("mode") || "Présentiel"),
     agenda,
     published: true,
     created_by: user.id,
   });
+  if(!error){
+    await sendPushToAll({
+      title:"Nouvelle réunion AEDBVT",
+      body:title+(location?" · "+location:""),
+      url:"/agenda",
+      tag:"agenda-meeting",
+    },"agenda").catch(()=>undefined);
+  }
   revalidatePath("/agenda");
   revalidatePath("/dashboard");
 }

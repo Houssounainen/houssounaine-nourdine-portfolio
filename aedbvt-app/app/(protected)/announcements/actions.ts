@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { isStaff } from "@/lib/auth";
+import { sendPushToAll } from "@/lib/push";
 
 async function staffContext() {
   const supabase = await createClient();
@@ -19,14 +20,24 @@ export async function createAnnouncement(formData: FormData) {
   const message = String(formData.get("message") || "").trim();
   if (!title || !message) return;
 
-  await supabase.from("announcements").insert({
+  const level=String(formData.get("level") || "info");
+  const {error}=await supabase.from("announcements").insert({
     title,
     message,
-    level: String(formData.get("level") || "info"),
+    level,
     pinned: formData.get("pinned") === "on",
     published_at: new Date().toISOString(),
     created_by: user.id,
   });
+
+  if(!error){
+    await sendPushToAll({
+      title:level==="urgent"?"AEDBVT · Urgent":"AEDBVT · "+title,
+      body:message,
+      url:"/announcements",
+      tag:"announcement",
+    },"announcements").catch(()=>undefined);
+  }
 
   revalidatePath("/announcements");
   revalidatePath("/dashboard");
