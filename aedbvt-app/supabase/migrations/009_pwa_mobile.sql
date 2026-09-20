@@ -70,4 +70,22 @@ where not exists(
   select 1 from public.notification_preferences np where np.profile_id=p.id
 );
 
+create or replace function public.init_notification_preferences()
+returns trigger
+language plpgsql
+security definer
+set search_path=public
+as $$
+begin
+  insert into public.notification_preferences(profile_id)
+  values(new.id)
+  on conflict(profile_id) do nothing;
+  return new;
+end $$;
+
+drop trigger if exists init_notification_preferences on public.profiles;
+create trigger init_notification_preferences
+after insert on public.profiles
+for each row execute function public.init_notification_preferences();
+
 commit;
