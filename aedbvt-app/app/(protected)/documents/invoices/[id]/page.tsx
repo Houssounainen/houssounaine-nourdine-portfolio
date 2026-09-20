@@ -13,11 +13,12 @@ export default async function InvoiceDetailPage({params}:{params:Promise<{id:str
   const {data:profile}=await supabase.from("profiles").select("role").eq("id",user!.id).single();
   if(!["admin","bureau","tresorier"].includes(profile?.role||"")) notFound();
 
-  const [{data:invoice},{data:items},{data:payments},{data:accounts},{data:attachments}]=await Promise.all([
+  const [{data:invoice},{data:items},{data:payments},{data:accounts},{data:incomeCategories},{data:attachments}]=await Promise.all([
     supabase.from("invoices").select("id,quote_id,number,recipient_name,recipient_email,recipient_phone,recipient_address,subject,total,status,issued_at,due_at,notes,currency").eq("id",id).maybeSingle(),
     supabase.from("invoice_items").select("id,position,description,quantity,unit_price").eq("invoice_id",id).order("position"),
     supabase.from("invoice_payments").select("id,amount,method,external_reference,receipt_number,paid_at,account_id,notes").eq("invoice_id",id).order("paid_at",{ascending:false}),
     supabase.from("cash_accounts").select("id,name,provider").eq("active",true).order("name"),
+    supabase.from("finance_categories").select("id,code,name").eq("kind","income").eq("active",true).order("code"),
     supabase.from("financial_attachments").select("id,file_name,content_type,size_bytes,created_at").eq("entity_type","invoice").eq("entity_id",id).order("created_at",{ascending:false}),
   ]);
   if(!invoice) notFound();
@@ -72,7 +73,7 @@ export default async function InvoiceDetailPage({params}:{params:Promise<{id:str
           <input type="hidden" name="invoice_id" value={invoice.id}/>
           <div><span className="eyebrow">Règlement</span><h2>Enregistrer un paiement</h2></div>
           <label>Montant (Ar)<input name="amount" type="number" min="1" max={remaining} defaultValue={remaining} required/></label>
-          <label>Compte<select name="account_id" required><option value="">Choisir…</option>{(accounts||[]).map(a=><option key={a.id} value={a.id}>{a.name}</option>)}</select></label>
+          <label>Compte<select name="account_id" required><option value="">Choisir…</option>{(accounts||[]).map(a=><option key={a.id} value={a.id}>{a.name}</option>)}</select></label><label>Catégorie de recette<select name="category_id" required><option value="">Choisir…</option>{(incomeCategories||[]).map(c=><option key={c.id} value={c.id}>{c.code} · {c.name}</option>)}</select></label>
           <label>Moyen<select name="method"><option>Espèces</option><option>MVola</option><option>Orange Money</option><option>Airtel Money</option><option>Virement</option></select></label>
           <label>Date<input name="paid_at" type="date" defaultValue={new Date().toISOString().slice(0,10)}/></label>
           <label>Référence externe<input name="external_reference"/></label>
