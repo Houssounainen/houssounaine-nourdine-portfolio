@@ -496,7 +496,7 @@ returns trigger
 language plpgsql
 security definer
 set search_path=public
-as $
+as $$
 declare doc_title text;
 begin
   if old.status is distinct from 'adopted' and new.status='adopted' then
@@ -522,7 +522,7 @@ begin
     on conflict(amendment_id) do nothing;
   end if;
   return new;
-end $;
+end $$;
 
 drop trigger if exists register_amendment_decision on public.governance_amendments;
 create trigger register_amendment_decision
@@ -534,7 +534,7 @@ returns trigger
 language plpgsql
 security definer
 set search_path=public
-as $
+as $$
 declare
   pos record;
   top_votes bigint;
@@ -609,7 +609,7 @@ begin
     end loop;
   end if;
   return new;
-end $;
+end $$;
 
 drop trigger if exists register_closed_election_decisions on public.elections;
 create trigger register_closed_election_decisions
