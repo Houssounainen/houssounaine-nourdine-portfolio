@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isStaff } from "@/lib/auth";
+import { uploadFinancialAttachment } from "@/lib/financial-files";
 import { addQuoteItem, convertQuote, updateQuoteStatus } from "../../actions";
 
 const fmt=(value:number)=>value.toLocaleString("fr-FR")+" Ar";
@@ -18,6 +19,7 @@ export default async function QuoteDetailPage({params}:{params:Promise<{id:strin
   if(!quote||!isStaff(profile?.role)) notFound();
 
   const finance=["admin","bureau","tresorier"].includes(profile?.role||"");
+  const attachments=finance ? (await supabase.from("financial_attachments").select("id,file_name,content_type,size_bytes,created_at").eq("entity_type","quote").eq("entity_id",quote.id).order("created_at",{ascending:false})).data || [] : [];
   const editable=["draft","issued"].includes(quote.status);
   const canConvert=finance&&quote.status!=="cancelled"&&Number(quote.total)>0;
 
@@ -53,6 +55,15 @@ export default async function QuoteDetailPage({params}:{params:Promise<{id:strin
           <button className="button secondary">Ajouter la ligne</button>
         </form>}
 
+        {finance&&<form action={uploadFinancialAttachment} className="panel form-stack" encType="multipart/form-data">
+          <input type="hidden" name="entity_type" value="quote"/>
+          <input type="hidden" name="entity_id" value={quote.id}/>
+          <div><span className="eyebrow">Justificatif</span><h2>Ajouter une pièce</h2></div>
+          <label>PDF ou image<input name="file" type="file" accept="application/pdf,image/jpeg,image/png,image/webp" required/></label>
+          <small className="muted">5 Mo maximum. Le fichier reste privé.</small>
+          <button className="button secondary">Téléverser</button>
+        </form>}
+
         {canConvert&&<form action={convertQuote} className="panel form-stack">
           <input type="hidden" name="quote_id" value={quote.id}/>
           <div><span className="eyebrow">Conversion</span><h2>Créer la facture</h2></div>
@@ -62,5 +73,9 @@ export default async function QuoteDetailPage({params}:{params:Promise<{id:strin
         </form>}
       </aside>
     </div>
+    {finance&&<article className="panel attachment-panel">
+      <div className="panel-head"><div><span className="eyebrow">Pièces jointes</span><h2>Documents privés</h2></div><span>{attachments.length}</span></div>
+      <div className="attachment-list">{attachments.map((file)=><a href={"/api/financial-files/"+file.id} key={file.id}><span><b>{file.file_name}</b><small>{file.content_type||"fichier"} · {Math.max(1,Math.round(Number(file.size_bytes||0)/1024))} Ko</small></span><strong>↓</strong></a>)}{!attachments.length&&<p>Aucune pièce jointe.</p>}</div>
+    </article>}
   </section>
 }
