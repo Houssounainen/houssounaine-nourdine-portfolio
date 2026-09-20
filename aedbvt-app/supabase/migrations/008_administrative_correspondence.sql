@@ -275,6 +275,29 @@ end $$;
 revoke all on function public.dispatch_correspondence(uuid,date) from public;
 grant execute on function public.dispatch_correspondence(uuid,date) to authenticated;
 
+create or replace function public.start_incoming_correspondence_review(p_correspondence_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path=public
+as $
+begin
+  if not public.is_staff() then
+    raise exception 'Accès secrétariat requis.';
+  end if;
+
+  update public.correspondence_register
+  set status='review',updated_at=now()
+  where id=p_correspondence_id and direction='incoming' and status='registered';
+
+  if not found then
+    raise exception 'Ce courrier entrant ne peut pas être mis en traitement.';
+  end if;
+end $;
+
+revoke all on function public.start_incoming_correspondence_review(uuid) from public;
+grant execute on function public.start_incoming_correspondence_review(uuid) to authenticated;
+
 create or replace function public.close_correspondence(p_correspondence_id uuid)
 returns void
 language plpgsql
@@ -290,7 +313,7 @@ begin
   set status='closed',updated_at=now()
   where id=p_correspondence_id
     and (
-      (direction='incoming' and status in ('registered','review'))
+      (direction='incoming' and status='review')
       or (direction='outgoing' and status='dispatched')
     );
 
@@ -445,7 +468,10 @@ begin
 
   if tg_table_name='correspondence_register' then
     if old.direction='incoming' then
-      if not (old.status='registered' and new.status='closed') then
+      if not (
+        (old.status='registered' and new.status='review')
+        or (old.status='review' and new.status='closed')
+      ) then
         raise exception 'Transition de courrier entrant invalide : % vers %.',old.status,new.status;
       end if;
     else
