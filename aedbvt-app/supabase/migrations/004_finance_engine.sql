@@ -1,7 +1,5 @@
 begin;
 
-alter type public.document_status add value if not exists 'partial_paid';
-
 create table if not exists public.finance_categories (
   id uuid primary key default gen_random_uuid(),
   code text unique not null,
@@ -199,7 +197,7 @@ begin
     when status='cancelled' then status
     when paid <= 0 then 'issued'::public.document_status
     when paid >= due and due > 0 then 'paid'::public.document_status
-    else 'partial_paid'::public.document_status
+    else 'issued'::public.document_status
   end
   where id=target_id;
 
