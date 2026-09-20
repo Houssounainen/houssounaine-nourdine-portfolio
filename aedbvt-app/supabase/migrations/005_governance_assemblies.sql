@@ -541,7 +541,85 @@ end $$;
 revoke all on function public.get_assembly_quorum(uuid) from public;
 grant execute on function public.get_assembly_quorum(uuid) to authenticated;
 
-do $$
+create or replace function public.guard_assembly_status()
+returns trigger
+language plpgsql
+set search_path=public
+as $
+begin
+  if old.status in ('closed','archived') and new.status is distinct from old.status then
+    raise exception 'Une assemblée clôturée ou archivée ne peut pas être rouverte.';
+  end if;
+  if new.status='archived' and old.status <> 'closed' then
+    raise exception 'Une assemblée doit être clôturée avant archivage.';
+  end if;
+  return new;
+end $;
+
+drop trigger if exists guard_assembly_status on public.assemblies;
+create trigger guard_assembly_status before update of status on public.assemblies
+for each row execute function public.guard_assembly_status();
+
+create or replace function public.guard_motion_status()
+returns trigger
+language plpgsql
+set search_path=public
+as $
+declare assembly_status text;
+declare quorum_met boolean;
+begin
+  if old.status in ('closed','cancelled') and new.status is distinct from old.status then
+    raise exception 'Une motion clôturée ou annulée ne peut pas être rouverte.';
+  end if;
+
+  if new.status='open' and old.status is distinct from 'open' then
+    select status into assembly_status from public.assemblies where id=new.assembly_id;
+    select q.met into quorum_met from public.get_assembly_quorum(new.assembly_id) q limit 1;
+
+    if assembly_status <> 'open' then
+      raise exception 'L’assemblée doit être ouverte avant le vote.';
+    end if;
+    if not coalesce(quorum_met,false) then
+      raise exception 'Le quorum configuré n’est pas atteint.';
+    end if;
+  end if;
+  return new;
+end $;
+
+drop trigger if exists guard_motion_status on public.motions;
+create trigger guard_motion_status before update of status on public.motions
+for each row execute function public.guard_motion_status();
+
+create or replace function public.guard_election_status()
+returns trigger
+language plpgsql
+set search_path=public
+as $
+begin
+  if old.status in ('closed','cancelled') and new.status is distinct from old.status then
+    raise exception 'Un scrutin clôturé ou annulé ne peut pas être rouvert.';
+  end if;
+  if new.status='open' and old.status is distinct from 'open' then
+    if not exists(select 1 from public.election_positions p where p.election_id=new.id) then
+      raise exception 'Ajoutez au moins un poste avant d’ouvrir le scrutin.';
+    end if;
+    if not exists(
+      select 1
+      from public.election_candidates c
+      join public.election_positions p on p.id=c.position_id
+      where p.election_id=new.id and c.status='approved'
+    ) then
+      raise exception 'Au moins une candidature approuvée est requise.';
+    end if;
+  end if;
+  return new;
+end $;
+
+drop trigger if exists guard_election_status on public.elections;
+create trigger guard_election_status before update of status on public.elections
+for each row execute function public.guard_election_status();
+
+do $
 declare t text;
 begin
   foreach t in array array['assemblies','assembly_proxies','motions','recorded_motion_votes','elections','election_positions','election_candidates']
