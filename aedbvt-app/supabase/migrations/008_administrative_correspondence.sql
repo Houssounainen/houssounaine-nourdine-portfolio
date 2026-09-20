@@ -95,6 +95,13 @@ grant select, insert, update on table public.administrative_templates, public.co
   public.administrative_issuances, public.administrative_attachments to authenticated;
 grant usage, select on sequence public.correspondence_seq, public.issuance_seq to authenticated;
 
+grant insert on table public.internal_notifications to authenticated;
+
+drop policy if exists notifications_staff_insert on public.internal_notifications;
+create policy notifications_staff_insert on public.internal_notifications
+for insert to authenticated
+with check (public.is_staff());
+
 create policy admin_templates_staff on public.administrative_templates for all to authenticated
 using (public.is_staff()) with check (public.is_staff());
 
