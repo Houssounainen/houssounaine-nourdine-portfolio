@@ -5,7 +5,7 @@
 (() => {
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-  const SPOT_SELECTOR = ".service-card, .project-card, .client-card, .work-card, .metric, .thesis-card, .timeline-card, .aed-card";
+  const SPOT_SELECTOR = ".service-card, .project-card, .client-card, .work-card, .metric, .thesis-card, .timeline-card, .aed-card, .aed-doc-card, .aed-law";
   const MAGNET_SELECTOR = ".button, .sidebar-cta";
 
   /* 1. Apparition échelonnée des éléments frères */
@@ -37,7 +37,8 @@
   window.addEventListener("resize", updateProgress);
   updateProgress();
 
-  /* 3. Nouveaux éléments .reveal ajoutés dynamiquement (clients, créations…) */+  const main = document.querySelector("#main");
+  /* 3. Nouveaux éléments .reveal ajoutés dynamiquement (clients, créations…) */
+  const main = document.querySelector("#main");
   if (main && "MutationObserver" in window) {
     let queued = false;
     new MutationObserver(() => {
