@@ -1,0 +1,18 @@
+{
+  "packageId": "mg.aedbvt.tulear",
+  "name": "AEDBVT",
+  "launcherName": "AEDBVT",
+  "appVersion": "1.0.0",
+  "appVersionCode": 1,
+  "startUrl": "/dashboard",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "themeColor": "#07162f",
+  "themeColorDark": "#07162f",
+  "navigationColor": "#07162f",
+  "navigationColorDark": "#07162f",
+  "backgroundColor": "#f4f7fb",
+  "fallbackType": "customtabs",
+  "enableNotifications": true,
+  "enableSiteSettingsShortcut": true
+}
