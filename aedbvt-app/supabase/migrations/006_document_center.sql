@@ -66,6 +66,7 @@ create table if not exists public.decision_register (
   election_id uuid references public.elections(id) on delete set null,
   document_id uuid references public.governance_documents(id) on delete set null,
   document_version_id uuid references public.governance_document_versions(id) on delete set null,
+  amendment_id uuid unique references public.governance_amendments(id) on delete set null,
   published boolean not null default true,
   created_by uuid references public.profiles(id) on delete set null,
   created_at timestamptz not null default now()
@@ -489,6 +490,131 @@ drop trigger if exists register_closed_motion_decision on public.motions;
 create trigger register_closed_motion_decision
 after update of status on public.motions
 for each row execute function public.register_closed_motion_decision();
+
+create or replace function public.register_amendment_decision()
+returns trigger
+language plpgsql
+security definer
+set search_path=public
+as $
+declare doc_title text;
+begin
+  if old.status is distinct from 'adopted' and new.status='adopted' then
+    select title into doc_title from public.governance_documents where id=new.document_id;
+    insert into public.decision_register(
+      decision_type,title,summary,outcome,decision_date,assembly_id,motion_id,
+      document_id,document_version_id,amendment_id,published,created_by
+    )
+    values(
+      'document',
+      'Amendement adopté : ' || new.title,
+      coalesce(new.decision_notes,new.rationale,new.proposed_text),
+      'adopted',
+      current_date,
+      new.assembly_id,
+      new.motion_id,
+      new.document_id,
+      new.target_version_id,
+      new.id,
+      true,
+      new.proposed_by
+    )
+    on conflict(amendment_id) do nothing;
+  end if;
+  return new;
+end $;
+
+drop trigger if exists register_amendment_decision on public.governance_amendments;
+create trigger register_amendment_decision
+after update of status on public.governance_amendments
+for each row execute function public.register_amendment_decision();
+
+create or replace function public.register_closed_election_decisions()
+returns trigger
+language plpgsql
+security definer
+set search_path=public
+as $
+declare
+  pos record;
+  top_votes bigint;
+  top_count bigint;
+  winner record;
+begin
+  if old.status is distinct from 'closed' and new.status='closed' then
+    for pos in
+      select id,title from public.election_positions where election_id=new.id order by sort_order,id
+    loop
+      select max(votes) into top_votes from (
+        select candidate_id,count(*)::bigint votes
+        from public.election_ballots
+        where position_id=pos.id
+        group by candidate_id
+      ) x;
+
+      if top_votes is null then
+        insert into public.decision_register(
+          decision_type,title,summary,outcome,decision_date,election_id,published,created_by
+        ) values(
+          'election','Résultat : ' || pos.title,'Aucun bulletin enregistré.','noted',
+          new.ends_at::date,new.id,true,new.created_by
+        );
+      else
+        select count(*) into top_count from (
+          select candidate_id,count(*)::bigint votes
+          from public.election_ballots
+          where position_id=pos.id
+          group by candidate_id
+          having count(*)=top_votes
+        ) ties;
+
+        if top_count=1 then
+          select c.id candidate_id,m.full_name,m.member_number
+          into winner
+          from public.election_ballots b
+          join public.election_candidates c on c.id=b.candidate_id
+          join public.members m on m.id=c.member_id
+          where b.position_id=pos.id
+          group by c.id,m.full_name,m.member_number
+          having count(*)=top_votes
+          limit 1;
+
+          insert into public.decision_register(
+            decision_type,title,summary,outcome,decision_date,election_id,published,created_by
+          ) values(
+            'election',
+            'Élection : ' || pos.title,
+            winner.full_name || ' (' || coalesce(winner.member_number,'membre') || ') - ' || top_votes || ' voix',
+            'elected',
+            new.ends_at::date,
+            new.id,
+            true,
+            new.created_by
+          );
+        else
+          insert into public.decision_register(
+            decision_type,title,summary,outcome,decision_date,election_id,published,created_by
+          ) values(
+            'election',
+            'Résultat : ' || pos.title,
+            'Égalité au résultat le plus élevé (' || top_votes || ' voix). Aucune désignation automatique.',
+            'noted',
+            new.ends_at::date,
+            new.id,
+            true,
+            new.created_by
+          );
+        end if;
+      end if;
+    end loop;
+  end if;
+  return new;
+end $;
+
+drop trigger if exists register_closed_election_decisions on public.elections;
+create trigger register_closed_election_decisions
+after update of status on public.elections
+for each row execute function public.register_closed_election_decisions();
 
 create or replace function public.guard_decision_register()
 returns trigger
