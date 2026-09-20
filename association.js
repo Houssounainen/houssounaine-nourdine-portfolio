@@ -355,7 +355,7 @@
     requestAnimationFrame(step);
   }
   function enhanceMotion(scope) {
-    const items = $(".aed-card, .aed-ev, .aed-alert, .aed-faq, .aed-tree > ul > li, .aed-ph, .aed-chips", scope);
+    const items = $$(".aed-card, .aed-ev, .aed-alert, .aed-faq, .aed-tree > ul > li, .aed-ph, .aed-chips", scope);
     items.forEach((el, i) => {
       el.style.setProperty("--aed-i", Math.min(i, 12));
       el.classList.add("aed-motion-item");
@@ -363,10 +363,10 @@
   }
   function animateIn(scope) {
     enhanceMotion(scope);
-    $("[data-count]", scope).forEach(countUp);
+    $$("[data-count]", scope).forEach(countUp);
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      $(".aed-track i[data-w]", scope).forEach((b) => { b.style.width = `${b.dataset.w}%`; });
-      $(".aed-ring-fg[data-off]", scope).forEach((r) => { r.style.strokeDashoffset = r.dataset.off; });
+      $$(".aed-track i[data-w]", scope).forEach((b) => { b.style.width = `${b.dataset.w}%`; });
+      $$(".aed-ring-fg[data-off]", scope).forEach((r) => { r.style.strokeDashoffset = r.dataset.off; });
       scope.classList.add("is-entered");
     }));
   }
