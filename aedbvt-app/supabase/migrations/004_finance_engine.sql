@@ -265,6 +265,34 @@ create trigger audit_invoice_payments after insert or update or delete on public
 drop trigger if exists audit_financial_attachments on public.financial_attachments;
 create trigger audit_financial_attachments after insert or update or delete on public.financial_attachments for each row execute function public.audit_row();
 
+insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types)
+values(
+  'financial-documents',
+  'financial-documents',
+  false,
+  5242880,
+  array['application/pdf','image/jpeg','image/png','image/webp']
+)
+on conflict (id) do update set
+  public=false,
+  file_size_limit=5242880,
+  allowed_mime_types=array['application/pdf','image/jpeg','image/png','image/webp'];
+
+drop policy if exists financial_storage_read on storage.objects;
+create policy financial_storage_read on storage.objects
+for select to authenticated
+using (bucket_id='financial-documents' and public.is_finance());
+
+drop policy if exists financial_storage_insert on storage.objects;
+create policy financial_storage_insert on storage.objects
+for insert to authenticated
+with check (bucket_id='financial-documents' and public.is_finance());
+
+drop policy if exists financial_storage_delete on storage.objects;
+create policy financial_storage_delete on storage.objects
+for delete to authenticated
+using (bucket_id='financial-documents' and public.is_finance());
+
 create or replace function public.convert_quote_to_invoice(
   p_quote_id uuid,
   p_due_at date default null
