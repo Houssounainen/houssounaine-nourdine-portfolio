@@ -44,7 +44,7 @@ export default async function CommissionPage({params}:{params:Promise<{id:string
     <div className="content-grid">
       <article className="panel">
         <div className="panel-head"><div><span className="eyebrow">Équipe</span><h2>Membres de la commission</h2></div><span>{activeMembers.length}</span></div>
-        <div className="commission-member-list">{activeMembers.map(member=>{const p=profileMap.get(member.profile_id);return <div key={member.profile_id}><span className="avatar small">{p?.full_name?p.full_name.split(" ").map(x=>x[0]).slice(0,2).join("").toUpperCase():"—"}</span><span><b>{p?.full_name||"Membre"}</b><small>{member.role} · {p?.role||"membre"}</small></span><form action={removeCommissionMember}><input type="hidden" name="commission_id" value={commission.id}/><input type="hidden" name="profile_id" value={member.profile_id}/><button className="button secondary">Retirer</button></form></div>})}{!activeMembers.length&&<p>Aucun membre affecté.</p>}</div>
+        <div className="commission-member-list">{activeMembers.map(member=>{const p=profileMap.get(member.profile_id);return <div key={member.profile_id}><span className="avatar small">{p?.full_name?p.full_name.split(" ").map((x:string)=>x[0]).slice(0,2).join("").toUpperCase():"—"}</span><span><b>{p?.full_name||"Membre"}</b><small>{member.role} · {p?.role||"membre"}</small></span><form action={removeCommissionMember}><input type="hidden" name="commission_id" value={commission.id}/><input type="hidden" name="profile_id" value={member.profile_id}/><button className="button secondary">Retirer</button></form></div>})}{!activeMembers.length&&<p>Aucun membre affecté.</p>}</div>
       </article>
 
       <form action={addCommissionMember} className="panel form-stack">
