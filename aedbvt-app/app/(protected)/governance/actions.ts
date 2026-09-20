@@ -88,13 +88,7 @@ export async function createProxy(formData:FormData){
   const assemblyId=String(formData.get("assembly_id")||"");
   const holderId=String(formData.get("holder_member_id")||"");
   if(!assemblyId||!holderId||holderId===member.id) return;
-  await supabase.from("assembly_proxies").upsert({
-    assembly_id:assemblyId,
-    grantor_member_id:member.id,
-    holder_member_id:holderId,
-    status:"pending",
-    updated_at:new Date().toISOString(),
-  },{onConflict:"assembly_id,grantor_member_id"});
+  await supabase.rpc("set_my_proxy",{p_assembly_id:assemblyId,p_holder_member_id:holderId});
   revalidatePath("/governance/assemblies/"+assemblyId);
 }
 
