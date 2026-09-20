@@ -17,7 +17,7 @@ export default async function DocumentsPage() {
     supabase.from("quotes").select("id,number,recipient_name,subject,total,status,issued_at,valid_until").order("created_at",{ascending:false}),
     supabase.from("invoices").select("id,number,recipient_name,subject,total,status,issued_at,due_at").order("created_at",{ascending:false}),
     supabase.from("payments").select("id,receipt_number,amount,paid_at,members(full_name)").eq("status","confirmed").order("paid_at",{ascending:false}).limit(10),
-    finance ? supabase.from("invoice_payments").select("id,receipt_number,amount,paid_at,invoice_id,invoices(number,recipient_name)").order("paid_at",{ascending:false}).limit(10) : Promise.resolve({data:[]}),
+    finance ? supabase.from("invoice_payments").select("id,receipt_number,amount,paid_at,invoice_id,invoices(number,recipient_name)").order("paid_at",{ascending:false}) : Promise.resolve({data:[]}),
   ]);
 
   const invoicePaidMap = new Map<string,number>();
@@ -94,7 +94,7 @@ export default async function DocumentsPage() {
 
         {finance&&<article className="panel">
           <h2>Reçus de factures</h2>
-          <div className="doc-list">{(invoicePayments||[]).map((p:any)=>{const invoice=Array.isArray(p.invoices)?p.invoices[0]:p.invoices;return <div key={p.id}><span><small>Facture {invoice?.number||"—"}</small><b>{p.receipt_number}</b><em>{invoice?.recipient_name||"Destinataire"}</em></span><strong>{fmt(Number(p.amount))}</strong><a className="button secondary" href={"/api/documents/invoice-payments/"+p.id}>PDF</a></div>})}</div>
+          <div className="doc-list">{(invoicePayments||[]).slice(0,10).map((p:any)=>{const invoice=Array.isArray(p.invoices)?p.invoices[0]:p.invoices;return <div key={p.id}><span><small>Facture {invoice?.number||"—"}</small><b>{p.receipt_number}</b><em>{invoice?.recipient_name||"Destinataire"}</em></span><strong>{fmt(Number(p.amount))}</strong><a className="button secondary" href={"/api/documents/invoice-payments/"+p.id}>PDF</a></div>})}</div>
         </article>}
       </div>
     </section>
