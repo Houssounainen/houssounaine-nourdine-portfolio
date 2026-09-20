@@ -67,6 +67,10 @@ create table if not exists public.administrative_issuances (
   updated_at timestamptz not null default now()
 );
 
+create unique index if not exists administrative_issuances_request_unique
+on public.administrative_issuances(service_request_id)
+where service_request_id is not null;
+
 create table if not exists public.administrative_attachments (
   id uuid primary key default gen_random_uuid(),
   entity_type text not null check (entity_type in ('correspondence','issuance')),
@@ -421,6 +425,53 @@ $;
 
 revoke all on function public.verify_administrative_document(uuid) from public;
 grant execute on function public.verify_administrative_document(uuid) to anon, authenticated;
+
+create or replace function public.guard_administrative_status_transition()
+returns trigger
+language plpgsql
+set search_path=public
+as $
+begin
+  if new.status is not distinct from old.status then
+    return new;
+  end if;
+
+  if tg_table_name='correspondence_register' then
+    if old.direction='incoming' then
+      if not (old.status='registered' and new.status='closed') then
+        raise exception 'Transition de courrier entrant invalide : % vers %.',old.status,new.status;
+      end if;
+    else
+      if not (
+        (old.status='draft' and new.status='review')
+        or (old.status='review' and new.status in ('approved','rejected'))
+        or (old.status='approved' and new.status='dispatched')
+        or (old.status='dispatched' and new.status='closed')
+      ) then
+        raise exception 'Transition de courrier sortant invalide : % vers %.',old.status,new.status;
+      end if;
+    end if;
+  elsif tg_table_name='administrative_issuances' then
+    if not (
+      (old.status='draft' and new.status in ('review','cancelled'))
+      or (old.status='review' and new.status in ('approved','rejected'))
+      or (old.status='approved' and new.status='issued')
+    ) then
+      raise exception 'Transition de document administratif invalide : % vers %.',old.status,new.status;
+    end if;
+  end if;
+  return new;
+end $;
+
+drop trigger if exists guard_correspondence_status_transition on public.correspondence_register;
+create trigger guard_correspondence_status_transition
+before update of status on public.correspondence_register
+for each row execute function public.guard_administrative_status_transition();
+
+drop trigger if exists guard_issuance_status_transition on public.administrative_issuances;
+create trigger guard_issuance_status_transition
+before update of status on public.administrative_issuances
+for each row execute function public.guard_administrative_status_transition();
 
 create or replace function public.guard_administrative_final_state()
 returns trigger
