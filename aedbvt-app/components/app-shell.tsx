@@ -14,7 +14,7 @@ const commonLinks:[string,string][] = [
   ["/governance", "Gouvernance"],
 ];
 
-export function AppShell({ children, profile }: { children: React.ReactNode; profile: { full_name?: string | null; role?: string | null } | null }) {
+export function AppShell({ children, profile, unreadNotifications=0 }: { children: React.ReactNode; profile: { full_name?: string | null; role?: string | null } | null; unreadNotifications?:number }) {
   const role = profile?.role || "membre";
   const staff = ["admin","bureau","tresorier","secretaire"].includes(role);
   const finance = ["admin","bureau","tresorier"].includes(role);
@@ -31,7 +31,7 @@ export function AppShell({ children, profile }: { children: React.ReactNode; pro
     <div className="app-frame">
       <aside className="sidebar">
         <Link href="/dashboard" className="side-brand"><Image src="/aedbvt-logo.webp" alt="AEDBVT" width={56} height={56} /><span><b>AEDBVT</b><small>Gestion associative</small></span></Link>
-        <nav aria-label="Navigation principale">{links.map(([href, label]) => <Link key={href} href={href}>{label}</Link>)}</nav>
+        <nav aria-label="Navigation principale">{links.map(([href, label]) => <Link key={href} href={href}>{label}{href==="/notifications"&&unreadNotifications>0?<span className="side-nav-count">{unreadNotifications}</span>:null}</Link>)}</nav>
         <div className="side-user">
           <span className="avatar">{profileName.split(" ").map(x => x[0]).slice(0,2).join("").toUpperCase()}</span>
           <div><b>{profileName}</b><small>{role}</small></div>
@@ -39,7 +39,7 @@ export function AppShell({ children, profile }: { children: React.ReactNode; pro
         <SignOutButton/>
       </aside>
       <main id="contenu" className="app-main">{children}</main>
-      <MobileNavigation links={links} profileName={profileName} role={role}/>
+      <MobileNavigation links={links} profileName={profileName} role={role} unreadCount={unreadNotifications}/>
     </div>
   );
 }
