@@ -478,7 +478,7 @@
   };
 
   R.info = () => {
-    const docs = ["Statuts de l’association", "Règlement intérieur", "Modèle de compte rendu", "Fiche d’adhésion"];
+    const docs = [["Statuts proposés", "rules"], ["Règlement intérieur", "rules"], ["Devis, factures & reçus", "docs"], ["Console administrateur", "admin"]];
     const faq = [
       ["Comment adhérer à l’AEDBVT ?", "Toute étudiante ou tout étudiant originaire de Darsalama ou de Bandrani-Vouani à Tuléar peut adhérer en remplissant la fiche d’adhésion et en réglant sa cotisation."],
       ["Comment payer ma cotisation ?", "Par MVola, Orange Money, Airtel Money ou en espèces auprès de la trésorière. Un reçu numéroté vous est remis."],
@@ -487,7 +487,7 @@
     ];
     return `<div class="aed-ph"><h3>Informations</h3></div><div class="aed-split"><div class="aed-stack">
       <div class="aed-card"><h4 style="margin-top:0">Qui sommes-nous ?</h4><p>L’AEDBVT rassemble, soutient et accompagne les étudiants de Darsalama et de Bandrani-Vouani à Tuléar : entraide, vie associative, réussite académique et solidarité.</p></div>
-      <div class="aed-card"><h4 style="margin-top:0">Documents</h4><div class="aed-stack" style="margin-top:10px">${docs.map((d) => `<div class="aed-row" style="justify-content:space-between"><span>${d}</span><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="doc">Consulter</button></div>`).join("")}</div></div>
+      <div class="aed-card"><h4 style="margin-top:0">Documents</h4><div class="aed-stack" style="margin-top:10px">${docs.filter((d) => d[1] !== "admin" || isAdmin()).map((d) => `<div class="aed-row" style="justify-content:space-between"><span>${d[0]}</span><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="doc" data-v="${d[1]}">Consulter</button></div>`).join("")}</div></div>
       <div class="aed-card"><h4 style="margin-top:0">Contact</h4><p>Adresse e-mail, téléphone et permanences : à compléter par le bureau.</p></div>
     </div><div class="aed-stack"><h4 class="aed-h4" style="margin:0">Questions fréquentes</h4>${faq.map((f) => `<details class="aed-faq"><summary>${f[0]}</summary><p>${f[1]}</p></details>`).join("")}</div></div>`;
   };
@@ -529,7 +529,8 @@
     $("#aed-ticker").innerHTML = text + text;
   }
   function paintChrome() {
-    $$('[data-aed="role"]', root).forEach((b) => { const on = b.dataset.v === S.role; b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); });
+    $('[data-aed="role"]', root).forEach((b) => { const on = b.dataset.v === S.role; b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); });
+    applyAccessibility();
     const n = unseen(), bell = $("#aed-bell");
     bell.hidden = !n; bell.textContent = n;
     paintTicker();
@@ -653,12 +654,25 @@
   }
   function receiptHtml(p) {
     const m = member(p.mid) || { name: "—", village: "" };
-    return `<div class="aed-receipt"><span class="aed-stamp">SIMULATION</span><img class="aed-receipt-logo" src="${LOGO}" alt="AEDBVT" width="76" height="76"><h3>Reçu de cotisation</h3><div class="aed-receipt-ref">${esc(p.ref)}</div><dl><dt>Membre</dt><dd>${esc(m.name)}</dd><dt>Village</dt><dd>${esc(m.village)}</dd><dt>Montant</dt><dd>${ar(p.amount)}</dd><dt>Moyen</dt><dd>${esc(p.method)}</dd><dt>Date</dt><dd>${esc(p.date)}</dd><dt>Objet</dt><dd>Cotisation 2026-2027</dd></dl><p class="aed-receipt-org">Association des Étudiants de Darsalama et Bandrani-Vouani à Tuléar</p></div><div class="aed-row" style="justify-content:flex-end;margin-top:14px"><button class="aed-btn aed-primary aed-sm" type="button" data-aed="close">Fermer</button></div>`;
+    return `<div class="aed-receipt"><span class="aed-stamp">SIMULATION</span><img class="aed-receipt-logo" src="${LOGO}" alt="AEDBVT" width="76" height="76"><h3>Reçu de cotisation</h3><div class="aed-receipt-ref">${esc(p.ref)}</div><dl><dt>Membre</dt><dd>${esc(m.name)}</dd><dt>Village</dt><dd>${esc(m.village)}</dd><dt>Montant</dt><dd>${ar(p.amount)}</dd><dt>Moyen</dt><dd>${esc(p.method)}</dd><dt>Date</dt><dd>${esc(p.date)}</dd><dt>Objet</dt><dd>Cotisation 2026-2027</dd></dl><p class="aed-receipt-org">Association des Étudiants de Darsalama et Bandrani-Vouani à Tuléar</p></div><div class="aed-row" style="justify-content:flex-end;margin-top:14px"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="download-receipt" data-id="${p.id}">Télécharger PDF</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="close">Fermer</button></div>`;
   }
   const pubForm = () => openModal(`<h3>Publier une actualité</h3><label class="aed-f">Titre<input class="aed-input" id="nt"></label><label class="aed-f">Catégorie<select class="aed-input" id="nc"><option>Vie associative</option><option>Académique</option><option>Solidarité</option><option>Annonce</option></select></label><label class="aed-f">Résumé<input class="aed-input" id="ne"></label><label class="aed-f">Contenu<textarea class="aed-input" id="nb" rows="4"></textarea></label><div class="aed-row" style="justify-content:flex-end"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="close">Annuler</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="do-pub">Publier</button></div>`);
   const evForm = () => openModal(`<h3>Nouvel événement</h3><label class="aed-f">Titre<input class="aed-input" id="et"></label><label class="aed-f">Date et heure<input class="aed-input" id="ed" type="datetime-local"></label><label class="aed-f">Lieu<input class="aed-input" id="ep"></label><label class="aed-f">Type<select class="aed-input" id="ey"><option>Assemblée</option><option>Culturel</option><option>Sport</option><option>Solidarité</option><option>Académique</option></select></label><label class="aed-f">Description<textarea class="aed-input" id="es" rows="3"></textarea></label><div class="aed-row" style="justify-content:flex-end"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="close">Annuler</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="do-ev">Ajouter</button></div>`);
   const memForm = () => openModal(`<h3>Nouveau membre</h3><label class="aed-f">Nom complet<input class="aed-input" id="mn"></label><label class="aed-f">Village<select class="aed-input" id="mv"><option>Darsalama</option><option>Bandrani-Vouani</option></select></label><label class="aed-f">Filière<input class="aed-input" id="mf"></label><label class="aed-f">Niveau<input class="aed-input" id="ml" placeholder="Licence 1"></label><div class="aed-row" style="justify-content:flex-end"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="close">Annuler</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="do-mem">Ajouter</button></div>`);
   const alertForm = () => openModal(`<h3>Nouvelle annonce</h3><label class="aed-f">Titre<input class="aed-input" id="at"></label><label class="aed-f">Niveau<select class="aed-input" id="al"><option value="info">Information</option><option value="alerte">Alerte</option><option value="urgent">Urgent</option></select></label><label class="aed-f">Message<textarea class="aed-input" id="am" rows="3"></textarea></label><label class="aed-row" style="margin-bottom:12px;font-size:13px;font-weight:700"><input type="checkbox" id="ap" checked> Épingler dans le bandeau défilant</label><div class="aed-row" style="justify-content:flex-end"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="close">Annuler</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="do-alert">Diffuser</button></div>`);
+  let draftDocType = "quote";
+  function financialForm(kind) {
+    draftDocType = kind;
+    const title = kind === "quote" ? "Créer un devis" : "Créer une facture";
+    openModal(`<h3>${title}</h3><p class="aed-note">Document de simulation. Les mentions officielles seront configurées lors du déploiement de l’application dédiée.</p>
+      <label class="aed-f">Destinataire<input class="aed-input" id="dclient" placeholder="Nom du partenaire / bénéficiaire"></label>
+      <label class="aed-f">Objet<input class="aed-input" id="dobject" placeholder="Objet du document"></label>
+      <label class="aed-f">Ligne<input class="aed-input" id="dlabel" placeholder="Prestation, contribution ou article"></label>
+      <div class="aed-field2"><label class="aed-f">Quantité<input class="aed-input" id="dqty" type="number" min="1" value="1"></label><label class="aed-f">Prix unitaire (Ar)<input class="aed-input" id="dunit" type="number" min="0" step="1000" value="50000"></label></div>
+      ${kind === "invoice" ? '<label class="aed-f">Échéance<input class="aed-input" id="ddue" type="date"></label>' : ""}
+      <div class="aed-row" style="justify-content:flex-end"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="close">Annuler</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="do-financial">Enregistrer</button></div>`);
+  }
+  const expenseForm = () => openModal(`<h3>Enregistrer une dépense</h3><label class="aed-f">Libellé<input class="aed-input" id="xl"></label><label class="aed-f">Montant (Ar)<input class="aed-input" id="xa" type="number" min="1" step="1000"></label><label class="aed-f">Date<input class="aed-input" id="xd" type="date" value="${todayKey()}"></label><div class="aed-row" style="justify-content:flex-end"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="close">Annuler</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="do-exp">Enregistrer</button></div>`);
 
   /* ---------- Actions ---------- */
   const A = {
@@ -673,18 +687,42 @@
     org: (t) => { S.orgSel = t.dataset.id; save(); render(); },
     pin: (t) => { const a = S.alerts.find((x) => String(x.id) === t.dataset.id); if (a) a.pinned = !a.pinned; save(); render(); },
     del: (t) => { const k = t.dataset.k, id = parseInt(t.dataset.id, 10); S[k] = S[k].filter((x) => x.id !== id); save(); render(); toast("Supprimé"); },
-    doc: () => toast("Document de démonstration — bientôt disponible"),
+    doc: (t) => { const target = t.dataset.v || "rules"; go(target); },
     close: closeModal,
     "open-pay": payForm, "open-pub": pubForm, "open-ev": evForm, "open-mem": memForm, "open-alert": alertForm,
+    "open-quote": () => financialForm("quote"), "open-invoice": () => financialForm("invoice"), "open-exp": expenseForm,
     pm: (t) => { payMethod = t.dataset.v; $$(".aed-pm button", modal).forEach((b) => b.classList.toggle("on", b === t)); },
     receipt: (t) => { const p = S.payments.find((x) => String(x.id) === t.dataset.id); if (p) openModal(receiptHtml(p)); },
+    "download-receipt": (t) => { const p = S.payments.find((x) => String(x.id) === t.dataset.id); if (!p) return; downloadPdf(`${p.ref}.pdf`, "Reçu de cotisation", receiptLines(p)); toast("Reçu PDF téléchargé"); },
+    "download-doc": (t) => { const list = t.dataset.kind === "quote" ? S.quotes : S.invoices; const d = list.find((x) => String(x.id) === t.dataset.id); if (!d) return; const title = t.dataset.kind === "quote" ? "Devis" : "Facture"; downloadPdf(`${d.ref}.pdf`, title, financialLines(t.dataset.kind, d)); toast(`${title} PDF téléchargé`); },
+    "download-rules": (t) => { const list = t.dataset.v === "statutes" ? STATUTES : INTERNAL_RULES; const title = t.dataset.v === "statutes" ? "Statuts proposés AEDBVT" : "Règlement intérieur proposé AEDBVT"; const lines = ["PROJET DE SIMULATION - à adopter et faire valider", "", ...list.flatMap((a) => [a[0], a[1], ""])]; downloadPdf(`AEDBVT-${t.dataset.v === "statutes" ? "statuts" : "reglement"}-simulation.pdf`, title, lines); toast("Document PDF généré"); },
+    backup: () => { downloadJson(); toast("Sauvegarde JSON exportée"); },
+    a11y: (t) => {
+      const a = S.accessibility;
+      if (t.dataset.v === "font-up") a.font = Math.min(2, a.font + 1);
+      if (t.dataset.v === "font-down") a.font = Math.max(-1, a.font - 1);
+      if (t.dataset.v === "contrast") a.contrast = !a.contrast;
+      if (t.dataset.v === "calm") a.calm = !a.calm;
+      save(); applyAccessibility(); toast("Préférences d’accessibilité mises à jour");
+    },
+    "convert-quote": (t) => { const q = S.quotes.find((x) => String(x.id) === t.dataset.id); if (!q) return; const id = nextId(S.invoices); const inv = { id, ref: financialRef("FAC", S.invoices), date: todayKey(), due: "", client: q.client, object: q.object, status: "Émise", items: JSON.parse(JSON.stringify(q.items)) }; S.invoices.push(inv); q.status = "Accepté"; addActivity(`Devis ${q.ref} converti en facture ${inv.ref}`); save(); render(); toast("Devis converti en facture"); },
+    "invoice-paid": (t) => { const d = S.invoices.find((x) => String(x.id) === t.dataset.id); if (!d) return; d.status = "Payée"; addActivity(`Facture ${d.ref} marquée payée`); save(); render(); toast("Facture marquée payée"); },
+    "do-financial": () => {
+      const client = val("dclient"), object = val("dobject"), label = val("dlabel"), qty = parseInt(val("dqty"), 10) || 1, unit = parseInt(val("dunit"), 10);
+      if (!client || !object || !label || !Number.isFinite(unit) || unit < 0) { toast("Complétez correctement le document"); return; }
+      const list = draftDocType === "quote" ? S.quotes : S.invoices, prefix = draftDocType === "quote" ? "DEV" : "FAC";
+      const d = { id: nextId(list), ref: financialRef(prefix, list), date: todayKey(), client, object, status: draftDocType === "quote" ? "Brouillon" : "Émise", items: [{ label, qty, unit }] };
+      if (draftDocType === "invoice") d.due = val("ddue");
+      list.push(d); addActivity(`${draftDocType === "quote" ? "Devis" : "Facture"} ${d.ref} créé`); save(); closeModal(); render(); toast("Document créé"); confetti();
+    },
+    "do-exp": () => { const label = val("xl"), amount = parseInt(val("xa"), 10), date = val("xd") || todayKey(); if (!label || !amount || amount < 1) { toast("Libellé et montant requis"); return; } S.expenses.push({ id: nextId(S.expenses), label, amount, date }); addActivity(`Dépense enregistrée : ${label} — ${ar(amount)}`); save(); closeModal(); render(); toast("Dépense enregistrée"); },
     "do-pay": () => {
       const mid = parseInt(val("pmem"), 10), amount = parseInt(val("pamt"), 10);
       if (!amount || amount < 1000) { toast("Montant invalide"); return; }
       openModal(`<div style="text-align:center;padding:16px 0"><div class="aed-spin"></div><b>Traitement du paiement ${esc(payMethod)}…</b><br><small class="aed-muted">Simulation en cours</small></div>`);
       setTimeout(() => {
         const n = nextId(S.payments), p = { id: n, mid, amount, method: payMethod, date: todayKey(), ref: `AED-${new Date().getFullYear()}-${String(n).padStart(4, "0")}` };
-        S.payments.push(p); save();
+        S.payments.push(p); addActivity(`Paiement ${p.ref} enregistré — ${ar(p.amount)}`); save();
         openModal(`<div class="aed-pay-success"><span aria-hidden="true">✅</span><h3>Paiement enregistré !</h3></div>${receiptHtml(p)}`);
         confetti(); render();
       }, 1400);
