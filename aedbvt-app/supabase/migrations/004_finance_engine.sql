@@ -137,7 +137,7 @@ insert into public.cash_accounts(name,kind,provider) values
 on conflict (name) do nothing;
 
 create or replace function public.guard_budget_line_write()
-returns trigger language plpgsql set search_path=public as $
+returns trigger language plpgsql set search_path=public as $$
 declare target_budget uuid;
 declare budget_status text;
 begin
@@ -147,14 +147,14 @@ begin
     raise exception 'Un budget approuvé ou clôturé ne peut plus être modifié.';
   end if;
   return coalesce(new,old);
-end $;
+end $$;
 
 drop trigger if exists guard_budget_line_write on public.budget_lines;
 create trigger guard_budget_line_write before insert or update or delete on public.budget_lines
 for each row execute function public.guard_budget_line_write();
 
 create or replace function public.guard_quote_item_write()
-returns trigger language plpgsql set search_path=public as $
+returns trigger language plpgsql set search_path=public as $$
 declare target_quote uuid;
 declare quote_status public.document_status;
 begin
@@ -164,14 +164,14 @@ begin
     raise exception 'Les lignes de ce devis sont verrouillées.';
   end if;
   return coalesce(new,old);
-end $;
+end $$;
 
 drop trigger if exists guard_quote_item_write on public.quote_items;
 create trigger guard_quote_item_write before insert or update or delete on public.quote_items
 for each row execute function public.guard_quote_item_write();
 
 create or replace function public.guard_invoice_item_write()
-returns trigger language plpgsql set search_path=public as $
+returns trigger language plpgsql set search_path=public as $$
 declare target_invoice uuid;
 declare invoice_status public.document_status;
 begin
@@ -181,14 +181,14 @@ begin
     raise exception 'Les lignes d’une facture réglée ou partiellement réglée sont verrouillées.';
   end if;
   return coalesce(new,old);
-end $;
+end $$;
 
 drop trigger if exists guard_invoice_item_write on public.invoice_items;
 create trigger guard_invoice_item_write before insert or update or delete on public.invoice_items
 for each row execute function public.guard_invoice_item_write();
 
 create or replace function public.validate_invoice_payment()
-returns trigger language plpgsql set search_path=public as $
+returns trigger language plpgsql set search_path=public as $$
 declare invoice_total numeric(14,2);
 declare invoice_status public.document_status;
 declare already_paid numeric(14,2);
@@ -209,14 +209,14 @@ begin
     raise exception 'Le règlement dépasse le reste à payer.';
   end if;
   return new;
-end $;
+end $$;
 
 drop trigger if exists validate_invoice_payment on public.invoice_payments;
 create trigger validate_invoice_payment before insert or update on public.invoice_payments
 for each row execute function public.validate_invoice_payment();
 
 create or replace function public.guard_invoice_status_update()
-returns trigger language plpgsql set search_path=public as $
+returns trigger language plpgsql set search_path=public as $$
 begin
   if new.status='cancelled' and old.status is distinct from 'cancelled'
      and exists(select 1 from public.invoice_payments where invoice_id=old.id) then
@@ -226,7 +226,7 @@ begin
     raise exception 'Une facture payée est verrouillée.';
   end if;
   return new;
-end $;
+end $$;
 
 drop trigger if exists guard_invoice_status_update on public.invoices;
 create trigger guard_invoice_status_update before update of status on public.invoices
@@ -398,7 +398,7 @@ returns uuid
 language plpgsql
 security definer
 set search_path=public
-as $
+as $$
 declare
   q public.quotes%rowtype;
   new_invoice_id uuid;
@@ -445,7 +445,7 @@ begin
   update public.quotes set status='accepted' where id=p_quote_id;
 
   return new_invoice_id;
-end $;
+end $$;
 
 revoke all on function public.convert_quote_to_invoice(uuid,date) from public;
 grant execute on function public.convert_quote_to_invoice(uuid,date) to authenticated;
