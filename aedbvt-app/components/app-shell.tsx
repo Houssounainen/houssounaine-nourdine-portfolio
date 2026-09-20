@@ -18,9 +18,9 @@ export function AppShell({ children, profile }: { children: React.ReactNode; pro
 
   const links = [
     ...commonLinks,
-    ...(staff ? [["/operations","Pilotage"],["/members","Membres"],["/requests","Demandes"],["/documents","Documents"]] : []),
+    ...(staff ? [["/operations","Pilotage"],["/administration","Secrétariat"],["/members","Membres"],["/requests","Demandes"],["/documents","Documents"]] : []),
     ...(finance ? [["/finance","Finances"]] : []),
-    ...(role === "admin" ? [["/admin","Administration"]] : []),
+    ...(role === "admin" ? [["/admin","Paramètres"]] : []),
   ];
 
   return (
