@@ -167,7 +167,7 @@
   };
   const memberCards = (list) => list.length ? list.map((m, i) => {
     const st = statusOf(m.id);
-    return `<div class="aed-card aed-hov aed-mem" style="animation:aedPanel 520ms ${i * 40}ms both"><div class="aed-mav ${m.village === "Darsalama" ? "dar" : "ban"}">${initials(m.name)}</div><div style="flex:1;min-width:0"><b>${esc(m.name)}</b><small>${esc(m.role)}<br>${esc(m.filiere)} · ${esc(m.niveau)}</small><div style="margin-top:6px"><span class="aed-badge ${st[1]}">${st[0]}</span></div></div>${isBureau() && m.id > 16 ? `<button class="aed-btn aed-danger aed-sm" type="button" data-aed="del" data-k="members" data-id="${m.id}" aria-label="Supprimer">×</button>` : ""}</div>`;
+    return `<div class="aed-card aed-hov aed-mem" style="--aed-i:${Math.min(i, 12)}"><div class="aed-mav ${m.village === "Darsalama" ? "dar" : "ban"}">${initials(m.name)}</div><div style="flex:1;min-width:0"><b>${esc(m.name)}</b><small>${esc(m.role)}<br>${esc(m.filiere)} · ${esc(m.niveau)}</small><div style="margin-top:6px"><span class="aed-badge ${st[1]}">${st[0]}</span></div></div>${isBureau() && m.id > 16 ? `<button class="aed-btn aed-danger aed-sm" type="button" data-aed="del" data-k="members" data-id="${m.id}" aria-label="Supprimer">×</button>` : ""}</div>`;
   }).join("") : '<div class="aed-empty">Aucun membre trouvé.</div>';
 
   const newsFiltered = () => {
