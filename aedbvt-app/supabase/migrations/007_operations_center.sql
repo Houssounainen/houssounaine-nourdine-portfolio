@@ -406,7 +406,7 @@ declare commission_status text;
 begin
   select status into commission_status
   from public.commissions
-  where id=coalesce(new.commission_id,old.commission_id);
+  where id=new.commission_id;
 
   if commission_status='closed' and (tg_op='INSERT' or new.left_at is null) then
     raise exception 'Une commission clôturée ne peut plus recevoir de membres.';
