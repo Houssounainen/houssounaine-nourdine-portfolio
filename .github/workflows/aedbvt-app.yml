@@ -34,6 +34,7 @@ jobs:
           node -e "const fs=require('fs'); const j=JSON.parse(fs.readFileSync('../vercel.json','utf8')); const cmd=j.ignoreCommand||''; if(cmd.length>256){console.error('ignoreCommand too long:',cmd.length); process.exit(1)}"
           bash -n ../scripts/vercel-ignore-build.sh
       - run: node scripts/check-pwa.mjs
+      - run: node scripts/check-android.mjs
       - run: npm run typecheck
       - run: npm run build
         env:

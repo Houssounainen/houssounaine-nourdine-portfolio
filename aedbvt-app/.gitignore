@@ -4,3 +4,8 @@ node_modules
 .env.local
 .vercel
 *.log
+*.jks
+*.keystore
+*.apk
+*.aab
+android-signing/

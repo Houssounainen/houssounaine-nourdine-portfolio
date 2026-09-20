@@ -10,7 +10,12 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "vapid:generate": "node scripts/generate-vapid.mjs"
+    "vapid:generate": "node scripts/generate-vapid.mjs",
+    "android:validate": "node scripts/android-twa.mjs validate",
+    "android:init": "node scripts/android-twa.mjs init",
+    "android:doctor": "node scripts/android-twa.mjs doctor",
+    "android:build": "node scripts/android-twa.mjs build",
+    "android:build:unsigned": "node scripts/android-twa.mjs build-unsigned"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",
@@ -27,6 +32,7 @@
     "@types/react-dom": "^19.3.0",
     "@types/qrcode": "1.5.6",
     "typescript": "^5.9.0",
-    "@types/web-push": "^3.6.4"
+    "@types/web-push": "^3.6.4",
+    "@bubblewrap/cli": "1.25.0"
   }
 }

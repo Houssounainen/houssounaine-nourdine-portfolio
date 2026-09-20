@@ -5,6 +5,7 @@ export default function manifest():MetadataRoute.Manifest{
     name:"AEDBVT · Gestion associative",
     short_name:"AEDBVT",
     description:"Application officielle de gestion associative AEDBVT.",
+    id:"/",
     start_url:"/dashboard",
     scope:"/",
     display:"standalone",
