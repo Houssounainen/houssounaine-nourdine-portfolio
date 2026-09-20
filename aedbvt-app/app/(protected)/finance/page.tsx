@@ -33,7 +33,7 @@ export default async function FinancePage() {
         </form>
       </div>
       <div className="content-grid">
-        <article className="panel"><h2>Derniers paiements</h2><div className="feed">{(payments||[]).map((p) => <div key={p.id}><span><b>{Array.isArray(p.members) ? p.members[0]?.full_name : p.members?.full_name || "Membre"}</b><small>{p.method} · {p.receipt_number||"reçu en génération"}</small></span><strong>+ {Number(p.amount).toLocaleString("fr-FR")} Ar</strong></div>)}</div></article>
+        <article className="panel"><h2>Derniers paiements</h2><div className="feed">{(payments||[]).map((p: any) => <div key={p.id}><span><b>{Array.isArray(p.members) ? p.members[0]?.full_name : p.members?.full_name || "Membre"}</b><small>{p.method} · {p.receipt_number||"reçu en génération"}</small></span><strong>+ {Number(p.amount).toLocaleString("fr-FR")} Ar</strong></div>)}</div></article>
         <article className="panel"><h2>Dernières dépenses</h2><div className="feed">{(expenses||[]).map(e=><div key={e.id}><span><b>{e.label}</b><small>{e.spent_at}</small></span><strong className="negative">− {Number(e.amount).toLocaleString("fr-FR")} Ar</strong></div>)}</div></article>
       </div>
     </section>
