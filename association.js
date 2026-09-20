@@ -16,7 +16,7 @@
     del(key) { try { localStorage.removeItem(key); } catch { /* stockage indisponible */ } }
   };
 
-  const KEY = "aedbvt_state_v1";
+  const KEY = "aedbvt_state_v2";
   const COTISATION = 30000;
   const LOGO = "assets/aedbvt-logo.webp";
   const ar = (n) => `${Number(n).toLocaleString("fr-FR")} Ar`;
@@ -52,7 +52,7 @@
   /* ---------- Données de démonstration ---------- */
   function seed() {
     return {
-      tab: "dash", role: "membre", seen: [], rsvp: {}, newsCat: "Toutes", newsQ: "", memQ: "", memV: "Tous", selDay: null, cal: null, orgSel: "pres",
+      tab: "dash", role: "membre", seen: [], rsvp: {}, newsCat: "Toutes", newsQ: "", memQ: "", memV: "Tous", selDay: null, cal: { y: 2026, m: 8 }, orgSel: "pres",
       members: [
         { id: 1, name: "Abdou Salim", village: "Darsalama", filiere: "Droit", niveau: "Master 1", role: "Président" },
         { id: 2, name: "Fatima Said", village: "Bandrani-Vouani", filiere: "Économie & Gestion", niveau: "Licence 3", role: "Vice-présidente" },
@@ -112,21 +112,22 @@
         { id: 5, title: "Collecte solidaire : merci aux participants", cat: "Solidarité", date: "2026-09-08", excerpt: "Un bel élan de générosité entre membres.", body: "La commission Social & solidarité remercie tous les membres qui ont contribué. Le détail sera présenté à l’assemblée générale." }
       ],
       alerts: [
-        { id: 1, level: "alerte", title: "Cotisation : échéance le 31 octobre", msg: "Pensez à régler votre cotisation 2026-2027 avant la date limite.", date: "2026-09-18", pinned: true },+        { id: 2, level: "info", title: "AG de rentrée le 4 octobre", msg: "La présence de tous les membres est attendue.", date: "2026-09-17", pinned: true },
+        { id: 1, level: "alerte", title: "Cotisation : échéance le 31 octobre", msg: "Pensez à régler votre cotisation 2026-2027 avant la date limite.", date: "2026-09-18", pinned: true },
+        { id: 2, level: "info", title: "AG de rentrée le 4 octobre", msg: "La présence de tous les membres est attendue.", date: "2026-09-17", pinned: true },
         { id: 3, level: "urgent", title: "Réunion du bureau confirmée le 27 septembre", msg: "Elle se tiendra à 18h00, en visioconférence.", date: "2026-09-19", pinned: false }
       ]
     };
   }
 
   const ORG = {
-    id: "ag", title: "Assemblée générale", sub: "Instance suprême", mission: "Tous les membres se réunissent pour voter le bilan, le budget et élire le bureau.",
+    id: "ag", title: "Assemblée générale", sub: "Instance suprême", mission: "Tous les membres se réunissent pour voter le bilan, le budget et les grandes orientations de l’association.",
     children: [{
       id: "pres", title: "Président", mid: 1, mission: "Représente l’association, dirige le bureau et veille à l’application des décisions.",
       children: [
-        { id: "vp", title: "Vice-présidente", mid: 2, mission: "Seconde le président et coordonne les commissions.", children: [{ id: "vie", title: "Vie étudiante", mid: 10, mission: "Accueil des nouveaux, parrainage, activités culturelles et sportives." }] },
-        { id: "sg", title: "Secrétaire général", mid: 3, mission: "Rédige les comptes rendus, tient le registre des membres et les archives.", children: [{ id: "com", title: "Communication", mid: 11, mission: "Réseaux sociaux, affiches, annonces et espace en ligne de l’association." }] },
-        { id: "tres", title: "Trésorière", mid: 4, mission: "Encaisse les cotisations, tient la caisse et présente le bilan financier.", children: [{ id: "cot", title: "Cotisations", mid: 12, mission: "Suivi des paiements, rappels et délivrance des reçus." }] },
-        { id: "cac", title: "Commissaire aux comptes", mid: 5, mission: "Contrôle la régularité des comptes et rend compte à l’assemblée.", children: [{ id: "soc", title: "Social & solidarité", mid: 13, mission: "Entraide entre membres, collectes et soutien en cas de difficulté." }] }
+        { id: "sg", title: "Secrétaire général", mid: 3, mission: "Rédige les comptes rendus, prépare les réunions, tient le registre des membres et les archives." },
+        { id: "tres", title: "Trésorière", mid: 4, mission: "Encaisse les cotisations, tient la caisse et présente le bilan financier." },
+        { id: "com", title: "Communication", mid: 11, mission: "Gère les annonces, les réseaux sociaux, les affiches et l’espace en ligne de l’association." },
+        { id: "cot", title: "Cotisations", mid: 12, mission: "Suit les paiements, effectue les rappels et veille à la délivrance des reçus." }
       ]
     }]
   };
@@ -268,10 +269,11 @@
   };
 
   R.alerts = () => {
-    const order = { urgent: 0, alerte: 1, info: 2 }, glyph = { urgent: "warn", alerte: "warn", info: "circle" };
+    const order = { urgent: 0, alerte: 1, info: 2 };
+    const emoji = { urgent: "🚨", alerte: "⚠️", info: "📣" };
     const list = S.alerts.slice().sort((a, b) => (Number(b.pinned) - Number(a.pinned)) || (order[a.level] - order[b.level]) || (b.id - a.id));
     return `<div class="aed-ph"><h3>Alertes & annonces</h3>${isBureau() ? '<button class="aed-btn aed-primary aed-sm" type="button" data-aed="open-alert">+ Nouvelle annonce</button>' : ""}</div>
-      <div class="aed-stack">${list.length ? list.map((a, i) => `<div class="aed-alert ${a.level}" style="animation-delay:${i * 60}ms">${icon(glyph[a.level])}<div style="flex:1"><div class="aed-row" style="justify-content:space-between"><b>${esc(a.title)}</b>${a.pinned ? '<span class="aed-badge aed-b-part">Épinglée</span>' : ""}</div><div class="aed-muted" style="margin-top:4px;font-size:14px">${esc(a.msg)}</div><div class="aed-meta" style="margin-top:6px">${fmtDate.format(parse(a.date))}</div>${isBureau() ? `<div class="aed-row" style="margin-top:10px"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="pin" data-id="${a.id}">${a.pinned ? "Désépingler" : "Épingler"}</button><button class="aed-btn aed-danger aed-sm" type="button" data-aed="del" data-k="alerts" data-id="${a.id}">Supprimer</button></div>` : ""}</div></div>`).join("") : '<div class="aed-empty">Aucune alerte pour le moment.</div>'}</div>`;
+      <div class="aed-stack">${list.length ? list.map((a, i) => `<div class="aed-alert ${a.level}" style="animation-delay:${i * 60}ms"><span class="aed-alert-emoji" aria-hidden="true">${emoji[a.level] || "ℹ️"}</span><div style="flex:1"><div class="aed-row" style="justify-content:space-between"><b>${esc(a.title)}</b>${a.pinned ? '<span class="aed-badge aed-b-part">📌 Épinglée</span>' : ""}</div><div class="aed-muted" style="margin-top:4px;font-size:14px">${esc(a.msg)}</div><div class="aed-meta" style="margin-top:6px">${fmtDate.format(parse(a.date))}</div>${isBureau() ? `<div class="aed-row" style="margin-top:10px"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="pin" data-id="${a.id}">${a.pinned ? "Désépingler" : "Épingler"}</button><button class="aed-btn aed-danger aed-sm" type="button" data-aed="del" data-k="alerts" data-id="${a.id}">Supprimer</button></div>` : ""}</div></div>`).join("") : '<div class="aed-empty">Aucune alerte pour le moment.</div>'}</div>`;
   };
 
   R.info = () => {
@@ -292,8 +294,8 @@
   /* ---------- Squelette, moteur de rendu ---------- */
   root.innerHTML = `
     <div class="aed-bar">
-      <div class="aed-seg" role="group" aria-label="Type de vue"><button type="button" data-aed="role" data-v="membre">Vue Membre</button><button type="button" data-aed="role" data-v="bureau">Vue Bureau</button></div>
-      <div class="aed-row"><button class="aed-tool" type="button" data-aed="tab" data-v="alerts" aria-label="Alertes">${icon("alerts")}<span class="aed-count" id="aed-bell" hidden>0</span></button><button class="aed-tool" type="button" data-aed="reset" title="Réinitialiser la démonstration">↺ Démo</button></div>
+      <div class="aed-seg" role="group" aria-label="Type de vue"><button type="button" data-aed="role" data-v="membre"><span aria-hidden="true">👤</span> Vue Membre</button><button type="button" data-aed="role" data-v="bureau"><span aria-hidden="true">🛡️</span> Vue Bureau</button></div>
+      <div class="aed-row"><button class="aed-tool aed-bell-tool" type="button" data-aed="tab" data-v="alerts" aria-label="Alertes"><span aria-hidden="true">🔔</span><span class="aed-count" id="aed-bell" hidden>0</span></button><button class="aed-tool" type="button" data-aed="reset" title="Réinitialiser la démonstration">↻ Démo</button></div>
     </div>
     <div class="aed-ticker" aria-label="Alertes épinglées"><div id="aed-ticker"></div></div>
     <div class="aed-tabs" id="aed-tabs" role="tablist" aria-label="Rubriques de l’association"><span class="aed-ind" id="aed-ind"></span></div>
@@ -440,7 +442,7 @@
   }
   function receiptHtml(p) {
     const m = member(p.mid) || { name: "—", village: "" };
-    return `<div class="aed-receipt"><span class="aed-stamp">SIMULATION</span><img src="${LOGO}" alt="AEDBVT" width="64" height="64"><h3 style="margin:8px 0 2px">Reçu de cotisation</h3><small class="aed-muted">${esc(p.ref)}</small><dl><dt>Membre</dt><dd>${esc(m.name)}</dd><dt>Village</dt><dd>${esc(m.village)}</dd><dt>Montant</dt><dd>${ar(p.amount)}</dd><dt>Moyen</dt><dd>${esc(p.method)}</dd><dt>Date</dt><dd>${esc(p.date)}</dd><dt>Objet</dt><dd>Cotisation 2026-2027</dd></dl><small class="aed-muted">Association des Étudiants de Darsalama et Bandrani-Vouani à Tuléar</small></div><div class="aed-row" style="justify-content:flex-end;margin-top:14px"><button class="aed-btn aed-primary aed-sm" type="button" data-aed="close">Fermer</button></div>`;
+    return `<div class="aed-receipt"><span class="aed-stamp">SIMULATION</span><img class="aed-receipt-logo" src="${LOGO}" alt="AEDBVT" width="76" height="76"><h3>Reçu de cotisation</h3><div class="aed-receipt-ref">${esc(p.ref)}</div><dl><dt>Membre</dt><dd>${esc(m.name)}</dd><dt>Village</dt><dd>${esc(m.village)}</dd><dt>Montant</dt><dd>${ar(p.amount)}</dd><dt>Moyen</dt><dd>${esc(p.method)}</dd><dt>Date</dt><dd>${esc(p.date)}</dd><dt>Objet</dt><dd>Cotisation 2026-2027</dd></dl><p class="aed-receipt-org">Association des Étudiants de Darsalama et Bandrani-Vouani à Tuléar</p></div><div class="aed-row" style="justify-content:flex-end;margin-top:14px"><button class="aed-btn aed-primary aed-sm" type="button" data-aed="close">Fermer</button></div>`;
   }
   const pubForm = () => openModal(`<h3>Publier une actualité</h3><label class="aed-f">Titre<input class="aed-input" id="nt"></label><label class="aed-f">Catégorie<select class="aed-input" id="nc"><option>Vie associative</option><option>Académique</option><option>Solidarité</option><option>Annonce</option></select></label><label class="aed-f">Résumé<input class="aed-input" id="ne"></label><label class="aed-f">Contenu<textarea class="aed-input" id="nb" rows="4"></textarea></label><div class="aed-row" style="justify-content:flex-end"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="close">Annuler</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="do-pub">Publier</button></div>`);
   const evForm = () => openModal(`<h3>Nouvel événement</h3><label class="aed-f">Titre<input class="aed-input" id="et"></label><label class="aed-f">Date et heure<input class="aed-input" id="ed" type="datetime-local"></label><label class="aed-f">Lieu<input class="aed-input" id="ep"></label><label class="aed-f">Type<select class="aed-input" id="ey"><option>Assemblée</option><option>Culturel</option><option>Sport</option><option>Solidarité</option><option>Académique</option></select></label><label class="aed-f">Description<textarea class="aed-input" id="es" rows="3"></textarea></label><div class="aed-row" style="justify-content:flex-end"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="close">Annuler</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="do-ev">Ajouter</button></div>`);
@@ -472,7 +474,7 @@
       setTimeout(() => {
         const n = nextId(S.payments), p = { id: n, mid, amount, method: payMethod, date: todayKey(), ref: `AED-${new Date().getFullYear()}-${String(n).padStart(4, "0")}` };
         S.payments.push(p); save();
-        openModal(`<h3 style="text-align:center">Paiement enregistré</h3>${receiptHtml(p)}`);
+        openModal(`<div class="aed-pay-success"><span aria-hidden="true">✅</span><h3>Paiement enregistré !</h3></div>${receiptHtml(p)}`);
         confetti(); render();
       }, 1400);
     },
