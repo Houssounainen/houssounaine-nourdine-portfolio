@@ -376,6 +376,27 @@ where d.outcome in ('adopted','elected')
     where t.decision_id=d.id and t.auto_generated=true
   );
 
+create or replace function public.guard_commission_closure()
+returns trigger
+language plpgsql
+set search_path=public
+as $
+begin
+  if old.status='active' and new.status='closed'
+     and exists(
+       select 1 from public.operational_tasks t
+       where t.commission_id=old.id and t.status not in ('done','cancelled')
+     ) then
+    raise exception 'La commission possède encore des tâches ouvertes.';
+  end if;
+  return new;
+end $;
+
+drop trigger if exists guard_commission_closure on public.commissions;
+create trigger guard_commission_closure
+before update of status on public.commissions
+for each row execute function public.guard_commission_closure();
+
 create or replace function public.guard_closed_commission_membership()
 returns trigger
 language plpgsql
