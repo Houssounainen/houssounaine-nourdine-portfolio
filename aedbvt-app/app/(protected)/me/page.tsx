@@ -30,9 +30,10 @@ export default async function MySpacePage() {
     );
   }
 
-  const [{ data: payments }, { data: requests }, { data: eventRegs }, { data: meetingRegs }, { data: duesSetting }] = await Promise.all([
+  const [{ data: payments }, { data: requests }, { data: issuedDocs }, { data: eventRegs }, { data: meetingRegs }, { data: duesSetting }] = await Promise.all([
     supabase.from("payments").select("id,amount,method,receipt_number,paid_at,status").eq("member_id", member.id).eq("status","confirmed").order("paid_at",{ascending:false}),
     supabase.from("member_service_requests").select("id,request_type,subject,details,status,response,created_at,updated_at").eq("member_id",member.id).order("created_at",{ascending:false}),
+    supabase.from("administrative_issuances").select("id,number,document_type,subject,purpose,issued_at,verification_token").eq("member_id",member.id).eq("status","issued").order("issued_at",{ascending:false}),
     supabase.from("event_registrations").select("event_id,status").eq("user_id",user!.id).eq("status","going"),
     supabase.from("meeting_attendance").select("meeting_id,status").eq("user_id",user!.id).eq("status","confirmed"),
     supabase.from("app_settings").select("value").eq("key","annual_dues_ariary").maybeSingle(),
@@ -111,6 +112,14 @@ export default async function MySpacePage() {
           </div>
         </article>
       </div>
+
+      <article className="panel no-print member-documents">
+        <div className="panel-head"><div><span className="eyebrow">Secrétariat</span><h2>Mes documents administratifs</h2></div><span>{issuedDocs?.length||0}</span></div>
+        <div className="member-document-list">
+          {(issuedDocs||[]).map((doc:any)=><div key={doc.id}><span><small>{doc.number} · {doc.document_type}</small><b>{doc.subject}</b><em>{doc.issued_at?new Date(doc.issued_at).toLocaleDateString("fr-FR"):"Délivré"}</em></span><div><a className="button secondary" href={"/api/administration/issuances/"+doc.id}>PDF</a><Link href={"/verify/admin/"+doc.verification_token}>Vérifier →</Link></div></div>)}
+          {!issuedDocs?.length&&<p>Aucun document administratif délivré pour le moment.</p>}
+        </div>
+      </article>
 
       <article className="panel no-print">
         <span className="eyebrow">Vie associative</span><h2>Mes participations</h2>
