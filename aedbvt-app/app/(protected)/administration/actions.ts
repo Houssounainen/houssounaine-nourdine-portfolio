@@ -42,18 +42,34 @@ export async function createCorrespondence(formData:FormData){
   if(!["incoming","outgoing"].includes(direction)||!subject||!correspondent) return;
 
   const assignedTo=String(formData.get("assigned_to")||"")||null;
+  const templateId=String(formData.get("template_id")||"")||null;
+  const rawBody=String(formData.get("body")||"").trim();
+  let finalSubject=subject;
+  let finalBody=rawBody||null;
+
+  if(direction==="outgoing"&&templateId){
+    const {data:template}=await supabase.from("administrative_templates")
+      .select("subject_template,body_template").eq("id",templateId).maybeSingle();
+    if(template){
+      const values={subject,body:rawBody,issue_date:new Date().toLocaleDateString("fr-FR")};
+      finalSubject=renderAdministrativeTemplate(template.subject_template||subject,values);
+      finalBody=renderAdministrativeTemplate(template.body_template,values);
+    }
+  }
+
   const {data}=await supabase.from("correspondence_register").insert({
     direction,
     category:String(formData.get("category")||"general").trim()||"general",
-    subject,
+    subject:finalSubject,
     correspondent_name:correspondent,
     correspondent_contact:String(formData.get("correspondent_contact")||"").trim()||null,
-    body:String(formData.get("body")||"").trim()||null,
+    body:finalBody,
     received_on:direction==="incoming"?(String(formData.get("received_on")||"")||new Date().toISOString().slice(0,10)):null,
     status:direction==="incoming"?"registered":"draft",
     member_id:String(formData.get("member_id")||"")||null,
     service_request_id:String(formData.get("service_request_id")||"")||null,
     decision_id:String(formData.get("decision_id")||"")||null,
+    template_id:templateId,
     assigned_to:assignedTo,
     notes:String(formData.get("notes")||"").trim()||null,
     created_by:user.id,
@@ -119,6 +135,15 @@ export async function dispatchCorrespondence(formData:FormData){
     p_correspondence_id:id,
     p_sent_on:String(formData.get("sent_on")||"")||null,
   });
+  revalidatePath("/administration");
+  revalidatePath("/administration/correspondence/"+id);
+}
+
+export async function closeCorrespondence(formData:FormData){
+  const {supabase}=await ctx();
+  const id=String(formData.get("correspondence_id")||"");
+  if(!id) return;
+  await supabase.rpc("close_correspondence",{p_correspondence_id:id});
   revalidatePath("/administration");
   revalidatePath("/administration/correspondence/"+id);
 }
