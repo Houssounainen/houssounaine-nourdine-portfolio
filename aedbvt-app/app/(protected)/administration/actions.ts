@@ -139,6 +139,15 @@ export async function dispatchCorrespondence(formData:FormData){
   revalidatePath("/administration/correspondence/"+id);
 }
 
+export async function startIncomingCorrespondenceReview(formData:FormData){
+  const {supabase}=await ctx();
+  const id=String(formData.get("correspondence_id")||"");
+  if(!id) return;
+  await supabase.rpc("start_incoming_correspondence_review",{p_correspondence_id:id});
+  revalidatePath("/administration");
+  revalidatePath("/administration/correspondence/"+id);
+}
+
 export async function closeCorrespondence(formData:FormData){
   const {supabase}=await ctx();
   const id=String(formData.get("correspondence_id")||"");
