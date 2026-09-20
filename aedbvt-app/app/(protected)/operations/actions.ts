@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { isStaff } from "@/lib/auth";
+import { sendPushToProfiles } from "@/lib/push";
 
 async function context(){
   const supabase=await createClient();
@@ -127,7 +128,8 @@ export async function createTask(formData:FormData){
   if(!user||!isStaff(role)) return;
   const title=String(formData.get("title")||"").trim();
   if(!title) return;
-  await supabase.from("operational_tasks").insert({
+  const assigneeId=String(formData.get("assignee_id")||"")||null;
+  const {data:task}=await supabase.from("operational_tasks").insert({
     title,
     description:String(formData.get("description")||"").trim()||null,
     priority:String(formData.get("priority")||"normal"),
@@ -135,9 +137,19 @@ export async function createTask(formData:FormData){
     decision_id:String(formData.get("decision_id")||"")||null,
     assembly_id:String(formData.get("assembly_id")||"")||null,
     commission_id:String(formData.get("commission_id")||"")||null,
-    assignee_id:String(formData.get("assignee_id")||"")||null,
+    assignee_id:assigneeId,
     created_by:user.id,
-  });
+  }).select("id").maybeSingle();
+
+  if(task?.id&&assigneeId){
+    await sendPushToProfiles([assigneeId],{
+      title:"Nouvelle tâche AEDBVT",
+      body:title,
+      url:"/operations/tasks/"+task.id,
+      tag:"task-assignment",
+    },"operations").catch(()=>undefined);
+  }
+
   revalidatePath("/operations");
   revalidatePath("/dashboard");
 }
@@ -147,13 +159,26 @@ export async function updateTaskAssignment(formData:FormData){
   if(!isStaff(role)) return;
   const taskId=String(formData.get("task_id")||"");
   if(!taskId) return;
+  const nextAssignee=String(formData.get("assignee_id")||"")||null;
+  const {data:before}=await supabase.from("operational_tasks").select("title,assignee_id").eq("id",taskId).maybeSingle();
+
   await supabase.from("operational_tasks").update({
-    assignee_id:String(formData.get("assignee_id")||"")||null,
+    assignee_id:nextAssignee,
     commission_id:String(formData.get("commission_id")||"")||null,
     priority:String(formData.get("priority")||"normal"),
     due_on:String(formData.get("due_on")||"")||null,
     updated_at:new Date().toISOString(),
   }).eq("id",taskId);
+
+  if(nextAssignee&&before?.assignee_id!==nextAssignee){
+    await sendPushToProfiles([nextAssignee],{
+      title:"Tâche AEDBVT attribuée",
+      body:before?.title||"Une action vous a été attribuée.",
+      url:"/operations/tasks/"+taskId,
+      tag:"task-assignment",
+    },"operations").catch(()=>undefined);
+  }
+
   revalidatePath("/operations");
   revalidatePath("/operations/tasks/"+taskId);
   revalidatePath("/dashboard");
