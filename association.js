@@ -263,6 +263,104 @@
     return `${html}</div><div class="aed-leg"><span><i></i>Événement</span><span><i class="m"></i>Réunion</span></div>`;
   }
 
+  const docTotal = (d) => (d.items || []).reduce((sum, item) => sum + Number(item.qty || 0) * Number(item.unit || 0), 0);
+  const financialRef = (prefix, list) => `${prefix}-${new Date().getFullYear()}-${String(nextId(list)).padStart(4, "0")}`;
+  const docBadge = (status) => status === "Payée" || status === "Accepté" ? "aed-b-ok" : status === "Annulé" ? "aed-b-no" : status === "Brouillon" ? "aed-b-part" : "aed-b-info";
+  const addActivity = (text) => { S.activity.unshift({ id: nextId(S.activity), date: todayKey(), text }); S.activity = S.activity.slice(0, 40); };
+
+  function pdfClean(value) {
+    return String(value ?? "")
+      .replace(/[’‘]/g, "'").replace(/[“”]/g, '"').replace(/[–—]/g, "-")
+      .replace(/œ/g, "oe").replace(/Œ/g, "OE").replace(/…/g, "...")
+      .replace(/[^\x20-\xFF]/g, "?");
+  }
+  function pdfEsc(value) { return pdfClean(value).replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)"); }
+  function wrapPdf(value, width = 86) {
+    const words = pdfClean(value).split(/\s+/).filter(Boolean), lines = []; let line = "";
+    words.forEach((word) => {
+      const next = line ? `${line} ${word}` : word;
+      if (next.length > width && line) { lines.push(line); line = word; } else line = next;
+    });
+    if (line) lines.push(line);
+    return lines.length ? lines : [""];
+  }
+  function latin1Bytes(value) {
+    const bytes = new Uint8Array(value.length);
+    for (let i = 0; i < value.length; i++) bytes[i] = value.charCodeAt(i) & 255;
+    return bytes;
+  }
+  function downloadPdf(filename, title, lines) {
+    const prepared = [];
+    lines.forEach((line) => wrapPdf(line, 88).forEach((part) => prepared.push(part)));
+    const perPage = 45, chunks = [];
+    for (let i = 0; i < prepared.length; i += perPage) chunks.push(prepared.slice(i, i + perPage));
+    if (!chunks.length) chunks.push([""]);
+    const n = chunks.length, fontNo = 3 + 2 * n, objects = [];
+    objects[1] = "<< /Type /Catalog /Pages 2 0 R >>";
+    const kids = chunks.map((_, i) => `${3 + i} 0 R`).join(" ");
+    objects[2] = `<< /Type /Pages /Kids [${kids}] /Count ${n} >>`;
+    chunks.forEach((chunk, i) => {
+      const pageNo = 3 + i, contentNo = 3 + n + i;
+      objects[pageNo] = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 ${fontNo} 0 R >> >> /Contents ${contentNo} 0 R >>`;
+      const commands = [];
+      commands.push(`BT /F1 15 Tf 46 806 Td (${pdfEsc(title)}) Tj ET`);
+      commands.push(`BT /F1 8 Tf 46 789 Td (AEDBVT - SIMULATION - page ${i + 1}/${n}) Tj ET`);
+      let y = 765;
+      chunk.forEach((line) => { commands.push(`BT /F1 10 Tf 46 ${y} Td (${pdfEsc(line)}) Tj ET`); y -= 16; });
+      const stream = commands.join("\n");
+      objects[contentNo] = `<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`;
+    });
+    objects[fontNo] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>";
+    let pdf = "%PDF-1.4\n%âãÏÓ\n", offsets = [0];
+    for (let i = 1; i <= fontNo; i++) { offsets[i] = pdf.length; pdf += `${i} 0 obj\n${objects[i]}\nendobj\n`; }
+    const xref = pdf.length;
+    pdf += `xref\n0 ${fontNo + 1}\n0000000000 65535 f \n`;
+    for (let i = 1; i <= fontNo; i++) pdf += `${String(offsets[i]).padStart(10, "0")} 00000 n \n`;
+    pdf += `trailer\n<< /Size ${fontNo + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`;
+    const blob = new Blob([latin1Bytes(pdf)], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob), a = document.createElement("a");
+    a.href = url; a.download = filename; document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1200);
+  }
+  function receiptLines(p) {
+    const m = member(p.mid) || { name: "—", village: "—" };
+    return [
+      "Association des Etudiants de Darsalama et Bandrani-Vouani a Tulear (AEDBVT)",
+      "DOCUMENT DE SIMULATION - ne vaut pas justificatif fiscal officiel",
+      "", `Recu : ${p.ref}`, `Date : ${p.date}`, `Membre : ${m.name}`, `Village : ${m.village}`,
+      `Montant : ${ar(p.amount)}`, `Moyen : ${p.method}`, "Objet : Cotisation 2026-2027", "",
+      `Administrateur de la simulation : ${ADMIN_NAME}`
+    ];
+  }
+  function financialLines(kind, d) {
+    const label = kind === "quote" ? "DEVIS" : "FACTURE";
+    const lines = [
+      "Association des Etudiants de Darsalama et Bandrani-Vouani a Tulear (AEDBVT)",
+      "DOCUMENT DE SIMULATION - projet non fiscal", "", `${label} : ${d.ref}`, `Date : ${d.date}`,
+      `Destinataire : ${d.client}`, `Objet : ${d.object}`, `Statut : ${d.status}`
+    ];
+    if (kind === "invoice" && d.due) lines.push(`Echeance : ${d.due}`);
+    lines.push("");
+    (d.items || []).forEach((item) => lines.push(`${item.label} | ${item.qty} x ${ar(item.unit)} = ${ar(Number(item.qty) * Number(item.unit))}`));
+    lines.push("", `TOTAL : ${ar(docTotal(d))}`, "", `Administrateur de la simulation : ${ADMIN_NAME}`);
+    return lines;
+  }
+  function downloadJson() {
+    const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), simulation: true, administrator: ADMIN_NAME, state: S }, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob), a = document.createElement("a");
+    a.href = url; a.download = `aedbvt-sauvegarde-${todayKey()}.json`; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1200);
+  }
+  function applyAccessibility() {
+    const a = S.accessibility || { font: 0, contrast: false, calm: false };
+    root.classList.toggle("aed-font-small", a.font < 0);
+    root.classList.toggle("aed-font-large", a.font === 1);
+    root.classList.toggle("aed-font-xlarge", a.font >= 2);
+    root.classList.toggle("aed-high-contrast", !!a.contrast);
+    root.classList.toggle("aed-calm", !!a.calm);
+    $('.aed-access [data-v="contrast"]', root).forEach((b) => b.setAttribute("aria-pressed", String(!!a.contrast)));
+    $('.aed-access [data-v="calm"]', root).forEach((b) => b.setAttribute("aria-pressed", String(!!a.calm)));
+  }
+
   const R = {};
 
   R.dash = () => {
@@ -338,6 +436,37 @@
       <div class="aed-card aed-tw" style="margin-top:16px;padding:8px 12px"><table class="aed-table"><thead><tr><th>Membre</th><th>Versé</th><th>Reste</th><th>Statut</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
       <h4 class="aed-h4">Dépenses</h4><div class="aed-card" style="padding:6px 16px">${S.expenses.map((x) => `<div class="aed-row" style="justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)"><span>${esc(x.label)}<br><small class="aed-muted">${x.date}</small></span><span class="aed-badge aed-b-no">− ${ar(x.amount)}</span></div>`).join("")}</div>
       <p class="aed-note">Simulation : aucun vrai paiement n’est effectué.</p>`;
+  };
+
+  R.docs = () => {
+    const quoteRows = S.quotes.map((d) => `<tr><td><b>${esc(d.ref)}</b><br><small class="aed-muted">${esc(d.object)}</small></td><td>${esc(d.client)}</td><td>${ar(docTotal(d))}</td><td><span class="aed-badge ${docBadge(d.status)}">${esc(d.status)}</span></td><td><div class="aed-row"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="download-doc" data-kind="quote" data-id="${d.id}">PDF</button>${isBureau() && d.status !== "Accepté" ? `<button class="aed-btn aed-primary aed-sm" type="button" data-aed="convert-quote" data-id="${d.id}">→ Facture</button>` : ""}</div></td></tr>`).join("");
+    const invoiceRows = S.invoices.map((d) => `<tr><td><b>${esc(d.ref)}</b><br><small class="aed-muted">${esc(d.object)}</small></td><td>${esc(d.client)}</td><td>${ar(docTotal(d))}</td><td><span class="aed-badge ${docBadge(d.status)}">${esc(d.status)}</span></td><td><div class="aed-row"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="download-doc" data-kind="invoice" data-id="${d.id}">PDF</button>${isBureau() && d.status !== "Payée" ? `<button class="aed-btn aed-primary aed-sm" type="button" data-aed="invoice-paid" data-id="${d.id}">Marquer payée</button>` : ""}</div></td></tr>`).join("");
+    const receipts = S.payments.slice().sort((a,b)=>b.id-a.id).map((p) => { const m = member(p.mid); return `<div class="aed-doc-card"><div><small>REÇU</small><b>${esc(p.ref)}</b><span>${m ? esc(m.name) : "—"} · ${ar(p.amount)}</span></div><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="download-receipt" data-id="${p.id}">Télécharger PDF</button></div>`; }).join("");
+    return `<div class="aed-ph"><div><h3>Documents & gestion</h3><p class="aed-muted">Devis, factures et reçus numérotés — simulation administrative.</p></div>${isBureau() ? '<div class="aed-row"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="open-quote">+ Devis</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="open-invoice">+ Facture</button></div>' : ""}</div>
+      <div class="aed-grid aed-g3"><div class="aed-card aed-stat"><small>Devis</small><span class="aed-num">${S.quotes.length}</span><small>historique conservé</small></div><div class="aed-card aed-stat" style="--c:var(--aed-gold)"><small>Factures</small><span class="aed-num">${S.invoices.length}</span><small>${S.invoices.filter(x=>x.status==="Payée").length} payée(s)</small></div><div class="aed-card aed-stat" style="--c:var(--aed-green)"><small>Reçus</small><span class="aed-num">${S.payments.length}</span><small>liés aux cotisations</small></div></div>
+      <h4 class="aed-h4">Devis</h4><div class="aed-card aed-tw" style="padding:8px 12px"><table class="aed-table"><thead><tr><th>Référence</th><th>Destinataire</th><th>Total</th><th>Statut</th><th></th></tr></thead><tbody>${quoteRows || '<tr><td colspan="5">Aucun devis.</td></tr>'}</tbody></table></div>
+      <h4 class="aed-h4">Factures</h4><div class="aed-card aed-tw" style="padding:8px 12px"><table class="aed-table"><thead><tr><th>Référence</th><th>Destinataire</th><th>Total</th><th>Statut</th><th></th></tr></thead><tbody>${invoiceRows || '<tr><td colspan="5">Aucune facture.</td></tr>'}</tbody></table></div>
+      <h4 class="aed-h4">Reçus de cotisation</h4><div class="aed-doc-grid">${receipts || '<div class="aed-empty">Aucun reçu.</div>'}</div>
+      <p class="aed-note">Les PDF portent la mention SIMULATION. La future application officielle devra intégrer les mentions légales, fiscales et d’identification réellement applicables à l’association.</p>`;
+  };
+
+  R.rules = () => {
+    const articles = (list, prefix) => list.map((a, i) => `<details class="aed-law" ${i === 0 ? "open" : ""}><summary><span>${String(i + 1).padStart(2, "0")}</span>${esc(a[0])}</summary><p>${esc(a[1])}</p></details>`).join("");
+    return `<div class="aed-ph"><div><h3>Statuts & règlement intérieur</h3><p class="aed-muted">Projet complet pour la simulation officielle AEDBVT.</p></div><div class="aed-row"><button class="aed-btn aed-ghost aed-sm" type="button" data-aed="download-rules" data-v="statutes">Statuts PDF</button><button class="aed-btn aed-primary aed-sm" type="button" data-aed="download-rules" data-v="rules">Règlement PDF</button></div></div>
+      <div class="aed-legal-banner"><b>⚖️ Projet à adopter et faire valider</b><span>Référence de travail : régime général des associations à Madagascar. Cette simulation ne prouve ni déclaration ni reconnaissance officielle de l’AEDBVT.</span></div>
+      <div class="aed-rule-meta"><span><b>Version</b> 0.3 — simulation</span><span><b>Administrateur technique</b> ${ADMIN_NAME}</span><span><b>Articles</b> ${STATUTES.length + INTERNAL_RULES.length}</span></div>
+      <div class="aed-law-grid"><section><h4>Statuts proposés</h4>${articles(STATUTES, "S")}</section><section><h4>Règlement intérieur proposé</h4>${articles(INTERNAL_RULES, "R")}</section></div>`;
+  };
+
+  R.admin = () => {
+    if (!isAdmin()) return '<div class="aed-empty">Accès administrateur requis.</div>';
+    const totalDocs = S.quotes.length + S.invoices.length + S.payments.length;
+    const log = S.activity.slice(0, 12).map((x) => `<li><time>${esc(x.date)}</time><span>${esc(x.text)}</span></li>`).join("");
+    return `<div class="aed-ph"><div><h3>Administration</h3><p class="aed-muted">Console de simulation — ${ADMIN_NAME}</p></div><span class="aed-badge aed-b-ok">Administrateur principal</span></div>
+      <div class="aed-grid aed-g4"><div class="aed-card aed-stat"><small>Membres</small><span class="aed-num">${S.members.length}</span><small>registre simulé</small></div><div class="aed-card aed-stat" style="--c:var(--aed-green)"><small>Trésorerie</small><span class="aed-num">${(totalPaid()-totalExpenses()).toLocaleString("fr-FR")}</span><small>Ariary</small></div><div class="aed-card aed-stat" style="--c:var(--aed-gold)"><small>Documents</small><span class="aed-num">${totalDocs}</span><small>référencés</small></div><div class="aed-card aed-stat" style="--c:var(--aed-red)"><small>Alertes</small><span class="aed-num">${S.alerts.length}</span><small>${unseen()} non lue(s)</small></div></div>
+      <div class="aed-split" style="margin-top:16px"><div class="aed-card"><h4 style="margin-top:0">Outils administrateur</h4><div class="aed-admin-actions"><button class="aed-btn aed-primary" type="button" data-aed="backup">Exporter la sauvegarde JSON</button><button class="aed-btn aed-ghost" type="button" data-aed="open-exp">Enregistrer une dépense</button><button class="aed-btn aed-ghost" type="button" data-aed="tab" data-v="docs">Gérer les documents</button><button class="aed-btn aed-ghost" type="button" data-aed="tab" data-v="rules">Voir les textes</button></div><p class="aed-note">Dans l’application officielle, ce rôle devra être protégé par authentification forte, journalisation serveur et permissions granulaires.</p></div>
+      <div class="aed-card"><h4 style="margin-top:0">Contrôles à prévoir avant mise en production</h4><ul class="aed-checklist"><li>Authentification + MFA administrateur</li><li>Base de données et sauvegardes automatiques</li><li>Permissions Président / Trésorier / Secrétaire / commissions</li><li>Journal d’audit immuable</li><li>Validation à deux personnes pour opérations sensibles</li><li>Politique de conservation des données</li><li>Passerelle de paiement officielle et rapprochement</li></ul></div></div>
+      <div class="aed-card" style="margin-top:16px"><h4 style="margin-top:0">Journal d’activité</h4><ol class="aed-audit">${log || "<li>Aucune activité.</li>"}</ol></div>`;
   };
 
   R.alerts = () => {
