@@ -77,6 +77,7 @@ export async function provisionMemberAccount(
 
   let authUser=await findAuthUserByEmail(email);
   let invited=false;
+  let applicantPasswordAccount=false;
 
   if(!authUser){
     const {data,error}=await admin.auth.admin.inviteUserByEmail(email,{
@@ -91,6 +92,8 @@ export async function provisionMemberAccount(
     authUser=data.user;
     invited=true;
   }
+
+  applicantPasswordAccount=Boolean(authUser?.user_metadata?.application_pending);
 
   const {data:profile}=await admin
     .from("profiles")
@@ -112,12 +115,22 @@ export async function provisionMemberAccount(
     });
   }
 
+  if(applicantPasswordAccount){
+    await admin.auth.admin.updateUserById(authUser.id,{
+      user_metadata:{...(authUser.user_metadata||{}),application_pending:false,full_name:input.fullName,member_id:input.memberId},
+    });
+  }
+
   const {error:linkError}=await admin.from("members").update({
     profile_id:authUser.id,
     invitation_sent_at:invited?new Date().toISOString():member.invitation_sent_at,
   }).eq("id",input.memberId);
 
   if(linkError) return {ok:false,state:"error",error:"Le compte existe mais n’a pas pu être lié au membre."};
+
+  if(applicantPasswordAccount){
+    return {ok:true,state:"linked",userId:authUser.id};
+  }
 
   if(!invited){
     const sent=await sendAccessEmail(email);

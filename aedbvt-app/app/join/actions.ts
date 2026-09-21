@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export type MembershipApplicationState={
   ok:boolean;
@@ -29,13 +30,17 @@ export async function submitMembershipApplication(
   const phone=String(formData.get("phone")||"").trim();
   const email=String(formData.get("email")||"").trim().toLowerCase();
   const motivation=String(formData.get("motivation")||"").trim();
+  const password=String(formData.get("password")||"");
+  const confirmPassword=String(formData.get("confirm_password")||"");
   const consent=formData.get("consent")==="on";
 
   if(fullName.length<3||fullName.length>120) return {ok:false,error:"Vérifiez votre nom complet."};
   if(!["Darsalama","Bandrani-Vouani"].includes(village)) return {ok:false,error:"Sélectionnez votre village."};
   if(phone.length<6||phone.length>40) return {ok:false,error:"Vérifiez votre numéro de téléphone."};
-  if(email.length>180) return {ok:false,error:"Adresse email invalide."};
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||email.length>180) return {ok:false,error:"Adresse email invalide."};
   if(program.length>120||studyLevel.length>80||motivation.length>1200) return {ok:false,error:"Un des champs dépasse la longueur autorisée."};
+  if(password.length<10) return {ok:false,error:"Choisissez un mot de passe d’au moins 10 caractères."};
+  if(password!==confirmPassword) return {ok:false,error:"Les deux mots de passe ne correspondent pas."};
   if(!consent) return {ok:false,error:"Votre consentement est requis pour déposer la candidature."};
 
   if(!process.env.NEXT_PUBLIC_SUPABASE_URL||!process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY){
@@ -65,6 +70,41 @@ export async function submitMembershipApplication(
   const result=data?.[0];
   if(!result?.reference||!result?.public_token){
     return {ok:false,error:"La candidature n’a pas pu être finalisée."};
+  }
+
+  const appUrl=(process.env.NEXT_PUBLIC_APP_URL||"").replace(/\/$/,"");
+  const redirectTo=appUrl
+    ? appUrl+"/auth/complete?next="+encodeURIComponent("/login?verified=1")
+    : undefined;
+
+  const {data:authData,error:authError}=await supabase.auth.signUp({
+    email,
+    password,
+    options:{
+      data:{full_name:fullName,application_pending:true},
+      ...(redirectTo?{emailRedirectTo:redirectTo}:{}),
+    },
+  });
+
+  if(authError||!authData.user){
+    const admin=createAdminClient();
+    if(admin){
+      await admin.from("membership_applications").delete().eq("reference",result.reference);
+    }
+    const message=authError?.message?.toLowerCase()||"";
+    if(message.includes("already")||message.includes("registered")||message.includes("exists")){
+      return {ok:false,error:"Un compte existe déjà avec cette adresse email. Utilisez la connexion ou « Mot de passe oublié »."};
+    }
+    return {ok:false,error:"Le compte de connexion n’a pas pu être préparé. Réessayez avec une adresse email valide."};
+  }
+
+  const admin=createAdminClient();
+  if(admin){
+    await admin.from("profiles").update({active:false,full_name:fullName}).eq("id",authData.user.id);
+  }
+
+  if(authData.session){
+    await supabase.auth.signOut();
   }
 
   return {

@@ -58,9 +58,12 @@ export async function proxy(request: NextRequest) {
   }
 
   if (pathname === "/login" && user) {
-    const dashboard = request.nextUrl.clone();
-    dashboard.pathname = "/dashboard";
-    return NextResponse.redirect(dashboard);
+    const {data:loginProfile}=await supabase.from("profiles").select("active").eq("id",user.id).maybeSingle();
+    if(loginProfile?.active!==false){
+      const dashboard = request.nextUrl.clone();
+      dashboard.pathname = "/dashboard";
+      return NextResponse.redirect(dashboard);
+    }
   }
   return response;
 }
