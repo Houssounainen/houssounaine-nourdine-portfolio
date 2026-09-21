@@ -14,6 +14,7 @@ export async function updateNotificationPreferences(formData:FormData){
     agenda:formData.get("agenda")==="on",
     operations:formData.get("operations")==="on",
     administration:formData.get("administration")==="on",
+    cases:formData.get("cases")==="on",
     updated_at:new Date().toISOString(),
   },{onConflict:"profile_id"});
 

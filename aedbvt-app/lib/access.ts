@@ -15,6 +15,7 @@ export type Capability=
   |"exports_manage"
   |"audit_view"
   |"member_import"
+  |"case_manage"
   |"admin_manage";
 
 const ALL_ROLES:AppRole[]=["admin","bureau","tresorier","secretaire","membre"];
@@ -34,6 +35,7 @@ const CAPABILITIES:Record<Capability,readonly AppRole[]>={
   exports_manage:["admin","bureau","tresorier","secretaire"],
   audit_view:["admin"],
   member_import:["admin","bureau","secretaire"],
+  case_manage:["admin","bureau"],
   admin_manage:["admin"],
 };
 
@@ -86,6 +88,7 @@ export function navigationForRole(role:string|null|undefined):[string,string][]{
     ["/announcements","Annonces"],
     ["/organization","Organigramme"],
     ["/governance","Gouvernance"],
+    ["/cases","Signalements"],
   ];
 
   if(can(r,"operations_manage")) links.push(["/operations","Pilotage"]);
