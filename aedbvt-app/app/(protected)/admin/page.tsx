@@ -14,7 +14,7 @@ export default async function AdminPage() {
   const [{ data: profiles }, { data: logs }, { data: members }] = await Promise.all([
     supabase.from("profiles").select("id,full_name,role,active,created_at").order("created_at"),
     supabase.from("audit_logs").select("id,actor_id,table_name,action,record_id,created_at").order("created_at",{ascending:false}).limit(40),
-    supabase.from("members").select("id,full_name,member_number,profile_id").eq("status","active").order("full_name"),
+    supabase.from("members").select("id,full_name,member_number,profile_id,email,invitation_sent_at,account_activated_at").eq("status","active").order("full_name"),
   ]);
 
   let emails = new Map<string,string>();
@@ -41,6 +41,15 @@ export default async function AdminPage() {
 
         <article className="panel accent-panel"><span className="eyebrow">Principe</span><h2>Le moindre privilège</h2><p>Chaque utilisateur reçoit uniquement les droits nécessaires à son rôle. Les changements de rôle et opérations métier restent tracés par le journal d’audit.</p></article>
       </div>
+
+      <h2 className="section-title">Activation des membres</h2>
+      <article className="panel onboarding-admin-list">
+        {(members||[]).map((member)=>{
+          const state=member.account_activated_at?"Activé":member.profile_id?"Invité":"À inviter";
+          return <div key={member.id}><span><b>{member.full_name}</b><small>{member.member_number||"—"} · {member.email||"email non renseigné"}</small></span><span className={"badge onboarding-"+(member.account_activated_at?"active":member.profile_id?"invited":"pending")}>{state}</span><small>{member.account_activated_at?"Activé le "+new Date(member.account_activated_at).toLocaleDateString("fr-FR"):member.invitation_sent_at?"Invité le "+new Date(member.invitation_sent_at).toLocaleDateString("fr-FR"):"Aucune invitation envoyée"}</small></div>;
+        })}
+        {!members?.length&&<div className="empty-state">Aucun membre actif.</div>}
+      </article>
 
       <h2 className="section-title">Comptes & rôles</h2>
       <div className="table-wrap panel">
