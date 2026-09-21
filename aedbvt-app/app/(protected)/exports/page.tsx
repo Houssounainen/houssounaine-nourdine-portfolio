@@ -31,6 +31,11 @@ export default async function ExportsPage(){
       </article>}
 
       <article className="panel export-card">
+        <span className="eyebrow">Relations extérieures</span><h2>Partenaires & soutiens</h2><p>Registre des partenaires, engagements monétaires et apports en nature.</p>
+        <div><a className="button secondary" href="/api/exports/partners?format=csv">CSV</a><a className="button primary" href="/api/exports/partners?format=excel">Excel XML</a></div>
+      </article>
+
+      <article className="panel export-card">
         <span className="eyebrow">Patrimoine</span><h2>Équipements & stock</h2><p>Registre des biens durables et quantités disponibles du stock consommable.</p>
         <div><a className="button secondary" href="/api/exports/assets?format=csv">CSV</a><a className="button primary" href="/api/exports/assets?format=excel">Excel XML</a></div>
       </article>
