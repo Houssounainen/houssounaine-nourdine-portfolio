@@ -33,11 +33,23 @@ async function findAuthUserByEmail(email:string){
   return null;
 }
 
-export async function provisionMemberAccount(input:{
-  memberId:string;
-  email:string|null|undefined;
-  fullName:string;
-}):Promise<ProvisionResult>{
+async function sendAccessEmail(email:string){
+  const admin=createAdminClient();
+  const redirectTo=inviteRedirect();
+  if(!admin||!redirectTo) return {ok:false,error:"Configuration d’invitation incomplète."};
+
+  const {error}=await admin.auth.resetPasswordForEmail(email,{redirectTo});
+  return error?{ok:false,error:error.message}:{ok:true as const};
+}
+
+export async function provisionMemberAccount(
+  input:{
+    memberId:string;
+    email:string|null|undefined;
+    fullName:string;
+  },
+  options:{resend?:boolean}={}
+):Promise<ProvisionResult>{
   const email=(input.email||"").trim().toLowerCase();
   if(!email) return {ok:true,state:"skipped"};
 
@@ -54,6 +66,12 @@ export async function provisionMemberAccount(input:{
   if(memberError||!member) return {ok:false,state:"error",error:"Membre introuvable."};
 
   if(member.profile_id){
+    if(options.resend||!member.account_activated_at){
+      const sent=await sendAccessEmail(email);
+      if(!sent.ok) return {ok:false,state:"error",userId:member.profile_id,error:sent.error};
+      await admin.from("members").update({invitation_sent_at:new Date().toISOString()}).eq("id",input.memberId);
+      return {ok:true,state:"invited",userId:member.profile_id};
+    }
     return {ok:true,state:"linked",userId:member.profile_id};
   }
 
@@ -101,11 +119,13 @@ export async function provisionMemberAccount(input:{
 
   if(linkError) return {ok:false,state:"error",error:"Le compte existe mais n’a pas pu être lié au membre."};
 
-  if(!invited && !member.account_activated_at){
-    const {error}=await admin.auth.resetPasswordForEmail(email,{redirectTo});
-    if(!error){
+  if(!invited){
+    const sent=await sendAccessEmail(email);
+    if(sent.ok){
       await admin.from("members").update({invitation_sent_at:new Date().toISOString()}).eq("id",input.memberId);
       invited=true;
+    }else{
+      return {ok:false,state:"error",userId:authUser.id,error:sent.error};
     }
   }
 
