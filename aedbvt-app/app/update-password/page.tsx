@@ -15,6 +15,9 @@ export default async function UpdatePasswordPage({
   searchParams,
 }:{searchParams:Promise<{error?:string;mode?:string}>}){
   const params=await searchParams;
+  if(!process.env.NEXT_PUBLIC_SUPABASE_URL||!process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY){
+    redirect("/forgot-password?error=config");
+  }
   const supabase=await createClient();
   const {data:{user}}=await supabase.auth.getUser();
   if(!user) redirect("/forgot-password?error=link");
