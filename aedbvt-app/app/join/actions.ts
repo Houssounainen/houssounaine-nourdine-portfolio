@@ -47,6 +47,11 @@ export async function submitMembershipApplication(
     return {ok:false,error:"Le dépôt de candidature est temporairement indisponible pendant la configuration du service sécurisé."};
   }
 
+  const admin=createAdminClient();
+  if(!admin){
+    return {ok:false,error:"Le service de création de compte est temporairement indisponible."};
+  }
+
   const supabase=await createClient();
   const {data,error}=await supabase.rpc("submit_membership_application",{
     p_full_name:fullName,
@@ -72,40 +77,39 @@ export async function submitMembershipApplication(
     return {ok:false,error:"La candidature n’a pas pu être finalisée."};
   }
 
-  const appUrl=(process.env.NEXT_PUBLIC_APP_URL||"").replace(/\/$/,"");
-  const redirectTo=appUrl
-    ? appUrl+"/auth/complete?next="+encodeURIComponent("/login?verified=1")
-    : undefined;
-
-  const {data:authData,error:authError}=await supabase.auth.signUp({
+  const {data:authData,error:authError}=await admin.auth.admin.createUser({
     email,
     password,
-    options:{
-      data:{full_name:fullName,application_pending:true},
-      ...(redirectTo?{emailRedirectTo:redirectTo}:{}),
+    email_confirm:false,
+    user_metadata:{
+      full_name:fullName,
+      application_pending:true,
+      application_reference:result.reference,
     },
   });
 
   if(authError||!authData.user){
-    const admin=createAdminClient();
-    if(admin){
-      await admin.from("membership_applications").delete().eq("reference",result.reference);
-    }
+    await admin.from("membership_applications").delete().eq("reference",result.reference);
+
+    const code=(authError as {code?:string}|null)?.code||"";
     const message=authError?.message?.toLowerCase()||"";
-    if(message.includes("already")||message.includes("registered")||message.includes("exists")){
+
+    if(code==="email_exists"||code==="user_already_exists"||message.includes("already")||message.includes("registered")||message.includes("exists")){
       return {ok:false,error:"Un compte existe déjà avec cette adresse email. Utilisez la connexion ou « Mot de passe oublié »."};
     }
-    return {ok:false,error:"Le compte de connexion n’a pas pu être préparé. Réessayez avec une adresse email valide."};
+    if(code==="weak_password"){
+      return {ok:false,error:"Le mot de passe ne respecte pas les exigences de sécurité. Choisissez un mot de passe plus fort."};
+    }
+    if(code==="email_address_invalid"||message.includes("invalid email")){
+      return {ok:false,error:"Le format de l’adresse email n’est pas reconnu. Vérifiez uniquement les espaces ou caractères saisis."};
+    }
+
+    return {ok:false,error:"Le compte de connexion n’a pas pu être préparé. Réessayez dans quelques instants."};
   }
 
-  const admin=createAdminClient();
-  if(admin){
-    await admin.from("profiles").update({active:false,full_name:fullName}).eq("id",authData.user.id);
-  }
-
-  if(authData.session){
-    await supabase.auth.signOut();
-  }
+  await admin.from("profiles")
+    .update({active:false,full_name:fullName})
+    .eq("id",authData.user.id);
 
   return {
     ok:true,
