@@ -34,7 +34,7 @@ const protectedExports={
 for(const [path,guard] of Object.entries(protectedExports)){
   const content=read(path);
   if(!content.includes(guard)) errors.push(path+" n’utilise pas "+guard);
-  if(!content.includes("Cache-Control")) errors.push(path+" doit empêcher le cache public des exports.");
+  if(!content.includes("attachmentHeaders(")) errors.push(path+" doit utiliser les headers privés d’export.");
 }
 
 for(const forbidden of ["auth.users","SUPABASE_SERVICE_ROLE_KEY","VAPID_PRIVATE_KEY","BUBBLEWRAP_KEYSTORE_PASSWORD"]){
@@ -42,6 +42,8 @@ for(const forbidden of ["auth.users","SUPABASE_SERVICE_ROLE_KEY","VAPID_PRIVATE_
 }
 
 if(!fs.existsSync("lib/tabular-export.ts")) errors.push("Utilitaire CSV/Excel XML manquant.");
+const exportHelper=read("lib/tabular-export.ts");
+if(!exportHelper.includes('"Cache-Control":"private, no-store"')) errors.push("Les exports doivent être servis en cache privé/no-store.");
 
 if(errors.length){
   console.error(errors.join("\n"));
