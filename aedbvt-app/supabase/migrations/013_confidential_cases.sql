@@ -293,6 +293,10 @@ begin
     raise exception 'Statut invalide.';
   end if;
 
+  if v_case.status in ('closed','dismissed') then
+    raise exception 'Ce dossier est clôturé et ne peut plus être modifié.';
+  end if;
+
   v_allowed := (
     v_case.status=p_status
     or (v_case.status='received' and p_status in ('in_review','dismissed'))
