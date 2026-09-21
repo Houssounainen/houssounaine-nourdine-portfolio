@@ -1,9 +1,12 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { sendPushToAll } from "@/lib/push";
 
 export async function publishDueArticles(){
-  const supabase=await createClient();
-  const {data}=await supabase.rpc("publish_due_articles");
+  const supabase=createAdminClient();
+  if(!supabase) return [];
+
+  const {data,error}=await supabase.rpc("publish_due_articles");
+  if(error) return [];
 
   for(const article of data||[]){
     if(!article.notify_on_publish) continue;
