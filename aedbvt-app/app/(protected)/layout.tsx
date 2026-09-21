@@ -17,5 +17,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
   if(!profile) redirect("/access-denied?reason=profile");
   if(profile.active===false) redirect("/access-denied?reason=suspended");
 
+  await supabase.rpc("mark_my_account_activated");
+
   return <AppShell profile={profile} unreadNotifications={unreadCount||0}>{children}</AppShell>;
 }
