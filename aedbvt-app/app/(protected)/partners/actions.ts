@@ -112,13 +112,16 @@ export async function recordPartnerReceipt(formData:FormData){
   const method=String(formData.get("method")||"").trim();
   if(!partnerId||amount<=0||!method) return;
 
+  const receivedRaw=String(formData.get("received_at")||"");
+  const receivedAt=receivedRaw?new Date(receivedRaw+"+03:00").toISOString():new Date().toISOString();
+
   await supabase.from("partner_receipts").insert({
     partner_id:partnerId,
     commitment_id:String(formData.get("commitment_id")||"")||null,
     amount,
     method,
     external_reference:String(formData.get("external_reference")||"").trim()||null,
-    received_at:String(formData.get("received_at")||"")||new Date().toISOString(),
+    received_at:receivedAt,
     category_id:String(formData.get("category_id")||"")||null,
     account_id:String(formData.get("account_id")||"")||null,
     notes:String(formData.get("notes")||"").trim()||null,
