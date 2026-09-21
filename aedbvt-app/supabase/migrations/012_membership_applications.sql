@@ -221,6 +221,10 @@ begin
     if v_member_id is null then
       v_member_number := replace(v_application.reference,'APP-','AED-');
 
+      while exists(select 1 from public.members where member_number=v_member_number) loop
+        v_member_number := 'AED-' || to_char(current_date,'YYYY') || '-' || lpad(nextval('public.membership_application_seq')::text,4,'0');
+      end loop;
+
       insert into public.members(
         member_number,full_name,village,program,study_level,phone,email,status,joined_at,created_by
       )
@@ -238,8 +242,18 @@ begin
       )
       returning id into v_member_id;
     else
+      v_member_number := replace(v_application.reference,'APP-','AED-');
+      while exists(
+        select 1 from public.members
+        where member_number=v_member_number
+          and id<>v_member_id
+      ) loop
+        v_member_number := 'AED-' || to_char(current_date,'YYYY') || '-' || lpad(nextval('public.membership_application_seq')::text,4,'0');
+      end loop;
+
       update public.members
       set status='active',
+          member_number=coalesce(member_number,v_member_number),
           full_name=v_application.full_name,
           village=v_application.village,
           program=v_application.program,
