@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { PublicFooter } from "@/components/public-footer";
 
 const labels:Record<string,string>={
   pending:"Reçue",
@@ -19,14 +20,19 @@ export default async function ApplicationStatusPage({
 
   let result:any=null;
   let searched=false;
+  let unavailable=false;
   if(reference&&token){
     searched=true;
-    const supabase=await createClient();
-    const {data}=await supabase.rpc("get_membership_application_status",{
+    if(!process.env.NEXT_PUBLIC_SUPABASE_URL||!process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY){
+      unavailable=true;
+    }else{
+      const supabase=await createClient();
+      const {data}=await supabase.rpc("get_membership_application_status",{
       p_reference:reference,
       p_public_token:token,
     });
-    result=data?.[0]||null;
+      result=data?.[0]||null;
+    }
   }
 
   return <main id="contenu" className="public-flow-page">
@@ -47,7 +53,8 @@ export default async function ApplicationStatusPage({
         <button className="button primary">Consulter</button>
       </form>
 
-      {searched&&!result&&<div className="error-box application-status-result">Aucune candidature ne correspond à cette référence et ce code de suivi.</div>}
+      {searched&&unavailable&&<div className="error-box application-status-result">Le suivi des candidatures est temporairement indisponible pendant la configuration du service sécurisé.</div>}
+      {searched&&!unavailable&&!result&&<div className="error-box application-status-result">Aucune candidature ne correspond à cette référence et ce code de suivi.</div>}
 
       {result&&<article className="panel application-status-result">
         <div className="application-status-head"><span><small>{result.reference}</small><h2>{result.full_name}</h2></span><span className={"badge application-"+result.status}>{labels[result.status]||result.status}</span></div>
@@ -60,5 +67,6 @@ export default async function ApplicationStatusPage({
         {result.status==="approved"&&<div className="application-approved"><b>Adhésion approuvée</b><p>Votre fiche membre a été créée{result.member_number?" sous le numéro "+result.member_number:""}. L’administration pourra ensuite vous envoyer votre invitation au compte sécurisé AEDBVT.</p></div>}
       </article>}
     </section>
+    <PublicFooter/>
   </main>;
 }

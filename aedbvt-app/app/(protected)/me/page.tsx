@@ -58,7 +58,7 @@ export default async function MySpacePage() {
 
   return (
     <section className="page my-space">
-      <header className="page-header no-print"><div><span className="eyebrow">Compte personnel</span><h1>Mon espace</h1></div><span className="status-pill">{profile?.role || "membre"} · {member.status}</span></header>
+      <header className="page-header no-print"><div><span className="eyebrow">Compte personnel</span><h1>Mon espace</h1></div><div className="page-header-actions"><Link className="button secondary" href="/update-password">Changer mon mot de passe</Link><span className="status-pill">{profile?.role || "membre"} · {member.status}</span></div></header>
 
       <div className="member-hero">
         <article className="member-card printable-card">

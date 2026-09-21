@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { MembershipApplicationForm } from "@/components/membership-application-form";
+import { PublicFooter } from "@/components/public-footer";
 
 export default function JoinPage(){
   return <main id="contenu" className="public-flow-page">
@@ -29,5 +30,6 @@ export default function JoinPage(){
         <article className="panel"><MembershipApplicationForm/></article>
       </div>
     </section>
+    <PublicFooter/>
   </main>;
 }

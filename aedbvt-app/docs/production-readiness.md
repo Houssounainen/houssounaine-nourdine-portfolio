@@ -146,3 +146,53 @@ Le workflow AEDBVT vérifie notamment :
 - matrice de rôles et gardes serveur ;
 - TypeScript ;
 - build Next.js.
+
+
+## 12. Authentification email Supabase
+
+Avant l’ouverture officielle aux membres :
+
+- Site URL Supabase Auth : `https://aedbvt.vercel.app` ;
+- ajouter `https://aedbvt.vercel.app/auth/complete` aux Redirect URLs ;
+- ajouter `https://aedbvt.vercel.app/auth/recovery` aux Redirect URLs ;
+- tester une invitation membre complète ;
+- tester « Mot de passe oublié » ;
+- vérifier qu’un lien expiré revient vers la récupération sans créer de session.
+
+L’application accepte les retours PKCE (`code`) et les sessions standards en fragment via `/auth/complete`. Pour un flux SSR encore plus strict, les templates email Supabase peuvent pointer vers `/auth/recovery` avec `token_hash` et `type`.
+
+Exemple de lien d’invitation SSR dans le template :
+
+```text
+{{ .SiteURL }}/auth/recovery?token_hash={{ .TokenHash }}&type=invite&next=/update-password?mode=invite
+```
+
+Exemple de lien de récupération SSR :
+
+```text
+{{ .SiteURL }}/auth/recovery?token_hash={{ .TokenHash }}&type=recovery&next=/update-password
+```
+
+## 13. Paramètres institutionnels
+
+Dans `Administration → Paramètres`, renseigner avant communication publique officielle :
+
+- email général ;
+- email support ;
+- email confidentialité ;
+- téléphone ;
+- adresse officielle ;
+- note de statut juridique mise à jour ;
+- nom officiel et nom court.
+
+## 14. Diagnostic production
+
+Dans `Administration → État du système`, vérifier :
+
+- Supabase URL et publishable key ;
+- service role serveur ;
+- URL officielle ;
+- VAPID ;
+- origine Android/TWA ;
+- empreintes Digital Asset Links ;
+- contact public.

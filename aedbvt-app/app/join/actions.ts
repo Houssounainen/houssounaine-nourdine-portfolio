@@ -38,6 +38,10 @@ export async function submitMembershipApplication(
   if(program.length>120||studyLevel.length>80||motivation.length>1200) return {ok:false,error:"Un des champs dépasse la longueur autorisée."};
   if(!consent) return {ok:false,error:"Votre consentement est requis pour déposer la candidature."};
 
+  if(!process.env.NEXT_PUBLIC_SUPABASE_URL||!process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY){
+    return {ok:false,error:"Le dépôt de candidature est temporairement indisponible pendant la configuration du service sécurisé."};
+  }
+
   const supabase=await createClient();
   const {data,error}=await supabase.rpc("submit_membership_application",{
     p_full_name:fullName,
