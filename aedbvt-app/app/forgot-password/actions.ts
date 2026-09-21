@@ -12,7 +12,7 @@ export async function requestPasswordReset(formData:FormData){
 
   const supabase=await createClient();
   const {error}=await supabase.auth.resetPasswordForEmail(email,{
-    redirectTo:appUrl+"/auth/recovery?next="+encodeURIComponent("/update-password"),
+    redirectTo:appUrl+"/auth/complete?next="+encodeURIComponent("/update-password"),
   });
 
   if(error) redirect("/forgot-password?error=send");
