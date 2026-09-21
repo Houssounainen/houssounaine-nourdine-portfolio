@@ -51,16 +51,21 @@ alter table public.membership_dues_cycles enable row level security;
 alter table public.member_dues enable row level security;
 
 revoke all on table public.membership_dues_cycles, public.member_dues from anon, authenticated;
-grant select, insert, update on table public.membership_dues_cycles, public.member_dues to authenticated;
+grant select, insert on table public.membership_dues_cycles to authenticated;
+grant select, update on table public.member_dues to authenticated;
 
 create policy dues_cycles_finance_read on public.membership_dues_cycles
 for select to authenticated
 using (public.is_finance());
 
-create policy dues_cycles_finance_manage on public.membership_dues_cycles
-for all to authenticated
-using (public.is_finance())
-with check (public.is_finance());
+create policy dues_cycles_finance_insert on public.membership_dues_cycles
+for insert to authenticated
+with check (
+  public.is_finance()
+  and status='draft'
+  and opened_at is null
+  and closed_at is null
+);
 
 create policy dues_cycles_self_read on public.membership_dues_cycles
 for select to authenticated
@@ -370,8 +375,9 @@ set search_path=public
 as $$
 begin
   update public.members
-  set account_activated_at=coalesce(account_activated_at,now())
-  where profile_id=auth.uid();
+  set account_activated_at=now()
+  where profile_id=auth.uid()
+    and account_activated_at is null;
 end $$;
 
 revoke all on function public.mark_my_account_activated() from public;
