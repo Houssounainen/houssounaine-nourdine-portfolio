@@ -44,7 +44,11 @@ export async function inviteUser(formData: FormData) {
   });
 
   if (memberId) {
-    await admin.from("members").update({ profile_id: data.user.id, email }).eq("id", memberId);
+    await admin.from("members").update({
+      profile_id:data.user.id,
+      email,
+      invitation_sent_at:new Date().toISOString(),
+    }).eq("id", memberId);
   }
 
   revalidatePath("/admin");
