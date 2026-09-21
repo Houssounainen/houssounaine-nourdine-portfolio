@@ -45,6 +45,7 @@ export async function createEvent(formData: FormData) {
     },"agenda").catch(()=>undefined);
   }
   revalidatePath("/agenda");
+  revalidatePath("/events");
   revalidatePath("/dashboard");
 }
 
