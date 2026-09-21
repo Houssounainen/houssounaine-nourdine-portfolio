@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { requestPasswordReset } from "./actions";
+import { PublicFooter } from "@/components/public-footer";
 
 export default async function ForgotPasswordPage({
   searchParams,
@@ -23,5 +24,6 @@ export default async function ForgotPasswordPage({
           </form></>}
       <div className="auth-join-links"><Link href="/login">← Retour à la connexion</Link><Link href="/support">Besoin d’aide ?</Link></div>
     </section>
+    <PublicFooter/>
   </main>;
 }
