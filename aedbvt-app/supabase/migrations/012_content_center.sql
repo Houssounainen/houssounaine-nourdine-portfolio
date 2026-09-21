@@ -78,6 +78,7 @@ for each row execute function public.validate_article_state();
 create or replace function public.publish_due_articles()
 returns table(
   id uuid,
+  slug text,
   title text,
   excerpt text,
   notify_on_publish boolean
@@ -99,9 +100,9 @@ begin
         updated_at=now()
     where a.status='scheduled'
       and a.scheduled_for<=now()
-    returning a.id,a.title,a.excerpt,a.notify_on_publish
+    returning a.id,a.slug,a.title,a.excerpt,a.notify_on_publish
   )
-  select due.id,due.title,due.excerpt,due.notify_on_publish
+  select due.id,due.slug,due.title,due.excerpt,due.notify_on_publish
   from due;
 end $$;
 
