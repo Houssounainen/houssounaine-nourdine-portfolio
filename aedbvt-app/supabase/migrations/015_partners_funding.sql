@@ -191,6 +191,7 @@ for each row execute function public.validate_partner_receipt();
 create or replace function public.refresh_partner_commitment()
 returns trigger
 language plpgsql
+security definer
 set search_path=public
 as $$
 declare
@@ -247,6 +248,8 @@ begin
 
   return coalesce(new,old);
 end $$;
+
+revoke all on function public.refresh_partner_commitment() from public;
 
 drop trigger if exists refresh_partner_commitment on public.partner_receipts;
 create trigger refresh_partner_commitment
