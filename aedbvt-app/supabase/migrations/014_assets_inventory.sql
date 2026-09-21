@@ -344,7 +344,8 @@ alter table public.stock_movements enable row level security;
 revoke all on table public.asset_categories,public.assets,public.asset_events,public.asset_maintenance,public.stock_items,public.stock_movements from anon,authenticated;
 
 grant select on table public.asset_categories,public.assets,public.asset_events,public.asset_maintenance,public.stock_items,public.stock_movements to authenticated;
-grant insert,update on table public.asset_categories,public.assets,public.stock_items to authenticated;
+grant insert,update on table public.asset_categories,public.assets to authenticated;
+grant insert on table public.stock_items to authenticated;
 
 create policy asset_categories_staff_read on public.asset_categories
 for select to authenticated using (public.is_staff());
@@ -372,9 +373,6 @@ for select to authenticated using (public.is_staff());
 
 create policy stock_items_finance_insert on public.stock_items
 for insert to authenticated with check (public.is_finance());
-
-create policy stock_items_finance_update on public.stock_items
-for update to authenticated using (public.is_finance()) with check (public.is_finance());
 
 create policy stock_movements_staff_read on public.stock_movements
 for select to authenticated using (public.is_staff());
