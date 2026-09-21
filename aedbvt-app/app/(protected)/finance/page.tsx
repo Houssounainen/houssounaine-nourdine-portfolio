@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { can } from "@/lib/access";
 import { addExpense, addPayment, approveBudget, createBudget, saveBudgetLine } from "./actions";
 import { uploadFinancialAttachment } from "@/lib/financial-files";
 
@@ -9,7 +10,7 @@ export default async function FinancePage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const { data: profile } = await supabase.from("profiles").select("role").eq("id",user!.id).single();
-  if (!["admin","bureau","tresorier"].includes(profile?.role || "")) notFound();
+  if (!can(profile?.role,"finance_manage")) notFound();
 
   const [
     { data: members },
