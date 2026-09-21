@@ -1,15 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
-import { isStaff } from "@/lib/auth";
+import { getAccessContext } from "@/lib/server-access";
 
 export async function addMember(formData: FormData) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return;
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (!isStaff(profile?.role)) return;
+  const {allowed,supabase,user}=await getAccessContext("members_manage");
+  if(!allowed||!user) return;
 
   const full_name = String(formData.get("full_name") || "").trim();
   if (!full_name) return;
