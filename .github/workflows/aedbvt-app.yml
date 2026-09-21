@@ -35,6 +35,7 @@ jobs:
           bash -n ../scripts/vercel-ignore-build.sh
       - run: node scripts/check-pwa.mjs
       - run: node scripts/check-android.mjs
+      - run: node scripts/check-access.mjs
       - run: npm run typecheck
       - run: npm run build
         env:

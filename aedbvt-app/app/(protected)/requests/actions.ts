@@ -1,15 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
-import { isStaff } from "@/lib/auth";
+import { getAccessContext } from "@/lib/server-access";
 
 export async function processRequest(formData: FormData) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return;
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id",user.id).single();
-  if (!isStaff(profile?.role)) return;
+  const {allowed,supabase,user}=await getAccessContext("requests_manage");
+  if(!allowed||!user) return;
 
   const id=String(formData.get("id")||"");
   const status=String(formData.get("status")||"in_review");

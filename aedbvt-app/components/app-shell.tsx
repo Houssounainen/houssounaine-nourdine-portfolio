@@ -2,30 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { MobileNavigation } from "@/components/mobile-navigation";
 import { SignOutButton } from "@/components/sign-out-button";
-
-const commonLinks:[string,string][] = [
-  ["/dashboard", "Tableau de bord"],
-  ["/me", "Mon espace"],
-  ["/notifications", "Notifications"],
-  ["/news", "Actualités"],
-  ["/agenda", "Agenda"],
-  ["/announcements", "Annonces"],
-  ["/organization", "Organigramme"],
-  ["/governance", "Gouvernance"],
-];
+import { navigationForRole, normalizeRole, ROLE_LABELS } from "@/lib/access";
 
 export function AppShell({ children, profile, unreadNotifications=0 }: { children: React.ReactNode; profile: { full_name?: string | null; role?: string | null } | null; unreadNotifications?:number }) {
-  const role = profile?.role || "membre";
-  const staff = ["admin","bureau","tresorier","secretaire"].includes(role);
-  const finance = ["admin","bureau","tresorier"].includes(role);
+  const role=normalizeRole(profile?.role);
   const profileName=profile?.full_name||"Membre";
-
-  const links:[string,string][] = [
-    ...commonLinks,
-    ...(staff ? [["/operations","Pilotage"],["/administration","Secrétariat"],["/members","Membres"],["/requests","Demandes"],["/documents","Documents"]] as [string,string][] : []),
-    ...(finance ? [["/finance","Finances"]] as [string,string][] : []),
-    ...(role === "admin" ? [["/admin","Paramètres"]] as [string,string][] : []),
-  ];
+  const links=navigationForRole(role);
 
   return (
     <div className="app-frame">
@@ -34,12 +16,12 @@ export function AppShell({ children, profile, unreadNotifications=0 }: { childre
         <nav aria-label="Navigation principale">{links.map(([href, label]) => <Link key={href} href={href}>{label}{href==="/notifications"&&unreadNotifications>0?<span className="side-nav-count">{unreadNotifications}</span>:null}</Link>)}</nav>
         <div className="side-user">
           <span className="avatar">{profileName.split(" ").map(x => x[0]).slice(0,2).join("").toUpperCase()}</span>
-          <div><b>{profileName}</b><small>{role}</small></div>
+          <div><b>{profileName}</b><small>{ROLE_LABELS[role]}</small></div>
         </div>
         <SignOutButton/>
       </aside>
       <main id="contenu" className="app-main">{children}</main>
-      <MobileNavigation links={links} profileName={profileName} role={role} unreadCount={unreadNotifications}/>
+      <MobileNavigation links={links} profileName={profileName} role={ROLE_LABELS[role]} unreadCount={unreadNotifications}/>
     </div>
   );
 }

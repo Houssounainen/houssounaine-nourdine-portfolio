@@ -1,20 +1,15 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+import { getAccessContext } from "@/lib/server-access";
 
 async function financeContext() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { ok: false as const, supabase, user: null, role: null };
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  const role = profile?.role || null;
-  return { ok: ["admin","bureau","tresorier"].includes(role || ""), supabase, user, role };
+  return getAccessContext("finance_manage");
 }
 
 export async function addPayment(formData: FormData) {
-  const { ok, supabase, user } = await financeContext();
-  if (!ok || !user) return;
+  const { allowed, supabase, user } = await financeContext();
+  if (!allowed || !user) return;
   const amount = Number(formData.get("amount") || 0);
   const memberId = String(formData.get("member_id") || "");
   if (amount <= 0 || !memberId) return;
@@ -37,8 +32,8 @@ export async function addPayment(formData: FormData) {
 }
 
 export async function addExpense(formData: FormData) {
-  const { ok, supabase, user } = await financeContext();
-  if (!ok || !user) return;
+  const { allowed, supabase, user } = await financeContext();
+  if (!allowed || !user) return;
   const amount = Number(formData.get("amount") || 0);
   const label = String(formData.get("label") || "").trim();
   if (amount <= 0 || !label) return;
@@ -59,8 +54,8 @@ export async function addExpense(formData: FormData) {
 }
 
 export async function createBudget(formData: FormData) {
-  const { ok, supabase, user } = await financeContext();
-  if (!ok || !user) return;
+  const { allowed, supabase, user } = await financeContext();
+  if (!allowed || !user) return;
   const label = String(formData.get("label") || "").trim();
   const startsOn = String(formData.get("starts_on") || "");
   const endsOn = String(formData.get("ends_on") || "");
@@ -76,8 +71,8 @@ export async function createBudget(formData: FormData) {
 }
 
 export async function saveBudgetLine(formData: FormData) {
-  const { ok, supabase } = await financeContext();
-  if (!ok) return;
+  const { allowed, supabase } = await financeContext();
+  if (!allowed) return;
   const budgetId = String(formData.get("budget_id") || "");
   const categoryId = String(formData.get("category_id") || "");
   const planned = Number(formData.get("planned_amount") || 0);
@@ -94,8 +89,8 @@ export async function saveBudgetLine(formData: FormData) {
 }
 
 export async function approveBudget(formData: FormData) {
-  const { ok, supabase, user } = await financeContext();
-  if (!ok || !user) return;
+  const { allowed, supabase, user } = await financeContext();
+  if (!allowed || !user) return;
   const budgetId = String(formData.get("budget_id") || "");
   if (!budgetId) return;
 
