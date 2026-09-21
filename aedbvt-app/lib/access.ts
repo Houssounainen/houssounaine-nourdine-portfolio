@@ -54,6 +54,8 @@ export function can(role:string|null|undefined,capability:Capability){
 }
 
 const SENSITIVE_ROUTES:{prefix:string;capability:Capability}[]=[
+  {prefix:"/admin/audit",capability:"audit_view"},
+  {prefix:"/members/import",capability:"member_import"},
   {prefix:"/admin",capability:"admin_manage"},
   {prefix:"/finance",capability:"finance_manage"},
   {prefix:"/operations",capability:"operations_manage"},
@@ -66,8 +68,6 @@ const SENSITIVE_ROUTES:{prefix:string;capability:Capability}[]=[
   {prefix:"/communication",capability:"communication_manage"},
   {prefix:"/content",capability:"content_manage"},
   {prefix:"/exports",capability:"exports_manage"},
-  {prefix:"/admin/audit",capability:"audit_view"},
-  {prefix:"/members/import",capability:"member_import"},
 ];
 
 export function canAccessPath(role:string|null|undefined,pathname:string){
