@@ -13,6 +13,7 @@ const adminActions=read("app/(protected)/admin/actions.ts");
 const access=read("lib/access.ts");
 const proxy=read("proxy.ts");
 const vercel=JSON.parse(read("vercel.json"));
+const publicSettingsHelper=read("lib/public-settings.ts");
 
 for(const token of [
   "get_public_app_settings",
@@ -32,6 +33,7 @@ if(!updatePassword.includes("updateUser({password})")) errors.push("La modificat
 if(!adminActions.includes("/auth/complete")) errors.push("Les invitations doivent passer par le flux d’activation sécurisé.");
 if(!access.includes('prefix:"/search",capability:"staff"')) errors.push("La recherche globale doit être protégée par le rôle staff.");
 if(!proxy.includes('"/search"')) errors.push("Le proxy doit protéger /search.");
+if(!publicSettingsHelper.includes("NEXT_PUBLIC_SUPABASE_URL")||!publicSettingsHelper.includes("return {...defaults}")) errors.push("Les pages publiques doivent rester disponibles sans Supabase.");
 
 for(const path of [
   "app/privacy/page.tsx",
