@@ -27,6 +27,12 @@ const tables=[
   "correspondence_register",
   "administrative_issuances",
   "internal_broadcasts",
+  "asset_categories",
+  "assets",
+  "asset_events",
+  "asset_maintenance",
+  "stock_items",
+  "stock_movements",
 ] as const;
 
 export async function GET(){
