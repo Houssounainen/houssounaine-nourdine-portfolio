@@ -37,11 +37,17 @@ const guardedActions={
   "app/(protected)/finance/actions.ts":'getAccessContext("finance_manage")',
   "app/(protected)/requests/actions.ts":'getAccessContext("requests_manage")',
   "app/(protected)/admin/actions.ts":'getAccessContext("admin_manage")',
+  "lib/financial-files.ts":'getAccessContext("finance_manage")',
 };
 
 for(const [path,guard] of Object.entries(guardedActions)){
   const content=read(path);
   if(!content.includes(guard)) errors.push(path+" n’utilise pas le garde attendu "+guard);
+}
+
+const documentsActions=read("app/(protected)/documents/actions.ts");
+if(!documentsActions.includes('can(role,"documents_manage")')||!documentsActions.includes('can(role,"finance_manage")')){
+  errors.push("Les actions Documents doivent utiliser les capacités centralisées documents_manage et finance_manage.");
 }
 
 for(const path of [
