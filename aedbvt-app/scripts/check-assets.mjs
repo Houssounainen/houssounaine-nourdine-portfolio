@@ -33,6 +33,7 @@ if(!access.includes('{prefix:"/assets",capability:"assets_view"}')) errors.push(
 if(!actions.includes('getAccessContext("assets_manage")')) errors.push("Les mutations patrimoine doivent exiger assets_manage.");
 if(!actions.includes('rpc("record_stock_movement"')) errors.push("Les mouvements de stock doivent passer par la RPC contrôlée.");
 if(!actions.includes('rpc("record_asset_maintenance"')) errors.push("Les maintenances doivent passer par la RPC contrôlée.");
+if(migration.includes("grant insert,update on table public.stock_items")||migration.includes("stock_items_finance_update")) errors.push("Le stock ne doit pas autoriser les mises à jour directes de quantité.");
 if(!page.includes('can(profile?.role,"assets_view")')) errors.push("La page patrimoine doit vérifier assets_view.");
 if(!detail.includes('can(profile?.role,"assets_manage")')) errors.push("La fiche patrimoine doit distinguer assets_manage.");
 if(!exportRoute.includes('getAccessContext("assets_view")')) errors.push("L’export patrimoine doit vérifier assets_view.");
