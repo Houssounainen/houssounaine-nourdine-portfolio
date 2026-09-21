@@ -17,4 +17,5 @@ export async function assignPosition(formData: FormData) {
 
   await supabase.from("organization_positions").update({ member_id: memberId || null, updated_at: new Date().toISOString() }).eq("slug", slug);
   revalidatePath("/organization");
+  revalidatePath("/association");
 }
