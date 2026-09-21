@@ -32,10 +32,8 @@ export async function proxy(request: NextRequest) {
 
   if (protectedPath && user) {
     const { data: profile } = await supabase.from("profiles").select("role,active").eq("id",user.id).maybeSingle();
-    const isBootstrapAdmin = Boolean(
-      process.env.AEDBVT_ADMIN_EMAIL &&
-      user.email?.toLowerCase()===process.env.AEDBVT_ADMIN_EMAIL.trim().toLowerCase()
-    );
+    const adminEmail=process.env.AEDBVT_ADMIN_EMAIL?.trim().toLowerCase();
+    const isBootstrapAdmin=Boolean(adminEmail&&user.email?.toLowerCase()===adminEmail);
 
     if (!profile && !isBootstrapAdmin) {
       const denied=request.nextUrl.clone();
