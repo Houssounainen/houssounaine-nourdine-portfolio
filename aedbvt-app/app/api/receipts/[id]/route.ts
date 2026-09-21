@@ -10,7 +10,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 
   const { data: payment } = await supabase
     .from("payments")
-    .select("id,amount,method,external_reference,receipt_number,paid_at,status,members(full_name,member_number,village)")
+    .select("id,amount,method,external_reference,receipt_number,paid_at,status,members(full_name,member_number,village),membership_dues_cycles(label)")
     .eq("id", id)
     .eq("status", "confirmed")
     .maybeSingle();
@@ -18,6 +18,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   if (!payment) return new NextResponse("Reçu introuvable", { status: 404 });
 
   const member = Array.isArray(payment.members) ? payment.members[0] : payment.members;
+  const cycle = Array.isArray(payment.membership_dues_cycles) ? payment.membership_dues_cycles[0] : payment.membership_dues_cycles;
   const rows = [
     "Association des Etudiants de Darsalama et Bandrani-Vouani a Tulear (AEDBVT)",
     "",
@@ -29,7 +30,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     "Montant : " + Number(payment.amount).toLocaleString("fr-FR") + " Ar",
     "Moyen : " + payment.method,
     "Reference externe : " + (payment.external_reference || "-"),
-    "Objet : cotisation / paiement associatif",
+    "Objet : " + (cycle?.label ? "cotisation " + cycle.label : "cotisation / paiement associatif"),
     "",
     "Ce document est un recu interne genere par l'application AEDBVT.",
   ];

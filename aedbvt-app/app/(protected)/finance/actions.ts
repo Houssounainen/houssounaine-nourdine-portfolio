@@ -17,6 +17,7 @@ export async function addPayment(formData: FormData) {
   await supabase.from("payments").insert({
     member_id: memberId,
     amount,
+    dues_cycle_id:String(formData.get("dues_cycle_id")||"")||null,
     method: String(formData.get("method") || "Espèces"),
     external_reference: String(formData.get("external_reference") || "").trim() || null,
     category_id: String(formData.get("category_id") || "") || null,

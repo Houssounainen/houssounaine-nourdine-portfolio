@@ -21,6 +21,7 @@ export default async function FinancePage() {
     { data: budgets },
     { data: ledger },
     { data: expenseAttachments },
+    { data: duesCycles },
   ] = await Promise.all([
     supabase.from("members").select("id,full_name,member_number").eq("status","active").order("full_name"),
     supabase.from("payments").select("id,amount,method,receipt_number,paid_at,account_id,category_id,members(full_name,member_number)").order("paid_at",{ascending:false}).limit(30),
@@ -30,6 +31,7 @@ export default async function FinancePage() {
     supabase.from("budget_years").select("id,label,starts_on,ends_on,status,approved_at").order("starts_on",{ascending:false}),
     supabase.from("finance_ledger").select("id,entry_date,source_type,reference,label,income,expense,category_id,account_id").order("entry_date",{ascending:false}).limit(120),
     supabase.from("financial_attachments").select("id,entity_id,file_name,size_bytes").eq("entity_type","expense").order("created_at",{ascending:false}),
+    supabase.from("membership_dues_cycles").select("id,label,amount,due_on,status").eq("status","open").order("starts_on",{ascending:false}),
   ]);
 
   const activeBudget = budgets?.[0] || null;
@@ -86,6 +88,7 @@ export default async function FinancePage() {
         <form action={addPayment} className="panel form-stack">
           <div><span className="eyebrow">Recette</span><h2>Enregistrer une cotisation</h2></div>
           <label>Membre<select name="member_id" required>{(members||[]).map(m=><option key={m.id} value={m.id}>{m.full_name} · {m.member_number||"sans n°"}</option>)}</select></label>
+          <label>Exercice de cotisation<select name="dues_cycle_id"><option value="">Paiement général / historique</option>{(duesCycles||[]).map(cycle=><option key={cycle.id} value={cycle.id}>{cycle.label} · {fmt(Number(cycle.amount))}</option>)}</select></label>
           <label>Catégorie<select name="category_id" required><option value="">Choisir…</option>{incomeCategories.map(c=><option key={c.id} value={c.id}>{c.code} · {c.name}</option>)}</select></label>
           <label>Compte encaissé<select name="account_id" required><option value="">Choisir…</option>{(accounts||[]).map(a=><option key={a.id} value={a.id}>{a.name}</option>)}</select></label>
           <label>Montant (Ar)<input name="amount" type="number" min="1" required /></label>
@@ -108,6 +111,8 @@ export default async function FinancePage() {
           <button className="button secondary">Enregistrer la dépense</button>
         </form>
       </div>
+
+      <article className="panel finance-dues-callout"><div><span className="eyebrow">Adhésions</span><h2>Cotisations annuelles</h2><p>Suivre les exercices, retards, exonérations et relances membre par membre.</p></div><a className="button primary" href="/finance/dues">Ouvrir les cotisations →</a></article>
 
       <section className="finance-budget-section">
         <div className="section-heading-row"><div><span className="eyebrow">Prévisionnel</span><h2>Budget annuel</h2></div>{activeBudget&&activeBudget.status==="draft"&&<form action={approveBudget}><input type="hidden" name="budget_id" value={activeBudget.id}/><button className="button primary">Approuver le budget</button></form>}</div>

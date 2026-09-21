@@ -30,13 +30,13 @@ export default async function MySpacePage() {
     );
   }
 
-  const [{ data: payments }, { data: requests }, { data: issuedDocs }, { data: eventRegs }, { data: meetingRegs }, { data: duesSetting }] = await Promise.all([
-    supabase.from("payments").select("id,amount,method,receipt_number,paid_at,status").eq("member_id", member.id).eq("status","confirmed").order("paid_at",{ascending:false}),
+  const [{ data: payments }, { data: requests }, { data: issuedDocs }, { data: eventRegs }, { data: meetingRegs }, { data: duesOverview }] = await Promise.all([
+    supabase.from("payments").select("id,amount,method,receipt_number,paid_at,status,dues_cycle_id,membership_dues_cycles(label)").eq("member_id", member.id).eq("status","confirmed").order("paid_at",{ascending:false}),
     supabase.from("member_service_requests").select("id,request_type,subject,details,status,response,created_at,updated_at").eq("member_id",member.id).order("created_at",{ascending:false}),
     supabase.from("administrative_issuances").select("id,number,document_type,subject,purpose,issued_at,verification_token").eq("member_id",member.id).eq("status","issued").order("issued_at",{ascending:false}),
     supabase.from("event_registrations").select("event_id,status").eq("user_id",user!.id).eq("status","going"),
     supabase.from("meeting_attendance").select("meeting_id,status").eq("user_id",user!.id).eq("status","confirmed"),
-    supabase.from("app_settings").select("value").eq("key","annual_dues_ariary").maybeSingle(),
+    supabase.from("member_dues_overview").select("id,cycle_id,cycle_label,starts_on,ends_on,due_on,cycle_status,amount_due,waived_amount,paid_amount,balance,current_status").eq("member_id",member.id).order("starts_on",{ascending:false}),
   ]);
 
   const eventIds=(eventRegs||[]).map((x)=>x.event_id);
@@ -46,9 +46,12 @@ export default async function MySpacePage() {
     meetingIds.length ? supabase.from("meetings").select("id,title,starts_at,location,mode").in("id",meetingIds).order("starts_at",{ascending:false}) : Promise.resolve({data:[]}),
   ]);
 
-  const annualDues=Number(duesSetting?.value || 30000);
-  const paid=(payments||[]).reduce((sum,p)=>sum+Number(p.amount||0),0);
-  const due=Math.max(0,annualDues-paid);
+  const currentDue=(duesOverview||[]).find((row:any)=>row.cycle_status==="open")||(duesOverview||[])[0]||null;
+  const effectiveDue=currentDue?Math.max(0,Number(currentDue.amount_due)-Number(currentDue.waived_amount)):0;
+  const paid=currentDue?Number(currentDue.paid_amount||0):0;
+  const due=currentDue?Number(currentDue.balance||0):0;
+  const dueProgress=effectiveDue>0?Math.min(100,Math.round(paid/effectiveDue*100)):100;
+  const dueLabels:Record<string,string>={due:"À régler",partial:"Paiement partiel",paid:"À jour",overdue:"En retard",exempt:"Exonéré"};
   const appUrl=(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000").replace(/\/$/,"");
   const verificationUrl=appUrl+"/verify/member/"+member.verification_token;
   const qr=await QRCode.toDataURL(verificationUrl,{width:220,margin:1,errorCorrectionLevel:"M"});
@@ -70,9 +73,10 @@ export default async function MySpacePage() {
           <MemberCardActions verificationUrl={verificationUrl}/>
           <div className="dues-card panel">
             <span className="eyebrow">Cotisation annuelle</span>
-            <strong>{paid.toLocaleString("fr-FR")} / {annualDues.toLocaleString("fr-FR")} Ar</strong>
-            <div className="progress-track"><i style={{width: Math.min(100,Math.round((paid/Math.max(1,annualDues))*100))+"%"}} /></div>
-            <p>{due===0?"Cotisation à jour.":"Reste à régler : "+due.toLocaleString("fr-FR")+" Ar"}</p>
+            {currentDue?<><div className="dues-card-title"><strong>{currentDue.cycle_label}</strong><span className={"badge dues-"+currentDue.current_status}>{dueLabels[currentDue.current_status]||currentDue.current_status}</span></div>
+            <strong>{paid.toLocaleString("fr-FR")} / {effectiveDue.toLocaleString("fr-FR")} Ar</strong>
+            <div className="progress-track"><i style={{width:dueProgress+"%"}} /></div>
+            <p>{due===0?"Cotisation à jour.":"Reste à régler : "+due.toLocaleString("fr-FR")+" Ar · échéance "+new Date(currentDue.due_on+"T12:00:00").toLocaleDateString("fr-FR")}</p></>:<p>Aucun exercice de cotisation ne vous est actuellement attribué.</p>}
           </div>
         </div>
       </div>
@@ -97,7 +101,7 @@ export default async function MySpacePage() {
 
       <div className="content-grid no-print">
         <article className="panel">
-          <div className="panel-head"><div><span className="eyebrow">Finances personnelles</span><h2>Mes reçus</h2></div><Link href="/finance">Finances →</Link></div>
+          <div className="panel-head"><div><span className="eyebrow">Finances personnelles</span><h2>Mes reçus</h2></div><span>{payments?.length||0}</span></div>
           <div className="receipt-list">
             {(payments||[]).map((p)=><div key={p.id}><span><b>{p.receipt_number||"Reçu"}</b><small>{new Date(p.paid_at||Date.now()).toLocaleDateString("fr-FR")} · {p.method}</small></span><strong>{Number(p.amount).toLocaleString("fr-FR")} Ar</strong><a className="button secondary" href={"/api/receipts/"+p.id}>PDF</a></div>)}
             {!payments?.length&&<p>Aucun paiement confirmé pour le moment.</p>}
@@ -112,6 +116,14 @@ export default async function MySpacePage() {
           </div>
         </article>
       </div>
+
+      <article className="panel no-print">
+        <div className="panel-head"><div><span className="eyebrow">Adhésion</span><h2>Historique des cotisations</h2></div><span>{duesOverview?.length||0}</span></div>
+        <div className="dues-history-list">
+          {(duesOverview||[]).map((row:any)=><div key={row.id}><span><b>{row.cycle_label}</b><small>Échéance {new Date(row.due_on+"T12:00:00").toLocaleDateString("fr-FR")}</small></span><span><strong>{Number(row.paid_amount).toLocaleString("fr-FR")} / {Math.max(0,Number(row.amount_due)-Number(row.waived_amount)).toLocaleString("fr-FR")} Ar</strong><em className={"badge dues-"+row.current_status}>{dueLabels[row.current_status]||row.current_status}</em></span></div>)}
+          {!duesOverview?.length&&<p>Aucun historique de cotisation disponible.</p>}
+        </div>
+      </article>
 
       <article className="panel no-print member-documents">
         <div className="panel-head"><div><span className="eyebrow">Secrétariat</span><h2>Mes documents administratifs</h2></div><span>{issuedDocs?.length||0}</span></div>

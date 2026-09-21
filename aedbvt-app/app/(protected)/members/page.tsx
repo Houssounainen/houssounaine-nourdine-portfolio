@@ -9,7 +9,7 @@ export default async function MembersPage() {
   const { data: { user } } = await supabase.auth.getUser();
   const [{ data: profile }, { data: members }] = await Promise.all([
     supabase.from("profiles").select("role").eq("id", user!.id).single(),
-    supabase.from("members").select("id,member_number,full_name,village,program,study_level,phone,status").order("full_name"),
+    supabase.from("members").select("id,member_number,full_name,village,program,study_level,phone,email,status,profile_id,invitation_sent_at,account_activated_at").order("full_name"),
   ]);
   if (!can(profile?.role,"members_manage")) notFound();
 
@@ -24,6 +24,7 @@ export default async function MembersPage() {
         <label>Filière<input name="program" /></label>
         <label>Niveau<input name="study_level" /></label>
         <label>Téléphone<input name="phone" /></label>
+        <label>Email<input name="email" type="email" /></label>
         <button className="button primary" type="submit">Ajouter</button>
       </form>
 
