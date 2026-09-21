@@ -41,6 +41,7 @@ jobs:
       - run: node scripts/check-audit-imports.mjs
       - run: node scripts/check-cases.mjs
       - run: node scripts/check-assets.mjs
+      - run: node scripts/check-partners.mjs
       - run: node scripts/check-membership-applications.mjs
       - run: node scripts/check-content.mjs
       - run: npm run typecheck
