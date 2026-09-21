@@ -13,6 +13,8 @@ export type Capability=
   |"communication_manage"
   |"content_manage"
   |"exports_manage"
+  |"audit_view"
+  |"member_import"
   |"admin_manage";
 
 const ALL_ROLES:AppRole[]=["admin","bureau","tresorier","secretaire","membre"];
@@ -30,6 +32,8 @@ const CAPABILITIES:Record<Capability,readonly AppRole[]>={
   communication_manage:["admin","bureau","tresorier","secretaire"],
   content_manage:["admin","bureau","secretaire"],
   exports_manage:["admin","bureau","tresorier","secretaire"],
+  audit_view:["admin"],
+  member_import:["admin","bureau","secretaire"],
   admin_manage:["admin"],
 };
 
@@ -50,6 +54,8 @@ export function can(role:string|null|undefined,capability:Capability){
 }
 
 const SENSITIVE_ROUTES:{prefix:string;capability:Capability}[]=[
+  {prefix:"/admin/audit",capability:"audit_view"},
+  {prefix:"/members/import",capability:"member_import"},
   {prefix:"/admin",capability:"admin_manage"},
   {prefix:"/finance",capability:"finance_manage"},
   {prefix:"/operations",capability:"operations_manage"},
