@@ -17,6 +17,7 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
           <label>Mot de passe<input required name="password" type="password" autoComplete="current-password" /></label>
           <button className="button primary" type="submit">Se connecter</button>
         </form>
+        <div className="auth-join-links"><span>Pas encore membre ?</span><Link href="/join">Déposer une candidature</Link><Link href="/application-status">Suivre mon dossier</Link></div>
       </section>
     </main>
   );
