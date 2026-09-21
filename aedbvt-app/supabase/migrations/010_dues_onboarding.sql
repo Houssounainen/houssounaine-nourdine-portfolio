@@ -312,13 +312,13 @@ create or replace function public.validate_due_adjustment()
 returns trigger
 language plpgsql
 set search_path=public
-as $
+as $$
 begin
   if new.waived_amount+new.paid_amount>new.amount_due then
     raise exception 'L’exonération ne peut pas rendre la cotisation inférieure au montant déjà payé.';
   end if;
   return new;
-end $;
+end $$;
 
 drop trigger if exists validate_due_adjustment on public.member_dues;
 create trigger validate_due_adjustment
