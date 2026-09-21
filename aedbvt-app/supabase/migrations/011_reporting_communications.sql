@@ -48,7 +48,7 @@ returns table(broadcast_id uuid, recipient_count integer, recipient_ids uuid[])
 language plpgsql
 security definer
 set search_path=public
-as $
+as $$
 declare
   v_broadcast_id uuid;
   v_recipient_ids uuid[];
@@ -123,7 +123,7 @@ begin
   from unnest(v_recipient_ids) as recipients(recipient_id);
 
   return query select v_broadcast_id,v_count,v_recipient_ids;
-end $;
+end $$;
 
 revoke all on function public.create_internal_broadcast(text,text,text,text,text) from public;
 grant execute on function public.create_internal_broadcast(text,text,text,text,text) to authenticated;
