@@ -357,7 +357,13 @@ begin
     );
   end if;
 
-  v_recipients := case when p_visible_to_member then array[v_case.submitted_by] else array[]::uuid[] end;
+  v_recipients := array[]::uuid[];
+  if p_visible_to_member then
+    v_recipients := array_append(v_recipients,v_case.submitted_by);
+  end if;
+  if p_assigned_to is not null and v_assignment_changed and p_assigned_to<>auth.uid() then
+    v_recipients := array_append(v_recipients,p_assigned_to);
+  end if;
 
   if p_visible_to_member and (v_status_changed or nullif(trim(coalesce(p_message,'')),'') is not null) then
     insert into public.internal_notifications(recipient_id,kind,title,message,href)
