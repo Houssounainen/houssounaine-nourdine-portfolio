@@ -62,6 +62,18 @@ for all to authenticated
 using (public.is_finance())
 with check (public.is_finance());
 
+create policy dues_cycles_self_read on public.membership_dues_cycles
+for select to authenticated
+using (
+  exists (
+    select 1
+    from public.member_dues d
+    join public.members m on m.id=d.member_id
+    where d.cycle_id=membership_dues_cycles.id
+      and m.profile_id=auth.uid()
+  )
+);
+
 create policy member_dues_finance_read on public.member_dues
 for select to authenticated
 using (public.is_finance());
@@ -347,6 +359,38 @@ end $$;
 
 revoke all on function public.mark_my_account_activated() from public;
 grant execute on function public.mark_my_account_activated() to authenticated;
+
+create or replace view public.member_dues_overview
+with (security_invoker=true)
+as
+select
+  d.id,
+  d.cycle_id,
+  c.label as cycle_label,
+  c.starts_on,
+  c.ends_on,
+  c.due_on,
+  c.status as cycle_status,
+  d.member_id,
+  d.amount_due,
+  d.waived_amount,
+  d.paid_amount,
+  greatest(0,d.amount_due-d.waived_amount-d.paid_amount) as balance,
+  case
+    when greatest(0,d.amount_due-d.waived_amount)=0 then 'exempt'
+    when d.paid_amount>=greatest(0,d.amount_due-d.waived_amount) then 'paid'
+    when d.paid_amount>0 then 'partial'
+    when c.due_on<current_date then 'overdue'
+    else 'due'
+  end as current_status,
+  d.notes,
+  d.last_reminded_at,
+  d.reminder_count,
+  d.updated_at
+from public.member_dues d
+join public.membership_dues_cycles c on c.id=d.cycle_id;
+
+grant select on public.member_dues_overview to authenticated;
 
 drop trigger if exists audit_membership_dues_cycles on public.membership_dues_cycles;
 create trigger audit_membership_dues_cycles
