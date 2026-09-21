@@ -7,9 +7,9 @@ import { archiveEditorialArticle, createEditorialArticle, updateEditorialArticle
 
 function localInputValue(value:string|null){
   if(!value) return "";
-  const date=new Date(value);
+  const date=new Date(new Date(value).getTime()+3*60*60*1000);
   const pad=(n:number)=>String(n).padStart(2,"0");
-  return date.getFullYear()+"-"+pad(date.getMonth()+1)+"-"+pad(date.getDate())+"T"+pad(date.getHours())+":"+pad(date.getMinutes());
+  return date.getUTCFullYear()+"-"+pad(date.getUTCMonth()+1)+"-"+pad(date.getUTCDate())+"T"+pad(date.getUTCHours())+":"+pad(date.getUTCMinutes());
 }
 
 export default async function ContentPage({
