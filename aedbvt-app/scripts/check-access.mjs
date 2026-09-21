@@ -15,6 +15,7 @@ const requiredRoutes={
   "/operations":"operations_manage",
   "/administration":"administration_manage",
   "/members":"members_manage",
+  "/applications":"members_manage",
   "/requests":"requests_manage",
   "/documents":"documents_manage",
   "/analytics":"analytics_view",
