@@ -10,7 +10,7 @@ export async function publishDueArticles(){
     await sendPushToAll({
       title:"AEDBVT · "+article.title,
       body:article.excerpt||"Une nouvelle actualité vient d’être publiée.",
-      url:"/news/"+article.id,
+      url:"/news/"+article.slug,
       tag:"article-published",
     },"announcements").catch(()=>undefined);
   }
