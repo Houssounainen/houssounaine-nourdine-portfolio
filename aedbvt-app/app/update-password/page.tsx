@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { updatePassword } from "./actions";
+import { PublicFooter } from "@/components/public-footer";
 
 const errors:Record<string,string>={
   length:"Le mot de passe doit contenir au moins 10 caractères.",
@@ -34,5 +35,6 @@ export default async function UpdatePasswordPage({
       </form>
       <small className="auth-security-note">Après modification, vous serez déconnecté puis invité à vous reconnecter avec le nouveau mot de passe.</small>
     </section>
+    <PublicFooter/>
   </main>;
 }
