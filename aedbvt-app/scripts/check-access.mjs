@@ -22,6 +22,7 @@ const requiredRoutes={
   "/communication":"communication_manage",
   "/content":"content_manage",
   "/exports":"exports_manage",
+  "/assets":"assets_view",
 };
 
 for(const [route,capability] of Object.entries(requiredRoutes)){
