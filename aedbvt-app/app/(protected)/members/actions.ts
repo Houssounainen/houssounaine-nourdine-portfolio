@@ -16,6 +16,7 @@ export async function addMember(formData: FormData) {
     program: String(formData.get("program") || ""),
     study_level: String(formData.get("study_level") || ""),
     phone: String(formData.get("phone") || ""),
+    email:String(formData.get("email")||"").trim().toLowerCase()||null,
     status: "active",
     created_by: user.id,
   });
