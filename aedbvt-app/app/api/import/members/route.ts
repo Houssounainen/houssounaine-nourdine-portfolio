@@ -49,8 +49,8 @@ export async function POST(request:Request){
     if(!row.full_name) errors.push("nom requis");
     if(!villages.includes(row.village||"")) errors.push("village invalide");
     if(!statuses.includes(row.status||"")) errors.push("statut invalide");
-    if(row.email&&!/^[^s@]+@[^s@]+.[^s@]+$/.test(row.email)) errors.push("email invalide");
-    if(row.joined_at&&!/^d{4}-d{2}-d{2}$/.test(row.joined_at)) errors.push("date invalide");
+    if(row.email&&!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(row.email)) errors.push("email invalide");
+    if(row.joined_at&&!/^\\d{4}-\\d{2}-\\d{2}$/.test(row.joined_at)) errors.push("date invalide");
     return {row,index:index+2,errors};
   });
 
