@@ -8,7 +8,7 @@ import { can, ROLE_LABELS } from "@/lib/access";
 export default async function AdminPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const { data: me } = await supabase.from("profiles").select("role").eq("id", user!.id).single();
+  const { data: me } = await supabase.from("profiles").select("role,full_name").eq("id", user!.id).single();
   if (!can(me?.role,"admin_manage")) notFound();
 
   const admin = createAdminClient();
@@ -26,7 +26,13 @@ export default async function AdminPage() {
 
   return (
     <section className="page">
-      <header className="page-header"><div><span className="eyebrow">Accès & traçabilité</span><h1>Administration</h1></div><span className="status-pill">Houssounaine Nourdine · administrateur</span></header>
+      <header className="page-header"><div><span className="eyebrow">Accès & traçabilité</span><h1>Administration</h1></div><span className="status-pill">{me?.full_name||"Administrateur"} · administrateur</span></header>
+
+      <div className="admin-tools-grid">
+        <Link href="/admin/settings" className="panel admin-tool-card"><span className="eyebrow">Institutionnel</span><h2>Paramètres</h2><p>Nom, contacts, support, textes publics et cotisation par défaut.</p><b>Configurer →</b></Link>
+        <Link href="/admin/system" className="panel admin-tool-card"><span className="eyebrow">Production</span><h2>État du système</h2><p>Supabase, PWA, Push, Android, origine officielle et health check.</p><b>Diagnostiquer →</b></Link>
+        <Link href="/admin/audit" className="panel admin-tool-card"><span className="eyebrow">Traçabilité</span><h2>Journal d’audit</h2><p>Actions, acteurs, tables, changements et historique détaillé.</p><b>Consulter →</b></Link>
+      </div>
 
       {!admin && <div className="panel warning"><h2>Service role non configuré</h2><p>Ajoute SUPABASE_SERVICE_ROLE_KEY au serveur pour activer les invitations et la gestion Auth.</p></div>}
 
