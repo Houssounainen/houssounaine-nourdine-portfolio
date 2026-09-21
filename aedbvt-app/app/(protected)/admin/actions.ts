@@ -30,7 +30,7 @@ async function sendInvitation({
 
   const {data,error}=await admin.auth.admin.inviteUserByEmail(email,{
     data:{full_name:fullName},
-    redirectTo:appUrl+"/auth/recovery?next="+encodeURIComponent("/update-password?mode=invite"),
+    redirectTo:appUrl+"/auth/complete?next="+encodeURIComponent("/update-password?mode=invite"),
   });
   if(error||!data.user) return false;
 
