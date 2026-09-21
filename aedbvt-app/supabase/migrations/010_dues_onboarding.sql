@@ -308,6 +308,23 @@ end $$;
 revoke all on function public.close_dues_cycle(uuid) from public;
 grant execute on function public.close_dues_cycle(uuid) to authenticated;
 
+create or replace function public.validate_due_adjustment()
+returns trigger
+language plpgsql
+set search_path=public
+as $
+begin
+  if new.waived_amount+new.paid_amount>new.amount_due then
+    raise exception 'L’exonération ne peut pas rendre la cotisation inférieure au montant déjà payé.';
+  end if;
+  return new;
+end $;
+
+drop trigger if exists validate_due_adjustment on public.member_dues;
+create trigger validate_due_adjustment
+before update of waived_amount,amount_due on public.member_dues
+for each row execute function public.validate_due_adjustment();
+
 create or replace function public.refresh_due_after_waiver()
 returns trigger
 language plpgsql
