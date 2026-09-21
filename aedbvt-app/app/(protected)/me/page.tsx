@@ -101,7 +101,7 @@ export default async function MySpacePage() {
 
       <div className="content-grid no-print">
         <article className="panel">
-          <div className="panel-head"><div><span className="eyebrow">Finances personnelles</span><h2>Mes reçus</h2></div><Link href="/finance">Finances →</Link></div>
+          <div className="panel-head"><div><span className="eyebrow">Finances personnelles</span><h2>Mes reçus</h2></div><span>{payments?.length||0}</span></div>
           <div className="receipt-list">
             {(payments||[]).map((p)=><div key={p.id}><span><b>{p.receipt_number||"Reçu"}</b><small>{new Date(p.paid_at||Date.now()).toLocaleDateString("fr-FR")} · {p.method}</small></span><strong>{Number(p.amount).toLocaleString("fr-FR")} Ar</strong><a className="button secondary" href={"/api/receipts/"+p.id}>PDF</a></div>)}
             {!payments?.length&&<p>Aucun paiement confirmé pour le moment.</p>}
