@@ -97,6 +97,7 @@ export async function publishVersion(formData:FormData){
   revalidatePath("/governance/documents/"+documentId);
   revalidatePath("/governance/documents");
   revalidatePath("/governance/decisions");
+  revalidatePath("/association");
 }
 
 export async function proposeAmendment(formData:FormData){

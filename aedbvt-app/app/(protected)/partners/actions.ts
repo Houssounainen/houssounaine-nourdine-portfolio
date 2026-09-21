@@ -20,6 +20,8 @@ export async function createPartner(formData:FormData){
     address:String(formData.get("address")||"").trim()||null,
     website:String(formData.get("website")||"").trim()||null,
     notes:String(formData.get("notes")||"").trim()||null,
+    is_public:formData.get("is_public")==="on",
+    public_description:String(formData.get("public_description")||"").trim()||null,
     created_by:user.id,
   });
 
@@ -44,11 +46,14 @@ export async function updatePartner(formData:FormData){
     address:String(formData.get("address")||"").trim()||null,
     website:String(formData.get("website")||"").trim()||null,
     notes:String(formData.get("notes")||"").trim()||null,
+    is_public:formData.get("is_public")==="on",
+    public_description:String(formData.get("public_description")||"").trim()||null,
     updated_at:new Date().toISOString(),
   }).eq("id",id);
 
   revalidatePath("/partners");
   revalidatePath("/partners/"+id);
+  revalidatePath("/soutiens");
 }
 
 export async function createCommitment(formData:FormData){

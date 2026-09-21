@@ -47,4 +47,5 @@ export async function updateInstitutionalSettings(formData:FormData){
   revalidatePath("/privacy");
   revalidatePath("/terms");
   revalidatePath("/support");
+  revalidatePath("/association");
 }

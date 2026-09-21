@@ -58,7 +58,9 @@ export default async function PartnerDetailPage({params}:{params:Promise<{id:str
         <div className="form-two"><label>Email<input type="email" name="email" defaultValue={partner.email||""}/></label><label>Téléphone<input name="phone" defaultValue={partner.phone||""}/></label></div>
         <label>Adresse<input name="address" defaultValue={partner.address||""}/></label>
         <label>Site web<input name="website" defaultValue={partner.website||""}/></label>
-        <label>Notes<textarea name="notes" rows={4} defaultValue={partner.notes||""}/></label>
+        <label>Présentation publique<textarea name="public_description" rows={3} defaultValue={partner.public_description||""} placeholder="Texte visible sur la vitrine publique"/></label>
+        <label className="checkbox-row"><input type="checkbox" name="is_public" defaultChecked={partner.is_public}/> Afficher ce partenaire sur la page publique</label>
+        <label>Notes internes<textarea name="notes" rows={4} defaultValue={partner.notes||""}/></label>
         <button className="button secondary">Enregistrer</button>
       </form>
 
