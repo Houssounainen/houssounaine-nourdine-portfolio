@@ -45,6 +45,7 @@ jobs:
       - run: node scripts/check-partners.mjs
       - run: node scripts/check-membership-applications.mjs
       - run: node scripts/check-content.mjs
+      - run: node scripts/check-polish.mjs
       - run: npm run typecheck
       - run: npm run build
         env:
