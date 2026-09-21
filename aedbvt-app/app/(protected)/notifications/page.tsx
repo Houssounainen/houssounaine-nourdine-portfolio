@@ -16,11 +16,11 @@ export default async function NotificationsPage(){
   ]=await Promise.all([
     supabase.from("internal_notifications").select("id,kind,title,message,href,read_at,created_at").eq("recipient_id",user!.id).order("created_at",{ascending:false}).limit(60),
     supabase.from("announcements").select("id,title,message,level,pinned,published_at,created_at").not("published_at","is",null).order("created_at",{ascending:false}).limit(20),
-    supabase.from("notification_preferences").select("announcements,agenda,operations,administration").eq("profile_id",user!.id).maybeSingle(),
+    supabase.from("notification_preferences").select("announcements,agenda,operations,administration,cases").eq("profile_id",user!.id).maybeSingle(),
     supabase.from("push_subscriptions").select("id").eq("profile_id",user!.id).eq("enabled",true),
   ]);
 
-  const prefs=preferences||{announcements:true,agenda:true,operations:true,administration:true};
+  const prefs=preferences||{announcements:true,agenda:true,operations:true,administration:true,cases:true};
   const unread=(notifications||[]).filter((n)=>!n.read_at);
   const publicKey=process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY||"";
 
@@ -36,6 +36,7 @@ export default async function NotificationsPage(){
         <label><input type="checkbox" name="agenda" defaultChecked={prefs.agenda}/> <span><b>Agenda</b><small>Nouveaux événements et réunions publiés.</small></span></label>
         <label><input type="checkbox" name="operations" defaultChecked={prefs.operations}/> <span><b>Pilotage</b><small>Tâches attribuées et alertes opérationnelles vous concernant.</small></span></label>
         <label><input type="checkbox" name="administration" defaultChecked={prefs.administration}/> <span><b>Secrétariat</b><small>Documents délivrés et suivis administratifs vous concernant.</small></span></label>
+        <label><input type="checkbox" name="cases" defaultChecked={prefs.cases}/> <span><b>Dossiers confidentiels</b><small>Alertes génériques lorsqu’un signalement confidentiel reçoit une mise à jour. Aucun contenu sensible n’apparaît dans le push.</small></span></label>
         <button className="button secondary">Enregistrer mes préférences</button>
       </form>
     </div>
