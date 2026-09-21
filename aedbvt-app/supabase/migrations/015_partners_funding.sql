@@ -72,7 +72,7 @@ alter table public.partner_receipts enable row level security;
 revoke all on table public.partners, public.partner_commitments, public.partner_receipts from anon, authenticated;
 grant select, insert, update on table public.partners to authenticated;
 grant select, insert, update on table public.partner_commitments to authenticated;
-grant select, insert, update, delete on table public.partner_receipts to authenticated;
+grant select, insert on table public.partner_receipts to authenticated;
 grant usage, select on sequence public.partner_receipt_seq to authenticated;
 
 create policy partners_staff_read on public.partners
@@ -252,7 +252,7 @@ create or replace function public.guard_partner_commitment_status()
 returns trigger
 language plpgsql
 set search_path=public
-as $
+as $$
 begin
   if new.status is not distinct from old.status then
     return new;
@@ -280,7 +280,7 @@ begin
   end if;
 
   return new;
-end $;
+end $$;
 
 drop trigger if exists guard_partner_commitment_status on public.partner_commitments;
 create trigger guard_partner_commitment_status
