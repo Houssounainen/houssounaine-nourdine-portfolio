@@ -22,7 +22,7 @@ export async function updateInstitutionalSettings(formData:FormData){
   const {allowed,supabase}=await getAccessContext("admin_manage");
   if(!allowed) return;
 
-  const rows=stringKeys.map((key)=>({
+  const rows:{key:string;value:string;updated_at:string}[]=stringKeys.map((key)=>({
     key,
     value:String(formData.get(key)||"").trim(),
     updated_at:new Date().toISOString(),
@@ -31,10 +31,10 @@ export async function updateInstitutionalSettings(formData:FormData){
   const dues=Number(formData.get("annual_dues_ariary")||0);
   if(Number.isFinite(dues)&&dues>0){
     rows.push({
-      key:"annual_dues_ariary" as typeof stringKeys[number],
+      key:"annual_dues_ariary",
       value:String(Math.round(dues)),
       updated_at:new Date().toISOString(),
-    } as any);
+    });
   }
 
   for(const row of rows){
