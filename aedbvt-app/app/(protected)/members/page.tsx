@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { can } from "@/lib/access";
@@ -15,7 +16,7 @@ export default async function MembersPage() {
 
   return (
     <section className="page">
-      <header className="page-header"><div><span className="eyebrow">Registre</span><h1>Membres</h1></div><span className="status-pill">{members?.length || 0} enregistrements</span></header>
+      <header className="page-header"><div><span className="eyebrow">Registre</span><h1>Membres</h1></div><div className="page-header-actions"><span className="status-pill">{members?.length || 0} enregistrements</span>{can(profile?.role,"member_import")&&<Link className="button secondary" href="/members/import">Importer un CSV</Link>}</div></header>
 
       <form action={addMember} className="panel form-grid">
         <h2>Nouveau membre</h2>
