@@ -49,7 +49,7 @@ export default async function ApplicationsPage({
   return <section className="page">
     <header className="page-header"><div><span className="eyebrow">Adhésions</span><h1>Candidatures</h1></div><span className="status-pill">{pending} reçue(s) · {inReview} en cours</span></header>
 
-    {filters.decision==="approved"&&<article className="panel"><span className="badge ok">Candidature approuvée</span><p>{filters.invite==="invited"?"Le membre a été créé et son invitation de connexion a été envoyée par email.":filters.invite==="linked"?"Le membre a été créé et relié à un compte existant.":filters.invite==="skipped"?"Le membre a été créé. Ajoute un email pour lui envoyer son accès.":"Le membre a été créé, mais l’invitation email n’a pas pu être envoyée. Tu peux la renvoyer depuis Membres."}</p></article>}
+    {filters.decision==="approved"&&<article className="panel"><span className="badge ok">Candidature approuvée</span><p>{filters.invite==="invited"?"Le membre a été créé et son invitation de connexion a été envoyée par email.":filters.invite==="linked"?"Le membre est approuvé. Son compte est activé et il peut se connecter avec le mot de passe choisi lors de sa demande.":filters.invite==="skipped"?"Le membre a été créé. Ajoute un email pour lui envoyer son accès.":"Le membre a été créé, mais l’invitation email n’a pas pu être envoyée. Tu peux la renvoyer depuis Membres."}</p></article>}
     {filters.decision==="rejected"&&<article className="panel"><span className="badge">Candidature traitée</span><p>La candidature a été refusée et l’historique est conservé.</p></article>}
     {filters.error&&<div className="error-box">La décision n’a pas pu être enregistrée. Réessaie.</div>}
 
