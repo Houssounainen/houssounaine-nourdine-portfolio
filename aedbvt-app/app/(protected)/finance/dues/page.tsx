@@ -16,9 +16,13 @@ export default async function DuesPage({
   const {data:profile}=await supabase.from("profiles").select("role").eq("id",user!.id).single();
   if(!can(profile?.role,"finance_manage")) notFound();
 
-  const {data:cycles}=await supabase.from("membership_dues_cycles")
-    .select("id,label,starts_on,ends_on,due_on,amount,status,opened_at,closed_at")
-    .order("starts_on",{ascending:false});
+  const [{data:cycles},{data:duesSetting}]=await Promise.all([
+    supabase.from("membership_dues_cycles")
+      .select("id,label,starts_on,ends_on,due_on,amount,status,opened_at,closed_at")
+      .order("starts_on",{ascending:false}),
+    supabase.from("app_settings").select("value").eq("key","annual_dues_ariary").maybeSingle(),
+  ]);
+  const defaultAmount=Number(duesSetting?.value||30000);
 
   const selectedId=filters.cycle||cycles?.find((cycle)=>cycle.status==="open")?.id||cycles?.[0]?.id||null;
   const selected=cycles?.find((cycle)=>cycle.id===selectedId)||null;
@@ -69,7 +73,7 @@ export default async function DuesPage({
         <label>Libellé<input name="label" placeholder="Cotisation 2026-2027" required/></label>
         <div className="form-two"><label>Début<input type="date" name="starts_on" required/></label><label>Fin<input type="date" name="ends_on" required/></label></div>
         <label>Échéance<input type="date" name="due_on" required/></label>
-        <label>Montant par membre (Ar)<input type="number" name="amount" min="1" defaultValue="30000" required/></label>
+        <label>Montant par membre (Ar)<input type="number" name="amount" min="1" defaultValue={defaultAmount} required/></label>
         <button className="button primary">Créer en brouillon</button>
       </form>
 
