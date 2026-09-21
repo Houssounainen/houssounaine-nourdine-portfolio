@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { login } from "./actions";
+import { PublicFooter } from "@/components/public-footer";
 
 export default async function Login({ searchParams }: { searchParams: Promise<{ error?: string; password?: string }> }) {
   const query = await searchParams;
@@ -21,6 +22,7 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
         </form>
         <div className="auth-join-links"><span>Pas encore membre ?</span><Link href="/join">Déposer une candidature</Link><Link href="/application-status">Suivre mon dossier</Link></div>
       </section>
+      <PublicFooter/>
     </main>
   );
 }
