@@ -45,6 +45,97 @@ with check (
   and recipient_id is not null
 );
 
+create or replace function public.create_internal_broadcast(
+  p_title text,
+  p_message text,
+  p_priority text,
+  p_segment_type text,
+  p_segment_value text default null
+)
+returns table(broadcast_id uuid, recipient_count integer, recipient_ids uuid[])
+language plpgsql
+security definer
+set search_path=public
+as $
+declare
+  v_broadcast_id uuid;
+  v_recipient_ids uuid[];
+  v_count integer;
+  v_kind text;
+begin
+  if not public.is_staff() then
+    raise exception 'Accès staff requis.';
+  end if;
+
+  if nullif(trim(coalesce(p_title,'')),'') is null
+     or nullif(trim(coalesce(p_message,'')),'') is null then
+    raise exception 'Titre et message requis.';
+  end if;
+
+  if p_priority not in ('info','warning','urgent') then
+    raise exception 'Priorité invalide.';
+  end if;
+
+  if p_segment_type not in ('all','staff','role','village') then
+    raise exception 'Segment invalide.';
+  end if;
+
+  if p_segment_type='role' and p_segment_value not in ('admin','bureau','tresorier','secretaire','membre') then
+    raise exception 'Rôle cible invalide.';
+  end if;
+
+  if p_segment_type='village' and p_segment_value not in ('Darsalama','Bandrani-Vouani') then
+    raise exception 'Village cible invalide.';
+  end if;
+
+  select coalesce(array_agg(distinct target_id),array[]::uuid[])
+  into v_recipient_ids
+  from (
+    select p.id as target_id
+    from public.profiles p
+    where p.active=true
+      and (
+        p_segment_type='all'
+        or (p_segment_type='staff' and p.role in ('admin','bureau','tresorier','secretaire'))
+        or (p_segment_type='role' and p.role::text=p_segment_value)
+        or (
+          p_segment_type='village'
+          and exists(
+            select 1 from public.members m
+            where m.profile_id=p.id
+              and m.status='active'
+              and m.village=p_segment_value
+          )
+        )
+      )
+  ) targets;
+
+  v_count := coalesce(array_length(v_recipient_ids,1),0);
+  if v_count=0 then
+    raise exception 'Aucun destinataire actif pour ce segment.';
+  end if;
+
+  insert into public.internal_broadcasts(
+    title,message,priority,segment_type,segment_value,recipient_count,created_by
+  )
+  values(
+    trim(p_title),trim(p_message),p_priority,p_segment_type,nullif(trim(coalesce(p_segment_value,'')),''),
+    v_count,auth.uid()
+  )
+  returning id into v_broadcast_id;
+
+  v_kind := case when p_priority='info' then 'info' else 'warning' end;
+
+  insert into public.internal_notifications(recipient_id,kind,title,message,href)
+  select recipient_id,v_kind,trim(p_title),trim(p_message),'/notifications'
+  from unnest(v_recipient_ids) recipient_id;
+
+  return query select v_broadcast_id,v_count,v_recipient_ids;
+end $;
+
+revoke all on function public.create_internal_broadcast(text,text,text,text,text) from public;
+grant execute on function public.create_internal_broadcast(text,text,text,text,text) to authenticated;
+
 drop trigger if exists audit_internal_broadcasts on public.internal_broadcasts;
 create trigger audit_internal_broadcasts
 after insert or update or delete on public.internal_broadcasts
