@@ -101,6 +101,16 @@ export async function provisionMemberAccount(
     .eq("id",authUser.id)
     .maybeSingle();
 
+  if(applicantPasswordAccount){
+    const {error:activateError}=await admin.auth.admin.updateUserById(authUser.id,{
+      email_confirm:true,
+      user_metadata:{...(authUser.user_metadata||{}),application_pending:false,full_name:input.fullName,member_id:input.memberId},
+    });
+    if(activateError){
+      return {ok:false,state:"error",userId:authUser.id,error:"Le compte existe mais n’a pas pu être activé."};
+    }
+  }
+
   if(profile){
     await admin.from("profiles").update({
       full_name:input.fullName,
@@ -112,12 +122,6 @@ export async function provisionMemberAccount(
       full_name:input.fullName,
       role:"membre",
       active:true,
-    });
-  }
-
-  if(applicantPasswordAccount){
-    await admin.auth.admin.updateUserById(authUser.id,{
-      user_metadata:{...(authUser.user_metadata||{}),application_pending:false,full_name:input.fullName,member_id:input.memberId},
     });
   }
 

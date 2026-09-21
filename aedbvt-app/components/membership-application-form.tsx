@@ -25,7 +25,7 @@ export function MembershipApplicationForm(){
         <Link className="button primary" href={trackingHref}>Suivre ma candidature</Link>
         <Link className="button secondary" href="/">Retour à l’accueil</Link>
       </div>
-      <div className="notice">Conservez votre référence et votre lien de suivi. Si vous recevez un email de confirmation, validez votre adresse. Après approbation, vous pourrez vous connecter avec l’email et le mot de passe choisis ici.</div>
+      <div className="notice">Conservez votre référence et votre lien de suivi. Aucun email n’est nécessaire pour finaliser la demande. Après approbation, vous pourrez vous connecter directement avec l’email et le mot de passe choisis ici.</div>
     </article>;
   }
 

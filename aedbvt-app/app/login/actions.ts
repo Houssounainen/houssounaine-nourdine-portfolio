@@ -12,6 +12,7 @@ export async function login(formData: FormData) {
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if(error?.code==="email_not_confirmed") redirect("/login?error=pending");
   if (error||!data.user) redirect("/login?error=identifiants");
 
   const {data:profile}=await supabase
