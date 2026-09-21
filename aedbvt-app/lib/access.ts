@@ -11,6 +11,7 @@ export type Capability=
   |"governance_manage"
   |"analytics_view"
   |"communication_manage"
+  |"content_manage"
   |"exports_manage"
   |"admin_manage";
 
@@ -27,6 +28,7 @@ const CAPABILITIES:Record<Capability,readonly AppRole[]>={
   governance_manage:["admin","bureau","tresorier","secretaire"],
   analytics_view:["admin","bureau","tresorier","secretaire"],
   communication_manage:["admin","bureau","tresorier","secretaire"],
+  content_manage:["admin","bureau","secretaire"],
   exports_manage:["admin","bureau","tresorier","secretaire"],
   admin_manage:["admin"],
 };
@@ -58,6 +60,7 @@ const SENSITIVE_ROUTES:{prefix:string;capability:Capability}[]=[
   {prefix:"/documents",capability:"documents_manage"},
   {prefix:"/analytics",capability:"analytics_view"},
   {prefix:"/communication",capability:"communication_manage"},
+  {prefix:"/content",capability:"content_manage"},
   {prefix:"/exports",capability:"exports_manage"},
 ];
 
@@ -90,6 +93,7 @@ export function navigationForRole(role:string|null|undefined):[string,string][]{
   if(can(r,"finance_manage")) links.push(["/finance","Finances"]);
   if(can(r,"analytics_view")) links.push(["/analytics","Statistiques"]);
   if(can(r,"communication_manage")) links.push(["/communication","Communication"]);
+  if(can(r,"content_manage")) links.push(["/content","Contenu"]);
   if(can(r,"exports_manage")) links.push(["/exports","Exports"]);
   if(can(r,"admin_manage")) links.push(["/admin","Paramètres"]);
 
