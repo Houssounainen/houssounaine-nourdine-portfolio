@@ -17,7 +17,13 @@ export type MemberDirectoryRow={
   status:string;
 };
 
-export function MemberDirectory({members}:{members:MemberDirectoryRow[]}){
+export function MemberDirectory({
+  members,
+  inviteAction,
+}:{
+  members:MemberDirectoryRow[];
+  inviteAction:(formData:FormData)=>Promise<void>;
+}){
   const [query,setQuery]=useState("");
   const [village,setVillage]=useState("all");
   const [status,setStatus]=useState("all");
@@ -63,10 +69,25 @@ export function MemberDirectory({members}:{members:MemberDirectoryRow[]}){
     </div>
 
     <div className="table-wrap">
-      <table><thead><tr><th>N°</th><th>Membre</th><th>Village</th><th>Études</th><th>Contact</th><th>Compte</th><th>Statut</th></tr></thead>
+      <table><thead><tr><th>N°</th><th>Membre</th><th>Village</th><th>Études</th><th>Contact</th><th>Compte</th><th>Statut</th><th>Accès</th></tr></thead>
       <tbody>{filtered.map((member)=>{
         const onboarding=member.account_activated_at?"Activé":member.profile_id?"Invité":"À inviter";
-        return <tr key={member.id}><td>{member.member_number||"—"}</td><td><b>{member.full_name}</b>{member.email&&<small className="member-email">{member.email}</small>}</td><td>{member.village||"—"}</td><td>{[member.program,member.study_level].filter(Boolean).join(" · ")||"—"}</td><td>{member.phone||"—"}</td><td><span className={"badge onboarding-"+(member.account_activated_at?"active":member.profile_id?"invited":"pending")}>{onboarding}</span></td><td><span className={"badge "+(member.status==="active"?"ok":"")}>{member.status}</span></td></tr>;
+        const canInvite=member.status==="active"&&Boolean(member.email)&&!member.account_activated_at;
+        return <tr key={member.id}>
+          <td>{member.member_number||"—"}</td>
+          <td><b>{member.full_name}</b>{member.email&&<small className="member-email">{member.email}</small>}</td>
+          <td>{member.village||"—"}</td>
+          <td>{[member.program,member.study_level].filter(Boolean).join(" · ")||"—"}</td>
+          <td>{member.phone||"—"}</td>
+          <td><span className={"badge onboarding-"+(member.account_activated_at?"active":member.profile_id?"invited":"pending")}>{onboarding}</span></td>
+          <td><span className={"badge "+(member.status==="active"?"ok":"")}>{member.status}</span></td>
+          <td>
+            {canInvite?<form action={inviteAction}>
+              <input type="hidden" name="member_id" value={member.id}/>
+              <button className="button secondary" type="submit">{member.profile_id?"Renvoyer":"Envoyer"} l’accès</button>
+            </form>:member.account_activated_at?<small className="muted">Compte actif</small>:<small className="muted">{member.email?"Active le membre":"Email requis"}</small>}
+          </td>
+        </tr>;
       })}</tbody></table>
       {!filtered.length&&<div className="directory-empty">Aucun membre ne correspond à ces critères.</div>}
     </div>

@@ -2,12 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { can } from "@/lib/access";
-import { addMember } from "./actions";
+import { addMember, inviteMember } from "./actions";
 import { MemberDirectory } from "@/components/member-directory";
 
 export default async function MembersPage({
   searchParams,
-}:{searchParams:Promise<{created?:string;error?:string}>}) {
+}:{searchParams:Promise<{created?:string;error?:string;invite?:string}>}) {
   const params=await searchParams;
   const supabase=await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -21,7 +21,9 @@ export default async function MembersPage({
     <section className="page">
       <header className="page-header"><div><span className="eyebrow">Registre</span><h1>Membres</h1></div><div className="page-header-actions"><span className="status-pill">{members?.length || 0} enregistrements</span>{can(profile?.role,"member_import")&&<Link className="button secondary" href="/members/import">Importer un CSV</Link>}</div></header>
 
-      {params.created==="1"&&<article className="panel"><span className="badge ok">Membre ajouté</span><p>Le registre a été mis à jour immédiatement.</p></article>}
+      {params.created==="1"&&<article className="panel"><span className="badge ok">Membre ajouté</span><p>{params.invite==="invited"?"Le registre est à jour et une invitation de connexion a été envoyée par email.":params.invite==="linked"?"Le registre est à jour et le membre est relié à son compte existant.":params.invite==="error"?"Le registre est à jour, mais l’invitation n’a pas pu être envoyée. Utilise « Envoyer l’accès » dans la liste.":"Le registre a été mis à jour immédiatement."}</p></article>}
+      {params.created!=="1"&&params.invite==="invited"&&<article className="panel"><span className="badge ok">Invitation envoyée</span><p>Le membre peut maintenant ouvrir l’email AEDBVT et créer son mot de passe.</p></article>}
+      {params.created!=="1"&&params.invite==="error"&&<div className="error-box">L’invitation n’a pas pu être envoyée. Vérifie l’adresse email et la configuration email Supabase.</div>}
       {params.error&&<div className="error-box">{params.error}</div>}
 
       <form action={addMember} className="panel form-grid">
@@ -38,7 +40,7 @@ export default async function MembersPage({
         <button className="button primary" type="submit">Ajouter le membre</button>
       </form>
 
-      <MemberDirectory members={members||[]}/>
+      <MemberDirectory members={members||[]} inviteAction={inviteMember}/>
     </section>
   );
 }

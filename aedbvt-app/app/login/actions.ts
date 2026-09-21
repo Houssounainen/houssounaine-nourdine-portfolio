@@ -12,5 +12,7 @@ export async function login(formData: FormData) {
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) redirect("/login?error=identifiants");
+
+  await supabase.rpc("mark_my_account_activated");
   redirect("/dashboard");
 }

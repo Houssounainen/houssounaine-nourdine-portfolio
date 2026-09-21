@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getAccessContext } from "@/lib/server-access";
+import { provisionMemberAccount } from "@/lib/member-onboarding";
 
 const villages=["Darsalama","Bandrani-Vouani"];
 const statuses=["pending","active","inactive"];
@@ -27,7 +28,7 @@ export async function addMember(formData: FormData) {
   if(!statuses.includes(status)) fail("Statut invalide.");
   if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) fail("Adresse email invalide.");
 
-  const {error}=await supabase.from("members").insert({
+  const {data:member,error}=await supabase.from("members").insert({
     full_name,
     member_number,
     village,
@@ -38,14 +39,51 @@ export async function addMember(formData: FormData) {
     status,
     joined_at,
     created_by:user.id,
-  });
+  }).select("id,full_name,email,status").single();
 
-  if(error){
-    if(error.code==="23505") fail("Ce numéro de membre est déjà utilisé.");
+  if(error||!member){
+    if(error?.code==="23505") fail("Ce numéro de membre est déjà utilisé.");
     fail("L’ajout du membre a échoué. Vérifie les informations puis réessaie.");
+  }
+
+  let invite="skipped";
+  if(member.status==="active"&&member.email){
+    const result=await provisionMemberAccount({
+      memberId:member.id,
+      email:member.email,
+      fullName:member.full_name,
+    });
+    invite=result.ok?result.state:"error";
   }
 
   revalidatePath("/members");
   revalidatePath("/dashboard");
-  redirect("/members?created=1");
+  redirect("/members?created=1&invite="+encodeURIComponent(invite));
+}
+
+export async function inviteMember(formData:FormData){
+  const {allowed,supabase}=await getAccessContext("members_manage");
+  if(!allowed) fail("Accès administrateur requis.");
+
+  const memberId=String(formData.get("member_id")||"");
+  if(!memberId) fail("Membre introuvable.");
+
+  const {data:member}=await supabase
+    .from("members")
+    .select("id,full_name,email,status")
+    .eq("id",memberId)
+    .maybeSingle();
+
+  if(!member) fail("Membre introuvable.");
+  if(member.status!=="active") fail("Le membre doit être actif avant de recevoir un accès.");
+  if(!member.email) fail("Ajoute une adresse email avant d’envoyer l’invitation.");
+
+  const result=await provisionMemberAccount({
+    memberId:member.id,
+    email:member.email,
+    fullName:member.full_name,
+  },{resend:true});
+
+  revalidatePath("/members");
+  redirect("/members?invite="+encodeURIComponent(result.ok?result.state:"error"));
 }

@@ -13,7 +13,7 @@ const labels:Record<string,string>={
 
 export default async function ApplicationsPage({
   searchParams,
-}:{searchParams:Promise<{q?:string;status?:string}>}){
+}:{searchParams:Promise<{q?:string;status?:string;decision?:string;invite?:string;error?:string}>}){
   const filters=await searchParams;
   const supabase=await createClient();
   const {data:{user}}=await supabase.auth.getUser();
@@ -48,6 +48,10 @@ export default async function ApplicationsPage({
 
   return <section className="page">
     <header className="page-header"><div><span className="eyebrow">Adhésions</span><h1>Candidatures</h1></div><span className="status-pill">{pending} reçue(s) · {inReview} en cours</span></header>
+
+    {filters.decision==="approved"&&<article className="panel"><span className="badge ok">Candidature approuvée</span><p>{filters.invite==="invited"?"Le membre a été créé et son invitation de connexion a été envoyée par email.":filters.invite==="linked"?"Le membre a été créé et relié à un compte existant.":filters.invite==="skipped"?"Le membre a été créé. Ajoute un email pour lui envoyer son accès.":"Le membre a été créé, mais l’invitation email n’a pas pu être envoyée. Tu peux la renvoyer depuis Membres."}</p></article>}
+    {filters.decision==="rejected"&&<article className="panel"><span className="badge">Candidature traitée</span><p>La candidature a été refusée et l’historique est conservé.</p></article>}
+    {filters.error&&<div className="error-box">La décision n’a pas pu être enregistrée. Réessaie.</div>}
 
     <div className="stat-grid">
       <article><small>À examiner</small><strong>{pending}</strong><span>nouvelle(s) candidature(s)</span></article>
@@ -86,12 +90,12 @@ export default async function ApplicationsPage({
           <label>Note / message au candidat<textarea name="decision_note" rows={3} maxLength={800} defaultValue={item.decision_note||""}/></label>
           <div>
             {item.status==="pending"&&<button className="button secondary" name="status" value="in_review">Prendre en charge</button>}
-            <button className="button primary" name="status" value="approved">Approuver & créer membre</button>
+            <button className="button primary" name="status" value="approved">Approuver, créer & inviter</button>
             <button className="button danger" name="status" value="rejected">Refuser</button>
           </div>
         </form>}
 
-        {item.status==="approved"&&<div className="application-member-created"><b>Membre créé</b><span>Cette personne apparaît désormais dans le registre et dans l’onboarding des comptes.</span></div>}
+        {item.status==="approved"&&<div className="application-member-created"><b>Membre créé</b><span>Cette personne apparaît dans le registre. Si son email est valide, son accès peut être activé par invitation.</span></div>}
       </article>)}
       {!filtered.length&&<div className="panel empty-state">Aucune candidature ne correspond aux filtres.</div>}
     </div>

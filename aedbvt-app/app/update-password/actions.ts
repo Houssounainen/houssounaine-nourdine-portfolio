@@ -17,6 +17,7 @@ export async function updatePassword(formData:FormData){
   const {error}=await supabase.auth.updateUser({password});
   if(error) redirect("/update-password?error=update");
 
+  await supabase.rpc("mark_my_account_activated");
   await supabase.auth.signOut();
   redirect("/login?password=updated");
 }
