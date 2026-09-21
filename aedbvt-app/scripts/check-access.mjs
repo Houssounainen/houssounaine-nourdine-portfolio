@@ -17,6 +17,9 @@ const requiredRoutes={
   "/members":"members_manage",
   "/requests":"requests_manage",
   "/documents":"documents_manage",
+  "/analytics":"analytics_view",
+  "/communication":"communication_manage",
+  "/exports":"exports_manage",
 };
 
 for(const [route,capability] of Object.entries(requiredRoutes)){
