@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import { inviteUser, updateUserAccess } from "./actions";
+import { inviteMemberAccount, inviteUser, updateUserAccess } from "./actions";
 import { can, ROLE_LABELS } from "@/lib/access";
 
 export default async function AdminPage() {
@@ -46,7 +46,7 @@ export default async function AdminPage() {
       <article className="panel onboarding-admin-list">
         {(members||[]).map((member)=>{
           const state=member.account_activated_at?"Activé":member.profile_id?"Invité":"À inviter";
-          return <div key={member.id}><span><b>{member.full_name}</b><small>{member.member_number||"—"} · {member.email||"email non renseigné"}</small></span><span className={"badge onboarding-"+(member.account_activated_at?"active":member.profile_id?"invited":"pending")}>{state}</span><small>{member.account_activated_at?"Activé le "+new Date(member.account_activated_at).toLocaleDateString("fr-FR"):member.invitation_sent_at?"Invité le "+new Date(member.invitation_sent_at).toLocaleDateString("fr-FR"):"Aucune invitation envoyée"}</small></div>;
+          return <div key={member.id}><span><b>{member.full_name}</b><small>{member.member_number||"—"} · {member.email||"email non renseigné"}</small></span><span className={"badge onboarding-"+(member.account_activated_at?"active":member.profile_id?"invited":"pending")}>{state}</span><small>{member.account_activated_at?"Activé le "+new Date(member.account_activated_at).toLocaleDateString("fr-FR"):member.invitation_sent_at?"Invité le "+new Date(member.invitation_sent_at).toLocaleDateString("fr-FR"):"Aucune invitation envoyée"}</small>{!member.profile_id&&member.email&&<form action={inviteMemberAccount}><input type="hidden" name="member_id" value={member.id}/><button className="button secondary">Inviter</button></form>}</div>;
         })}
         {!members?.length&&<div className="empty-state">Aucun membre actif.</div>}
       </article>
