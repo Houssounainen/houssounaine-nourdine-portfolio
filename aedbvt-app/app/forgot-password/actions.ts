@@ -8,7 +8,9 @@ export async function requestPasswordReset(formData:FormData){
   if(!email||email.length>180) redirect("/forgot-password?sent=1");
 
   const appUrl=(process.env.NEXT_PUBLIC_APP_URL||"").replace(/\/$/,"");
-  if(!appUrl) redirect("/forgot-password?error=config");
+  if(!appUrl||!process.env.NEXT_PUBLIC_SUPABASE_URL||!process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY){
+    redirect("/forgot-password?error=config");
+  }
 
   const supabase=await createClient();
   const {error}=await supabase.auth.resetPasswordForEmail(email,{
