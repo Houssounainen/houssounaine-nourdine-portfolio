@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -57,7 +58,7 @@ export default async function AdminPage() {
         <tbody>{(profiles||[]).map((profile)=><tr key={profile.id}><td><b>{profile.full_name || "Utilisateur"}</b></td><td>{emails.get(profile.id) || "—"}</td><td>{ROLE_LABELS[profile.role as keyof typeof ROLE_LABELS] || profile.role}</td><td><span className={"badge "+(profile.active?"ok":"")}>{profile.active?"Actif":"Suspendu"}</span></td><td>{profile.id===user!.id?<span className="muted">Compte administrateur principal</span>:<form action={updateUserAccess} className="table-action"><input type="hidden" name="profile_id" value={profile.id}/><select name="role" defaultValue={profile.role}><option value="membre">Membre</option><option value="secretaire">Secrétaire</option><option value="tresorier">Trésorier</option><option value="bureau">Bureau</option><option value="admin">Administrateur</option></select><select name="active" defaultValue={String(profile.active)}><option value="true">Actif</option><option value="false">Suspendu</option></select><button className="button secondary">Mettre à jour</button></form>}</td></tr>)}</tbody></table>
       </div>
 
-      <h2 className="section-title">Journal d’audit</h2>
+      <div className="section-heading-row"><h2 className="section-title">Journal d’audit</h2><Link className="button secondary" href="/admin/audit">Ouvrir le journal complet →</Link></div>
       <article className="panel audit-list">
         {(logs||[]).map((log)=><div key={log.id}><time>{new Date(log.created_at).toLocaleString("fr-FR")}</time><b>{log.action}</b><span>{log.table_name}</span><small>{log.record_id || "—"}</small></div>)}
         {!logs?.length && <div className="empty-state">Aucune opération auditée pour le moment.</div>}
