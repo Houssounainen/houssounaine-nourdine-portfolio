@@ -12,10 +12,11 @@ function Check({ok,label,detail}:{ok:boolean;label:string;detail?:string}){
 export default async function SystemPage(){
   const supabase=await createClient();
   const {data:{user}}=await supabase.auth.getUser();
-  const [{data:profile},{count:profileCount},{data:settings}]=await Promise.all([
+  const [{data:profile},{count:profileCount},{data:settings},publicSettingsCheck]=await Promise.all([
     supabase.from("profiles").select("role").eq("id",user!.id).single(),
     supabase.from("profiles").select("*",{count:"exact",head:true}),
     supabase.from("app_settings").select("key,value").in("key",["association_name","support_email","contact_email"]),
+    supabase.rpc("get_public_app_settings"),
   ]);
   if(!can(profile?.role,"admin_manage")) notFound();
 
@@ -57,6 +58,7 @@ export default async function SystemPage(){
 
     <article className="panel system-checks">
       <div><span className="eyebrow">Institutionnel</span><h2>Paramètres essentiels</h2></div>
+      <Check ok={!publicSettingsCheck.error} label="Migration paramètres publics" detail={publicSettingsCheck.error?"Migration 016 à appliquer":"RPC publique disponible"}/>
       <Check ok={Boolean(settingsMap.get("association_name"))} label="Nom officiel"/>
       <Check ok={Boolean(settingsMap.get("support_email")||settingsMap.get("contact_email"))} label="Contact public" detail="À renseigner avant ouverture large au public"/>
       <div className="system-links"><Link href="/admin/settings">Modifier les paramètres →</Link><a href="/api/health" target="_blank">Health endpoint ↗</a></div>
