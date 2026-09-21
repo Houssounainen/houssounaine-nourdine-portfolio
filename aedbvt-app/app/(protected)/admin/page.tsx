@@ -2,16 +2,13 @@ import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { inviteUser, updateUserAccess } from "./actions";
-
-const roleLabel: Record<string,string> = {
-  admin:"Administrateur", bureau:"Bureau", tresorier:"Trésorier", secretaire:"Secrétaire", membre:"Membre"
-};
+import { can, ROLE_LABELS } from "@/lib/access";
 
 export default async function AdminPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const { data: me } = await supabase.from("profiles").select("role").eq("id", user!.id).single();
-  if (me?.role !== "admin") notFound();
+  if (!can(me?.role,"admin_manage")) notFound();
 
   const admin = createAdminClient();
   const [{ data: profiles }, { data: logs }, { data: members }] = await Promise.all([
@@ -48,7 +45,7 @@ export default async function AdminPage() {
       <h2 className="section-title">Comptes & rôles</h2>
       <div className="table-wrap panel">
         <table><thead><tr><th>Utilisateur</th><th>Email</th><th>Rôle</th><th>État</th><th>Action</th></tr></thead>
-        <tbody>{(profiles||[]).map((profile)=><tr key={profile.id}><td><b>{profile.full_name || "Utilisateur"}</b></td><td>{emails.get(profile.id) || "—"}</td><td>{roleLabel[profile.role] || profile.role}</td><td><span className={"badge "+(profile.active?"ok":"")}>{profile.active?"Actif":"Suspendu"}</span></td><td>{profile.id===user!.id?<span className="muted">Compte administrateur principal</span>:<form action={updateUserAccess} className="table-action"><input type="hidden" name="profile_id" value={profile.id}/><select name="role" defaultValue={profile.role}><option value="membre">Membre</option><option value="secretaire">Secrétaire</option><option value="tresorier">Trésorier</option><option value="bureau">Bureau</option><option value="admin">Administrateur</option></select><select name="active" defaultValue={String(profile.active)}><option value="true">Actif</option><option value="false">Suspendu</option></select><button className="button secondary">Mettre à jour</button></form>}</td></tr>)}</tbody></table>
+        <tbody>{(profiles||[]).map((profile)=><tr key={profile.id}><td><b>{profile.full_name || "Utilisateur"}</b></td><td>{emails.get(profile.id) || "—"}</td><td>{ROLE_LABELS[profile.role as keyof typeof ROLE_LABELS] || profile.role}</td><td><span className={"badge "+(profile.active?"ok":"")}>{profile.active?"Actif":"Suspendu"}</span></td><td>{profile.id===user!.id?<span className="muted">Compte administrateur principal</span>:<form action={updateUserAccess} className="table-action"><input type="hidden" name="profile_id" value={profile.id}/><select name="role" defaultValue={profile.role}><option value="membre">Membre</option><option value="secretaire">Secrétaire</option><option value="tresorier">Trésorier</option><option value="bureau">Bureau</option><option value="admin">Administrateur</option></select><select name="active" defaultValue={String(profile.active)}><option value="true">Actif</option><option value="false">Suspendu</option></select><button className="button secondary">Mettre à jour</button></form>}</td></tr>)}</tbody></table>
       </div>
 
       <h2 className="section-title">Journal d’audit</h2>
