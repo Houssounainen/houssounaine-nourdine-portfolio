@@ -27,24 +27,22 @@ create unique index if not exists membership_applications_active_email_unique
 on public.membership_applications(lower(email))
 where status in ('pending','in_review');
 
+create unique index if not exists membership_applications_active_phone_unique
+on public.membership_applications(phone)
+where status in ('pending','in_review');
+
 create index if not exists membership_applications_status_idx
 on public.membership_applications(status,submitted_at desc);
 
 alter table public.membership_applications enable row level security;
 
 revoke all on table public.membership_applications from anon, authenticated;
-grant select, update on table public.membership_applications to authenticated;
+grant select on table public.membership_applications to authenticated;
 
 create policy membership_applications_staff_read
 on public.membership_applications
 for select to authenticated
 using (public.is_staff());
-
-create policy membership_applications_staff_update
-on public.membership_applications
-for update to authenticated
-using (public.is_staff())
-with check (public.is_staff());
 
 create or replace function public.submit_membership_application(
   p_full_name text,
@@ -101,6 +99,14 @@ begin
       and a.status in ('pending','in_review')
   ) then
     raise exception 'Une candidature est déjà en cours avec cette adresse email.';
+  end if;
+
+  if exists(
+    select 1 from public.membership_applications a
+    where a.phone=trim(p_phone)
+      and a.status in ('pending','in_review')
+  ) then
+    raise exception 'Une candidature est déjà en cours avec ce numéro de téléphone.';
   end if;
 
   v_reference := 'APP-' || to_char(current_date,'YYYY') || '-' || lpad(nextval('public.membership_application_seq')::text,4,'0');
