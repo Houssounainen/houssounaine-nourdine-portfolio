@@ -248,6 +248,45 @@ create trigger refresh_partner_commitment
 after insert or update or delete on public.partner_receipts
 for each row execute function public.refresh_partner_commitment();
 
+create or replace function public.guard_partner_commitment_status()
+returns trigger
+language plpgsql
+set search_path=public
+as $
+begin
+  if new.status is not distinct from old.status then
+    return new;
+  end if;
+
+  if old.status in ('received','cancelled') then
+    raise exception 'Un engagement finalisé conserve son historique.';
+  end if;
+
+  if new.status='cancelled' and old.received_amount>0 then
+    raise exception 'Un engagement déjà encaissé ne peut pas être annulé.';
+  end if;
+
+  if new.status='received'
+     and new.contribution_type<>'in_kind'
+     and new.received_amount<new.pledged_amount then
+    raise exception 'Un engagement monétaire n’est reçu qu’après encaissement complet.';
+  end if;
+
+  if not (
+    (old.status='pledged' and new.status in ('partial','received','cancelled'))
+    or (old.status='partial' and new.status='received')
+  ) then
+    raise exception 'Transition d’engagement invalide : % vers %.',old.status,new.status;
+  end if;
+
+  return new;
+end $;
+
+drop trigger if exists guard_partner_commitment_status on public.partner_commitments;
+create trigger guard_partner_commitment_status
+before update of status on public.partner_commitments
+for each row execute function public.guard_partner_commitment_status();
+
 create or replace function public.guard_partner_commitment_amount()
 returns trigger
 language plpgsql
