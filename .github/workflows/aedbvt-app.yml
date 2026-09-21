@@ -32,7 +32,7 @@ jobs:
       - name: Validate Vercel config
         run: |
           node -e "const fs=require('fs'); const j=JSON.parse(fs.readFileSync('../vercel.json','utf8')); const cmd=j.ignoreCommand||''; if(cmd.length>256){console.error('ignoreCommand too long:',cmd.length); process.exit(1)}"
-          node -e "const fs=require('fs'); const j=JSON.parse(fs.readFileSync('vercel.json','utf8')); if(!Array.isArray(j.alias)||!j.alias.includes('aedbvt.vercel.app')){console.error('Official AEDBVT alias missing'); process.exit(1)}"
+          node -e "const fs=require('fs'); const j=JSON.parse(fs.readFileSync('vercel.json','utf8')); if(j.framework!=='nextjs'){console.error('AEDBVT Vercel framework must be nextjs'); process.exit(1)} if(!Array.isArray(j.alias)||!j.alias.includes('aedbvt.vercel.app')){console.error('Official AEDBVT alias missing'); process.exit(1)}"
           bash -n ../scripts/vercel-ignore-build.sh
       - run: node scripts/check-pwa.mjs
       - run: node scripts/check-android.mjs
