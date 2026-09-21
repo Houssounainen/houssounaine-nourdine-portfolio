@@ -19,20 +19,12 @@ on public.internal_broadcasts(sent_at desc);
 alter table public.internal_broadcasts enable row level security;
 
 revoke all on table public.internal_broadcasts from anon, authenticated;
-grant select, insert on table public.internal_broadcasts to authenticated;
+grant select on table public.internal_broadcasts to authenticated;
 
 create policy internal_broadcasts_staff_read
 on public.internal_broadcasts
 for select to authenticated
 using (public.is_staff());
-
-create policy internal_broadcasts_staff_insert
-on public.internal_broadcasts
-for insert to authenticated
-with check (
-  public.is_staff()
-  and created_by=auth.uid()
-);
 
 grant insert on table public.internal_notifications to authenticated;
 
@@ -128,7 +120,7 @@ begin
 
   insert into public.internal_notifications(recipient_id,kind,title,message,href)
   select recipient_id,v_kind,trim(p_title),trim(p_message),'/notifications'
-  from unnest(v_recipient_ids) recipient_id;
+  from unnest(v_recipient_ids) as recipients(recipient_id);
 
   return query select v_broadcast_id,v_count,v_recipient_ids;
 end $;
