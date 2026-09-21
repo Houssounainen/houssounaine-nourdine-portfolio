@@ -2,24 +2,24 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
-import { isStaff } from "@/lib/auth";
+import { getAccessContext } from "@/lib/server-access";
+import { can } from "@/lib/access";
 
 async function documentContext() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { supabase, user: null, role: null };
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id",user.id).single();
-  return { supabase, user, role: profile?.role || null };
+  return getAccessContext();
 }
 
-function financeRole(role: string | null) {
-  return ["admin","bureau","tresorier"].includes(role || "");
+function staffRole(role:string|null) {
+  return can(role,"documents_manage");
+}
+
+function financeRole(role:string|null) {
+  return can(role,"finance_manage");
 }
 
 export async function createQuote(formData: FormData) {
   const { supabase, user, role } = await documentContext();
-  if (!user || !isStaff(role)) return;
+  if (!user || !staffRole(role)) return;
 
   const recipient = String(formData.get("recipient_name") || "").trim();
   const subject = String(formData.get("subject") || "").trim();
@@ -65,7 +65,7 @@ export async function createInvoice(formData: FormData) {
 
 export async function addQuoteItem(formData: FormData) {
   const { supabase, role } = await documentContext();
-  if (!isStaff(role)) return;
+  if (!staffRole(role)) return;
   const quoteId = String(formData.get("quote_id") || "");
   const description = String(formData.get("description") || "").trim();
   const quantity = Number(formData.get("quantity") || 1);
@@ -107,7 +107,7 @@ export async function addInvoiceItem(formData: FormData) {
 
 export async function updateQuoteStatus(formData: FormData) {
   const { supabase, role } = await documentContext();
-  if (!isStaff(role)) return;
+  if (!staffRole(role)) return;
   const quoteId = String(formData.get("quote_id") || "");
   const status = String(formData.get("status") || "");
   if (!quoteId || !["draft","issued","accepted","cancelled"].includes(status)) return;
