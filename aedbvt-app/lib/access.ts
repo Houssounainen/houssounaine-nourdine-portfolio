@@ -18,6 +18,7 @@ export type Capability=
   |"case_manage"
   |"assets_view"
   |"assets_manage"
+  |"partners_manage"
   |"admin_manage";
 
 const ALL_ROLES:AppRole[]=["admin","bureau","tresorier","secretaire","membre"];
@@ -40,6 +41,7 @@ const CAPABILITIES:Record<Capability,readonly AppRole[]>={
   case_manage:["admin","bureau"],
   assets_view:["admin","bureau","tresorier","secretaire"],
   assets_manage:["admin","bureau","tresorier"],
+  partners_manage:["admin","bureau","tresorier","secretaire"],
   admin_manage:["admin"],
 };
 
@@ -75,6 +77,7 @@ const SENSITIVE_ROUTES:{prefix:string;capability:Capability}[]=[
   {prefix:"/content",capability:"content_manage"},
   {prefix:"/exports",capability:"exports_manage"},
   {prefix:"/assets",capability:"assets_view"},
+  {prefix:"/partners",capability:"partners_manage"},
 ];
 
 export function canAccessPath(role:string|null|undefined,pathname:string){
@@ -110,6 +113,7 @@ export function navigationForRole(role:string|null|undefined):[string,string][]{
   if(can(r,"content_manage")) links.push(["/content","Contenu"]);
   if(can(r,"exports_manage")) links.push(["/exports","Exports"]);
   if(can(r,"assets_view")) links.push(["/assets","Patrimoine"]);
+  if(can(r,"partners_manage")) links.push(["/partners","Partenaires"]);
   if(can(r,"admin_manage")) links.push(["/admin","Paramètres"]);
 
   return links;
