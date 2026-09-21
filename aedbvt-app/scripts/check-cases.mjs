@@ -31,7 +31,7 @@ if(!access.includes('["/cases","Signalements"]')) errors.push("Signalements doit
 if(!actions.includes('getAccessContext("case_manage")')) errors.push("La gestion staff doit exiger case_manage.");
 if(!actions.includes('getAccessContext()')) errors.push("Le dépôt membre doit exiger un compte actif.");
 if(!actions.includes('body:"Une mise à jour est disponible dans un dossier confidentiel."')) errors.push("Les push confidentiels doivent rester génériques.");
-if(actions.includes("subject,")&&actions.includes("sendPushToProfiles")) errors.push("Le sujet du dossier ne doit pas être injecté dans les push.");
+if(actions.includes("body:subject")||actions.includes("title:subject")||actions.includes("body:details")||actions.includes("title:details")) errors.push("Le contenu confidentiel du dossier ne doit pas être injecté dans les push.");
 if(!push.includes('"cases"')) errors.push("Préférence push cases manquante.");
 if(!notifications.includes('name="cases"')) errors.push("Préférence UI dossiers confidentiels manquante.");
 if(!page.includes("Confidentialité renforcée")) errors.push("Avertissement de confidentialité absent.");
