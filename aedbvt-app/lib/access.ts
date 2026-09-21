@@ -9,6 +9,9 @@ export type Capability=
   |"administration_manage"
   |"finance_manage"
   |"governance_manage"
+  |"analytics_view"
+  |"communication_manage"
+  |"exports_manage"
   |"admin_manage";
 
 const ALL_ROLES:AppRole[]=["admin","bureau","tresorier","secretaire","membre"];
@@ -22,6 +25,9 @@ const CAPABILITIES:Record<Capability,readonly AppRole[]>={
   administration_manage:["admin","bureau","tresorier","secretaire"],
   finance_manage:["admin","bureau","tresorier"],
   governance_manage:["admin","bureau","tresorier","secretaire"],
+  analytics_view:["admin","bureau","tresorier","secretaire"],
+  communication_manage:["admin","bureau","tresorier","secretaire"],
+  exports_manage:["admin","bureau","tresorier","secretaire"],
   admin_manage:["admin"],
 };
 
@@ -49,6 +55,9 @@ const SENSITIVE_ROUTES:{prefix:string;capability:Capability}[]=[
   {prefix:"/members",capability:"members_manage"},
   {prefix:"/requests",capability:"requests_manage"},
   {prefix:"/documents",capability:"documents_manage"},
+  {prefix:"/analytics",capability:"analytics_view"},
+  {prefix:"/communication",capability:"communication_manage"},
+  {prefix:"/exports",capability:"exports_manage"},
 ];
 
 export function canAccessPath(role:string|null|undefined,pathname:string){
@@ -75,6 +84,9 @@ export function navigationForRole(role:string|null|undefined):[string,string][]{
   if(can(r,"requests_manage")) links.push(["/requests","Demandes"]);
   if(can(r,"documents_manage")) links.push(["/documents","Documents"]);
   if(can(r,"finance_manage")) links.push(["/finance","Finances"]);
+  if(can(r,"analytics_view")) links.push(["/analytics","Statistiques"]);
+  if(can(r,"communication_manage")) links.push(["/communication","Communication"]);
+  if(can(r,"exports_manage")) links.push(["/exports","Exports"]);
   if(can(r,"admin_manage")) links.push(["/admin","Paramètres"]);
 
   return links;

@@ -37,6 +37,7 @@ jobs:
       - run: node scripts/check-android.mjs
       - run: node scripts/check-access.mjs
       - run: node scripts/check-dues.mjs
+      - run: node scripts/check-reporting.mjs
       - run: npm run typecheck
       - run: npm run build
         env:

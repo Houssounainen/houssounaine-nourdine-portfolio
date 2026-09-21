@@ -55,6 +55,7 @@ export default async function DashboardPage() {
     ["/agenda","Agenda","Vie associative","Événements, réunions et participations."],
     ...(staff?[["/operations","Pilotage","Centre opérationnel","Décisions, tâches, commissions et mandats."],["/administration","Secrétariat","Courriers & attestations","Registre, modèles, validations et documents officiels."],["/members","Membres","Registre & adhésions","Numéros, filières, rôles et accès."]]:[]),
     ...(finance?[["/finance","Finances","Trésorerie & budget","Comptes, budget, grand livre et caisse."],["/finance/dues","Cotisations","Adhésions annuelles","Échéances, restes, retards et relances."]]:[]),
+    ...(staff?[["/analytics","Statistiques","Pilotage & données","Adhésions, activité et indicateurs agrégés."],["/communication","Communication","Messages ciblés","Informer tous les membres, le staff, un rôle ou un village."],["/exports","Exports","Données & archivage","CSV, Excel XML, PDF et sauvegardes selon vos droits."]]:[]),
     ["/organization","Organisation","Bureau & missions","Organigramme et titulaires."],
     ["/governance","Gouvernance","Textes & transparence","Statuts, décisions, assemblées et élections."],
   ];
