@@ -14,7 +14,8 @@ function parseSchedule(formData:FormData,status:string){
   if(status!=="scheduled") return null;
   const raw=String(formData.get("scheduled_for")||"").trim();
   if(!raw) return null;
-  const date=new Date(raw);
+  const normalized=raw+(raw.length===16?":00+03:00":"+03:00");
+  const date=new Date(normalized);
   return Number.isNaN(date.getTime())?null:date.toISOString();
 }
 
