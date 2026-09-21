@@ -31,6 +31,8 @@ export default async function AnalyticsPage(){
     {data:meetingRegs},
     {data:events},
     {data:meetings},
+    {data:partners},
+    {data:partnerCommitments},
   ]=await Promise.all([
     supabase.from("members").select("id,village,program,study_level,status,profile_id,invitation_sent_at,account_activated_at,joined_at").eq("status","active"),
     supabase.from("operational_tasks").select("id,status,priority,progress,due_on,created_at,completed_at"),
@@ -38,6 +40,8 @@ export default async function AnalyticsPage(){
     supabase.from("meeting_attendance").select("meeting_id,user_id,status").eq("status","confirmed"),
     supabase.from("events").select("id,title,starts_at,published").eq("published",true),
     supabase.from("meetings").select("id,title,starts_at,published").eq("published",true),
+    supabase.from("partners").select("id,status,partner_type"),
+    supabase.from("partner_commitments").select("id,status,contribution_type,pledged_amount,received_amount"),
   ]);
 
   const activeMembers=members||[];
@@ -57,6 +61,10 @@ export default async function AnalyticsPage(){
 
   const participationCount=(eventRegs?.length||0)+(meetingRegs?.length||0);
   const publishedActivities=(events?.length||0)+(meetings?.length||0);
+  const activePartners=(partners||[]).filter((partner)=>partner.status==="active").length;
+  const partnerProspects=(partners||[]).filter((partner)=>["prospect","contacted"].includes(partner.status)).length;
+  const openPartnerCommitments=(partnerCommitments||[]).filter((item)=>["pledged","partial"].includes(item.status)).length;
+  const partnerReceived=(partnerCommitments||[]).filter((item)=>item.contribution_type!=="in_kind"&&item.status!=="cancelled").reduce((sum,item)=>sum+Number(item.received_amount||0),0);
 
   let duesRows:any[]=[];
   let financeRows:any[]=[];
@@ -85,6 +93,7 @@ export default async function AnalyticsPage(){
       <article><small>Actions ouvertes</small><strong>{open}</strong><span>{overdue} retard · {blocked} bloquée(s)</span></article>
       <article><small>Actions terminées</small><strong>{done}</strong><span>{pct(done,Math.max(1,allTasks.length))}% du registre</span></article>
       <article><small>Participations</small><strong>{participationCount}</strong><span>{publishedActivities} activités publiées</span></article>
+      <article><small>Partenaires actifs</small><strong>{activePartners}</strong><span>{partnerProspects} prospect(s) · {openPartnerCommitments} engagement(s) ouvert(s)</span></article>
       {finance&&<article><small>Taux de cotisation</small><strong>{pct(collected,expected)}%</strong><span>{duesUpToDate} à jour · {duesOverdue} retard</span></article>}
     </div>
 
@@ -117,6 +126,7 @@ export default async function AnalyticsPage(){
     {finance&&<div className="content-grid">
       <article className="panel analytics-finance"><span className="eyebrow">Cotisations</span><h2>Exercice ouvert</h2><strong>{collected.toLocaleString("fr-FR")} / {expected.toLocaleString("fr-FR")} Ar</strong><div className="progress-track"><i style={{width:pct(collected,expected)+"%"}}/></div><p>{duesRows.length} membre(s) suivi(s) · {duesOverdue} en retard.</p></article>
       <article className="panel analytics-finance"><span className="eyebrow">Trésorerie</span><h2>Flux enregistrés</h2><strong>{(totalIncome-totalExpense).toLocaleString("fr-FR")} Ar</strong><p>Entrées : {totalIncome.toLocaleString("fr-FR")} Ar · Sorties : {totalExpense.toLocaleString("fr-FR")} Ar</p></article>
+      <article className="panel analytics-finance"><span className="eyebrow">Partenariats</span><h2>Soutiens encaissés</h2><strong>{partnerReceived.toLocaleString("fr-FR")} Ar</strong><p>{activePartners} partenaire(s) actif(s) · {openPartnerCommitments} engagement(s) à suivre.</p></article>
     </div>}
   </section>;
 }

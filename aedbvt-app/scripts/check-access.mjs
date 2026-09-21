@@ -23,6 +23,7 @@ const requiredRoutes={
   "/content":"content_manage",
   "/exports":"exports_manage",
   "/assets":"assets_view",
+  "/partners":"partners_manage",
 };
 
 for(const [route,capability] of Object.entries(requiredRoutes)){
