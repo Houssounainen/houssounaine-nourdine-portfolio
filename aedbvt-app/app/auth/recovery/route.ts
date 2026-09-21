@@ -13,6 +13,13 @@ export async function GET(request:NextRequest){
   const tokenHash=searchParams.get("token_hash");
   const type=searchParams.get("type") as EmailOtpType|null;
   const next=safeNext(searchParams.get("next"));
+  if(!process.env.NEXT_PUBLIC_SUPABASE_URL||!process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY){
+    const unavailable=request.nextUrl.clone();
+    unavailable.pathname="/forgot-password";
+    unavailable.search="";
+    unavailable.searchParams.set("error","config");
+    return NextResponse.redirect(unavailable);
+  }
   const supabase=await createClient();
 
   let error=null;
