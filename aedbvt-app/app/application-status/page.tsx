@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { PublicFooter } from "@/components/public-footer";
 
 const labels:Record<string,string>={
   pending:"Reçue",
@@ -60,5 +61,6 @@ export default async function ApplicationStatusPage({
         {result.status==="approved"&&<div className="application-approved"><b>Adhésion approuvée</b><p>Votre fiche membre a été créée{result.member_number?" sous le numéro "+result.member_number:""}. L’administration pourra ensuite vous envoyer votre invitation au compte sécurisé AEDBVT.</p></div>}
       </article>}
     </section>
+    <PublicFooter/>
   </main>;
 }
