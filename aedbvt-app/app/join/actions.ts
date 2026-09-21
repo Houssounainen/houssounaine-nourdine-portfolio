@@ -52,6 +52,7 @@ export async function submitMembershipApplication(
 
   if(error){
     const message=error.message||"";
+    if(message.includes("numéro de téléphone")) return {ok:false,error:"Une candidature est déjà en cours avec ce numéro de téléphone."};
     if(message.includes("déjà en cours")) return {ok:false,error:"Une candidature est déjà en cours avec cette adresse email."};
     if(message.includes("adhésion active")) return {ok:false,error:"Cette adresse email est déjà liée à une adhésion active."};
     return {ok:false,error:"La candidature n’a pas pu être enregistrée. Vérifiez les informations puis réessayez."};
