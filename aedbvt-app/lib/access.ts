@@ -13,6 +13,8 @@ export type Capability=
   |"communication_manage"
   |"content_manage"
   |"exports_manage"
+  |"audit_view"
+  |"member_import"
   |"admin_manage";
 
 const ALL_ROLES:AppRole[]=["admin","bureau","tresorier","secretaire","membre"];
@@ -30,6 +32,8 @@ const CAPABILITIES:Record<Capability,readonly AppRole[]>={
   communication_manage:["admin","bureau","tresorier","secretaire"],
   content_manage:["admin","bureau","secretaire"],
   exports_manage:["admin","bureau","tresorier","secretaire"],
+  audit_view:["admin"],
+  member_import:["admin","bureau","secretaire"],
   admin_manage:["admin"],
 };
 
@@ -62,6 +66,8 @@ const SENSITIVE_ROUTES:{prefix:string;capability:Capability}[]=[
   {prefix:"/communication",capability:"communication_manage"},
   {prefix:"/content",capability:"content_manage"},
   {prefix:"/exports",capability:"exports_manage"},
+  {prefix:"/admin/audit",capability:"audit_view"},
+  {prefix:"/members/import",capability:"member_import"},
 ];
 
 export function canAccessPath(role:string|null|undefined,pathname:string){
