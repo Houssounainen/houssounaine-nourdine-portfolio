@@ -70,7 +70,7 @@ export default async function AuditPage({
             <div className="audit-event-meta"><b>{actor?.full_name||"Système / inconnu"}</b><time>{new Date(log.created_at).toLocaleString("fr-FR")}</time></div>
           </div>
           <div className="audit-fields">
-            {(log.changed_fields||[]).map((field)=><span key={field}>{field}</span>)}
+            {((log.changed_fields||[]) as string[]).map((field:string)=><span key={field}>{field}</span>)}
             {!log.changed_fields?.length&&<span>Aucun champ détaillé</span>}
           </div>
           <details>
