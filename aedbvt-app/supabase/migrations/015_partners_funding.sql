@@ -70,8 +70,12 @@ alter table public.partner_commitments enable row level security;
 alter table public.partner_receipts enable row level security;
 
 revoke all on table public.partners, public.partner_commitments, public.partner_receipts from anon, authenticated;
-grant select, insert, update on table public.partners to authenticated;
-grant select, insert, update on table public.partner_commitments to authenticated;
+grant select, insert on table public.partners to authenticated;
+grant update (name,partner_type,status,contact_name,email,phone,address,website,notes,updated_at)
+  on table public.partners to authenticated;
+grant select, insert on table public.partner_commitments to authenticated;
+grant update (title,contribution_type,pledged_amount,in_kind_details,pledged_on,due_on,status,notes,updated_at)
+  on table public.partner_commitments to authenticated;
 grant select, insert on table public.partner_receipts to authenticated;
 grant usage, select on sequence public.partner_receipt_seq to authenticated;
 
@@ -81,7 +85,7 @@ using (public.is_staff());
 
 create policy partners_staff_insert on public.partners
 for insert to authenticated
-with check (public.is_staff());
+with check (public.is_staff() and created_by=auth.uid());
 
 create policy partners_staff_update on public.partners
 for update to authenticated
@@ -94,17 +98,20 @@ using (public.is_staff());
 
 create policy commitments_staff_insert on public.partner_commitments
 for insert to authenticated
-with check (public.is_staff());
+with check (public.is_staff() and created_by=auth.uid());
 
 create policy commitments_staff_update on public.partner_commitments
 for update to authenticated
 using (public.is_staff())
 with check (public.is_staff());
 
-create policy partner_receipts_finance_all on public.partner_receipts
-for all to authenticated
-using (public.is_finance())
-with check (public.is_finance());
+create policy partner_receipts_finance_read on public.partner_receipts
+for select to authenticated
+using (public.is_finance());
+
+create policy partner_receipts_finance_insert on public.partner_receipts
+for insert to authenticated
+with check (public.is_finance() and created_by=auth.uid());
 
 create or replace function public.set_partner_receipt_number()
 returns trigger
@@ -112,10 +119,8 @@ language plpgsql
 set search_path=public
 as $$
 begin
-  if new.receipt_number is null then
-    new.receipt_number := 'DON-' || to_char(coalesce(new.received_at,now()),'YYYY') || '-' ||
-      lpad(nextval('public.partner_receipt_seq')::text,4,'0');
-  end if;
+  new.receipt_number := 'DON-' || to_char(coalesce(new.received_at,now()),'YYYY') || '-' ||
+    lpad(nextval('public.partner_receipt_seq')::text,4,'0');
   return new;
 end $$;
 
