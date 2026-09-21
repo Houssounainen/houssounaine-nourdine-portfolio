@@ -29,6 +29,9 @@ const defaults:PublicSettings={
 };
 
 export async function getPublicSettings():Promise<PublicSettings>{
+  if(!process.env.NEXT_PUBLIC_SUPABASE_URL||!process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY){
+    return {...defaults};
+  }
   const supabase=await createClient();
   const {data}=await supabase.rpc("get_public_app_settings");
   const settings={...defaults};
