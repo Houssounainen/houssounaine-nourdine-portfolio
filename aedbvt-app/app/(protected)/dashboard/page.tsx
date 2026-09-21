@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { publishDueArticles } from "@/lib/article-publishing";
 
 export default async function DashboardPage() {
+  await publishDueArticles();
   const supabase = await createClient();
   const now = new Date().toISOString();
   const today = now.slice(0,10);
@@ -10,6 +12,7 @@ export default async function DashboardPage() {
   const role=profile?.role||"membre";
   const staff=["admin","bureau","tresorier","secretaire"].includes(role);
   const finance=["admin","bureau","tresorier"].includes(role);
+  const contentManager=["admin","bureau","secretaire"].includes(role);
 
   const memberQuery=staff
     ? supabase.from("members").select("*",{count:"exact",head:true}).eq("status","active")
@@ -56,6 +59,7 @@ export default async function DashboardPage() {
     ...(staff?[["/operations","Pilotage","Centre opérationnel","Décisions, tâches, commissions et mandats."],["/administration","Secrétariat","Courriers & attestations","Registre, modèles, validations et documents officiels."],["/members","Membres","Registre & adhésions","Numéros, filières, rôles et accès."],["/applications","Candidatures","Nouvelles adhésions","Examiner, approuver ou refuser les demandes publiques."]]:[]),
     ...(finance?[["/finance","Finances","Trésorerie & budget","Comptes, budget, grand livre et caisse."],["/finance/dues","Cotisations","Adhésions annuelles","Échéances, restes, retards et relances."]]:[]),
     ...(staff?[["/analytics","Statistiques","Pilotage & données","Adhésions, activité et indicateurs agrégés."],["/communication","Communication","Messages ciblés","Informer tous les membres, le staff, un rôle ou un village."],["/exports","Exports","Données & archivage","CSV, Excel XML, PDF et sauvegardes selon vos droits."]]:[]),
+    ...(contentManager?[["/content","Contenu","Édition officielle","Brouillons, programmation, publication et mise en avant."]]:[]),
     ["/organization","Organisation","Bureau & missions","Organigramme et titulaires."],
     ["/governance","Gouvernance","Textes & transparence","Statuts, décisions, assemblées et élections."],
   ];

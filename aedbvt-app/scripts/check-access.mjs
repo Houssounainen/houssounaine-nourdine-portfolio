@@ -20,6 +20,7 @@ const requiredRoutes={
   "/documents":"documents_manage",
   "/analytics":"analytics_view",
   "/communication":"communication_manage",
+  "/content":"content_manage",
   "/exports":"exports_manage",
 };
 
