@@ -18,14 +18,14 @@ export function MembershipApplicationForm(){
     return <article className="application-success">
       <span className="application-success-mark" aria-hidden="true">✓</span>
       <span className="eyebrow">Candidature enregistrée</span>
-      <h2>Conservez votre lien de suivi</h2>
-      <p>Votre dossier a bien été transmis à l’AEDBVT. Cette référence et ce lien privé permettent de consulter son état sans créer de compte.</p>
+      <h2>Votre demande et votre accès sont préparés</h2>
+      <p>Votre dossier a été transmis à l’AEDBVT. Votre mot de passe est enregistré uniquement dans le système sécurisé d’authentification et votre compte restera bloqué jusqu’à l’approbation de votre candidature.</p>
       <div className="application-reference"><small>Référence</small><strong>{state.reference}</strong></div>
       <div className="application-success-actions">
         <Link className="button primary" href={trackingHref}>Suivre ma candidature</Link>
         <Link className="button secondary" href="/">Retour à l’accueil</Link>
       </div>
-      <div className="notice">Enregistrez le lien de suivi dans vos favoris. Le jeton privé affiché dans ce lien n’est pas récupérable depuis l’espace public.</div>
+      <div className="notice">Conservez votre référence et votre lien de suivi. Si vous recevez un email de confirmation, validez votre adresse. Après approbation, vous pourrez vous connecter avec l’email et le mot de passe choisis ici.</div>
     </article>;
   }
 
@@ -54,12 +54,22 @@ export function MembershipApplicationForm(){
     </div>
 
     <div className="form-section">
+      <span className="eyebrow">Mon futur compte AEDBVT</span>
+      <p className="muted">Choisissez maintenant vos identifiants. Ils ne donneront accès à l’espace membre qu’après approbation de votre demande.</p>
+      <div className="form-two">
+        <label>Mot de passe<input name="password" type="password" minLength={10} required autoComplete="new-password"/></label>
+        <label>Confirmer le mot de passe<input name="confirm_password" type="password" minLength={10} required autoComplete="new-password"/></label>
+      </div>
+      <small className="muted">Minimum 10 caractères. Le mot de passe n’est jamais enregistré dans le dossier de candidature.</small>
+    </div>
+
+    <div className="form-section">
       <span className="eyebrow">Candidature</span>
       <label>Pourquoi souhaitez-vous rejoindre l’AEDBVT ?<textarea name="motivation" rows={5} maxLength={1200}/></label>
-      <label className="application-consent"><input type="checkbox" name="consent" required/><span>J’autorise l’AEDBVT à utiliser les informations fournies uniquement pour l’étude de ma demande d’adhésion et, si elle est acceptée, pour créer ma fiche membre.</span></label>
+      <label className="application-consent"><input type="checkbox" name="consent" required/><span>J’autorise l’AEDBVT à utiliser les informations fournies pour l’étude de ma demande et, si elle est acceptée, pour créer ma fiche membre et activer mon compte sécurisé.</span></label>
     </div>
 
     {state.error&&<div className="error-box" role="alert">{state.error}</div>}
-    <button className="button primary application-submit" type="submit" disabled={pending}>{pending?"Envoi en cours…":"Envoyer ma candidature"}</button>
+    <button className="button primary application-submit" type="submit" disabled={pending}>{pending?"Création sécurisée en cours…":"Envoyer ma candidature"}</button>
   </form>;
 }
