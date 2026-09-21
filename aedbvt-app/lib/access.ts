@@ -53,6 +53,7 @@ const SENSITIVE_ROUTES:{prefix:string;capability:Capability}[]=[
   {prefix:"/operations",capability:"operations_manage"},
   {prefix:"/administration",capability:"administration_manage"},
   {prefix:"/members",capability:"members_manage"},
+  {prefix:"/applications",capability:"members_manage"},
   {prefix:"/requests",capability:"requests_manage"},
   {prefix:"/documents",capability:"documents_manage"},
   {prefix:"/analytics",capability:"analytics_view"},
@@ -80,7 +81,10 @@ export function navigationForRole(role:string|null|undefined):[string,string][]{
 
   if(can(r,"operations_manage")) links.push(["/operations","Pilotage"]);
   if(can(r,"administration_manage")) links.push(["/administration","Secrétariat"]);
-  if(can(r,"members_manage")) links.push(["/members","Membres"]);
+  if(can(r,"members_manage")) {
+    links.push(["/members","Membres"]);
+    links.push(["/applications","Candidatures"]);
+  }
   if(can(r,"requests_manage")) links.push(["/requests","Demandes"]);
   if(can(r,"documents_manage")) links.push(["/documents","Documents"]);
   if(can(r,"finance_manage")) links.push(["/finance","Finances"]);
