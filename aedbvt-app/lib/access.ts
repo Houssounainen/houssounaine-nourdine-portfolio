@@ -78,6 +78,7 @@ const SENSITIVE_ROUTES:{prefix:string;capability:Capability}[]=[
   {prefix:"/exports",capability:"exports_manage"},
   {prefix:"/assets",capability:"assets_view"},
   {prefix:"/partners",capability:"partners_manage"},
+  {prefix:"/search",capability:"staff"},
 ];
 
 export function canAccessPath(role:string|null|undefined,pathname:string){
@@ -99,6 +100,7 @@ export function navigationForRole(role:string|null|undefined):[string,string][]{
     ["/cases","Signalements"],
   ];
 
+  if(can(r,"staff")) links.push(["/search","Recherche"]);
   if(can(r,"operations_manage")) links.push(["/operations","Pilotage"]);
   if(can(r,"administration_manage")) links.push(["/administration","Secrétariat"]);
   if(can(r,"members_manage")) {
