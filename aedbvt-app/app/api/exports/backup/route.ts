@@ -33,6 +33,9 @@ const tables=[
   "asset_maintenance",
   "stock_items",
   "stock_movements",
+  "partners",
+  "partner_commitments",
+  "partner_receipts",
 ] as const;
 
 export async function GET(){
