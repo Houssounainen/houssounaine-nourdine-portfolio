@@ -1,7 +1,7 @@
 import webPush from "web-push";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-export type PushCategory="announcements"|"agenda"|"operations"|"administration";
+export type PushCategory="announcements"|"agenda"|"operations"|"administration"|"cases";
 export type PushPayload={
   title:string;
   body:string;
@@ -93,7 +93,7 @@ export async function sendPushToProfiles(
 
   const [{data:subscriptions},{data:preferences}]=await Promise.all([
     admin.from("push_subscriptions").select("id,profile_id,endpoint,p256dh,auth").in("profile_id",unique).eq("enabled",true),
-    admin.from("notification_preferences").select("profile_id,announcements,agenda,operations,administration").in("profile_id",unique),
+    admin.from("notification_preferences").select("profile_id,announcements,agenda,operations,administration,cases").in("profile_id",unique),
   ]);
 
   const prefMap=new Map((preferences||[]).map((p:any)=>[p.profile_id,p]));
@@ -110,7 +110,7 @@ export async function sendPushToAll(
 
   const [{data:subscriptions},{data:preferences}]=await Promise.all([
     admin.from("push_subscriptions").select("id,profile_id,endpoint,p256dh,auth").eq("enabled",true),
-    admin.from("notification_preferences").select("profile_id,announcements,agenda,operations,administration"),
+    admin.from("notification_preferences").select("profile_id,announcements,agenda,operations,administration,cases"),
   ]);
 
   const prefMap=new Map((preferences||[]).map((p:any)=>[p.profile_id,p]));
