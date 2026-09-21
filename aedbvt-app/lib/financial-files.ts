@@ -1,18 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+import { getAccessContext } from "@/lib/server-access";
 
 const allowedTypes = new Set(["application/pdf","image/jpeg","image/png","image/webp"]);
 const allowedEntities = new Set(["expense","quote","invoice","invoice_payment","member_payment"]);
 
 export async function uploadFinancialAttachment(formData: FormData) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return;
-
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id",user.id).single();
-  if (!["admin","bureau","tresorier"].includes(profile?.role || "")) return;
+  const {allowed,supabase,user}=await getAccessContext("finance_manage");
+  if(!allowed||!user) return;
 
   const file = formData.get("file");
   const entityType = String(formData.get("entity_type") || "");
