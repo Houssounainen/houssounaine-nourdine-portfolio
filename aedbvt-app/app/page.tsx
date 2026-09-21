@@ -20,6 +20,8 @@ export default function Home() {
         <p className="lead">Une application séparée pour gérer les membres, la vie associative, la trésorerie, les documents et la gouvernance avec des accès sécurisés.</p>
         <div className="landing-actions">
           <Link className="button primary" href="/login">Accéder à mon espace</Link>
+          <Link className="button secondary" href="/join">Demander l’adhésion</Link>
+          <Link className="landing-track-link" href="/application-status">Suivre une candidature</Link>
           <span className="trust">Accès contrôlé · données protégées · journal d’audit</span>
         </div>
         <div className="module-grid">
