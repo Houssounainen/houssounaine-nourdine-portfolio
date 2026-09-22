@@ -13,14 +13,16 @@ type PublicEvent = { title: string; starts_at: string; ends_at: string | null; l
 
 export default async function Home() {
   const settings = await getPublicSettings();
-  const supabase = await createClient();
-  const results = await Promise.all([
+  const supabase = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+    ? await createClient()
+    : null;
+  const results = supabase ? await Promise.all([
     supabase.rpc("get_public_articles"),
     supabase.rpc("get_public_events"),
     supabase.rpc("get_public_organization"),
     supabase.rpc("get_public_governance_documents"),
     supabase.rpc("get_public_partners"),
-  ]);
+  ]) : Array.from({ length: 5 }, () => ({ data: null, error: { message: "Service temporairement indisponible" } }));
   const [articleResult, eventResult, positionResult, documentResult, partnerResult] = results;
   const articles = (articleResult.data || []) as PublicArticle[];
   const featured = articles.find(article => article.featured) || articles[0];
