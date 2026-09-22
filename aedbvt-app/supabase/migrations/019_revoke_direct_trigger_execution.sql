@@ -1,3 +1,5 @@
+begin;
+
 do $$
 declare r record;
 begin
@@ -12,3 +14,5 @@ begin
     execute format('grant execute on function %s to service_role', r.fn);
   end loop;
 end $$;
+
+commit;
