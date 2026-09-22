@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MobileNavigation } from "@/components/mobile-navigation";
 import { SignOutButton } from "@/components/sign-out-button";
+import { SideNavigation, WorkspaceTopbar } from "@/components/side-navigation";
 import { navigationForRole, normalizeRole, ROLE_LABELS } from "@/lib/access";
 
 export function AppShell({ children, profile, unreadNotifications=0 }: { children: React.ReactNode; profile: { full_name?: string | null; role?: string | null } | null; unreadNotifications?:number }) {
@@ -13,14 +14,14 @@ export function AppShell({ children, profile, unreadNotifications=0 }: { childre
     <div className="app-frame">
       <aside className="sidebar">
         <Link href="/dashboard" className="side-brand"><Image src="/aedbvt-logo.webp" alt="AEDBVT" width={56} height={56} /><span><b>AEDBVT</b><small>Gestion associative</small></span></Link>
-        <nav aria-label="Navigation principale">{links.map(([href, label]) => <Link key={href} href={href}>{label}{href==="/notifications"&&unreadNotifications>0?<span className="side-nav-count">{unreadNotifications}</span>:null}</Link>)}</nav>
+        <SideNavigation links={links} unreadCount={unreadNotifications}/>
         <div className="side-user">
           <span className="avatar">{profileName.split(" ").map(x => x[0]).slice(0,2).join("").toUpperCase()}</span>
           <div><b>{profileName}</b><small>{ROLE_LABELS[role]}</small></div>
         </div>
         <SignOutButton/>
       </aside>
-      <main id="contenu" className="app-main">{children}</main>
+      <div className="workspace-main"><WorkspaceTopbar links={links} unreadCount={unreadNotifications}/><main id="contenu" className="app-main">{children}</main></div>
       <MobileNavigation links={links} profileName={profileName} role={ROLE_LABELS[role]} unreadCount={unreadNotifications}/>
     </div>
   );

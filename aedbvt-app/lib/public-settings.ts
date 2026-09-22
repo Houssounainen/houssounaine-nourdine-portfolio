@@ -24,7 +24,7 @@ const defaults:PublicSettings={
   official_address:"",
   support_email:"",
   privacy_email:"",
-  homepage_message:"Une application séparée pour gérer les membres, la vie associative, la trésorerie, les documents et la gouvernance avec des accès sécurisés.",
+  homepage_message:"Un espace pour se retrouver, s’entraider et faire vivre notre communauté étudiante. Suivez les actualités, participez aux rendez-vous et construisez la suite avec nous.",
   legal_status_note:"Le statut juridique et les formalités réglementaires de l’association restent à valider avant toute présentation institutionnelle définitive.",
 };
 
@@ -38,6 +38,8 @@ export async function getPublicSettings():Promise<PublicSettings>{
   for(const row of data||[]){
     if(row.key in settings){
       const value=typeof row.value==="string"?row.value:String(row.value??"");
+      // Replace the original technical placeholder, while preserving custom messages.
+      if(row.key==="homepage_message"&&value==="Une application séparée pour gérer les membres, la vie associative, la trésorerie, les documents et la gouvernance avec des accès sécurisés.") continue;
       (settings as Record<string,string>)[row.key]=value;
     }
   }

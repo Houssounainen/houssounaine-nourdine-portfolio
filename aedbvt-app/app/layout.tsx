@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { PwaBootstrap } from "@/components/pwa-bootstrap";
 import "./globals.css";
+import "./modern.css";
 
 export const metadata: Metadata = {
   applicationName:"AEDBVT",

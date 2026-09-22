@@ -9,3 +9,4 @@ node_modules
 *.apk
 *.aab
 android-signing/
+*.tsbuildinfo

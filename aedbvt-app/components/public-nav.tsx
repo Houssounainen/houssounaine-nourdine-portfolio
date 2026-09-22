@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getPublicSettings } from "@/lib/public-settings";
+import { PublicNavigation } from "@/components/public-navigation";
 
 export async function PublicNav(){
   const settings=await getPublicSettings();
@@ -11,12 +12,6 @@ export async function PublicNav(){
       <span><b>{settings.association_short_name}</b><small>{settings.association_city}</small></span>
     </Link>
 
-    <nav className="public-nav-links" aria-label="Navigation publique">
-      <Link className="button secondary" href="/news">Actualités</Link>
-      <Link className="button secondary" href="/events">Événements</Link>
-      <Link className="button secondary" href="/association">Association</Link>
-      <Link className="button secondary" href="/soutiens">Partenaires</Link>
-      <Link className="button primary" href="/login">Espace membre</Link>
-    </nav>
+    <PublicNavigation/>
   </header>;
 }
