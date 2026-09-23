@@ -10,6 +10,7 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
+    "test:chat": "node scripts/test-chat.mjs",
     "vapid:generate": "node scripts/generate-vapid.mjs",
     "android:validate": "node scripts/android-twa.mjs validate",
     "android:init": "node scripts/android-twa.mjs init",

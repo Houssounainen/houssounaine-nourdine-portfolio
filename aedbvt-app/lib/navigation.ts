@@ -2,7 +2,7 @@ export type NavLink = [string, string];
 
 const groups = [
   { label: "Mon quotidien", paths: ["/dashboard", "/me", "/notifications", "/agenda"] },
-  { label: "Vie associative", paths: ["/news", "/announcements", "/organization", "/governance", "/cases"] },
+  { label: "Vie associative", paths: ["/chat", "/news", "/announcements", "/organization", "/governance", "/cases"] },
   { label: "Gestion & pilotage", paths: ["/operations", "/members", "/applications", "/requests", "/administration", "/finance", "/analytics", "/assets", "/partners"] },
   { label: "Outils", paths: ["/search", "/documents", "/communication", "/content", "/exports", "/admin"] },
 ];

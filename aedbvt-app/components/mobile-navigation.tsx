@@ -31,7 +31,7 @@ export function MobileNavigation({ links, profileName, role, unreadCount = 0 }: 
     };
   }, [open]);
 
-  const primary: NavLink[] = [["/dashboard", "Accueil"], ["/agenda", "Agenda"], ["/notifications", "Alertes"], ["/me", "Mon espace"]];
+  const primary: NavLink[] = [["/dashboard", "Accueil"], ["/chat", "Discussion"], ["/notifications", "Alertes"], ["/me", "Mon espace"]];
 
   return <>
     <nav className="mobile-bottom-nav" aria-label="Navigation mobile">

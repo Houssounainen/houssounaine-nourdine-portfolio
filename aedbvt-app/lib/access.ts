@@ -16,6 +16,7 @@ export type Capability=
   |"audit_view"
   |"member_import"
   |"case_manage"
+  |"chat_moderate"
   |"assets_view"
   |"assets_manage"
   |"partners_manage"
@@ -39,6 +40,7 @@ const CAPABILITIES:Record<Capability,readonly AppRole[]>={
   audit_view:["admin"],
   member_import:["admin","bureau","secretaire"],
   case_manage:["admin","bureau"],
+  chat_moderate:["admin","bureau"],
   assets_view:["admin","bureau","tresorier","secretaire"],
   assets_manage:["admin","bureau","tresorier"],
   partners_manage:["admin","bureau","tresorier","secretaire"],
@@ -94,6 +96,7 @@ export function navigationForRole(role:string|null|undefined):[string,string][]{
     ["/notifications","Notifications"],
     ["/news","Actualités"],
     ["/agenda","Agenda"],
+    ["/chat","Discussion"],
     ["/announcements","Annonces"],
     ["/organization","Organigramme"],
     ["/governance","Gouvernance"],
