@@ -4,6 +4,8 @@ const paths = {
   home: <><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Z"/><path d="M9 21v-8h6v8"/></>,
   calendar: <><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M16 3v4M8 3v4M3 11h18m-13 5h2m4 0h2"/></>,
   bell: <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/>,
+  chat: <><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5H4l-2 2V11.5a9.5 9.5 0 0 1 19 0Z"/><path d="M7 10h9m-9 4h6"/></>,
+  send: <><path d="m22 2-7 20-4-9-9-4Z"/><path d="m22 2-11 11"/></>,
   user: <><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></>,
   users: <><circle cx="9" cy="8" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3M16 5a3 3 0 0 1 0 6m3 10v-3a6 6 0 0 0-2-4"/></>,
   document: <path d="M14 3H5v18h14V8Zm0 0v5h5M8 12h8m-8 4h6"/>,
@@ -31,5 +33,5 @@ export function UiIcon({ name, ...props }: SVGProps<SVGSVGElement> & { name: Ico
 
 export function routeIcon(href: string): IconName {
   const icons: Record<string, IconName> = {dashboard:"home",me:"user",notifications:"bell",agenda:"calendar",events:"calendar",news:"document",announcements:"bell",members:"users",applications:"users",organization:"users",governance:"shield",cases:"shield",search:"search",finance:"wallet",analytics:"chart",partners:"heart",soutiens:"heart",association:"users",content:"document",documents:"document",administration:"document",exports:"document",communication:"bell"};
-  return icons[href.split("/")[1]] || "grid";
+  return href === "/chat" ? "chat" : icons[href.split("/")[1]] || "grid";
 }
