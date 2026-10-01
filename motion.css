@@ -123,3 +123,67 @@
     box-shadow: 0 12px 28px rgba(0, 0, 0, .12);
   }
 }
+
+/* WOW : aurore, portrait lumineux, typographie et cartes en profondeur. */
+.hero { position: relative; overflow: clip; }
+.wow-aurora { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: -1; }
+.wow-aurora i { position: absolute; width: 65%; aspect-ratio: 1; border-radius: 50%; filter: blur(60px); opacity: .32; }
+.wow-aurora i:nth-child(1) { top: -35%; left: -20%; background: radial-gradient(circle, #4fd1a3, transparent 65%); }
+.wow-aurora i:nth-child(2) { top: -20%; right: -25%; background: radial-gradient(circle, #7871ff, transparent 65%); }
+.wow-aurora i:nth-child(3) { bottom: -55%; left: 25%; background: radial-gradient(circle, #f8b900, transparent 65%); }
+@keyframes wowAurora {
+  0%, 100% { transform: translate3d(-5%, -3%, 0) scale(1); }
+  50% { transform: translate3d(12%, 9%, 0) scale(1.15); }
+}
+@keyframes wowTitle {
+  from { opacity: 0; clip-path: inset(100% 0 0); translate: 0 40px; }
+  to { opacity: 1; clip-path: inset(0); translate: 0 0; }
+}
+@keyframes wowPortrait {
+  from { opacity: 0; scale: .88; rotate: -5deg; }
+  to { opacity: 1; scale: 1; rotate: 0deg; }
+}
+@keyframes wowShimmer {
+  0%, 15% { background-position: 100% 50%; }
+  65%, 100% { background-position: 0% 50%; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .wow-aurora i { animation: wowAurora 14s ease-in-out infinite; }
+  .wow-aurora i:nth-child(2) { animation-delay: -5s; }
+  .wow-aurora i:nth-child(3) { animation-delay: -9s; }
+  .hero h1 > span { animation: wowTitle 950ms cubic-bezier(.16,1,.3,1) 150ms backwards; }
+  .hero h1 > strong {
+    color: var(--shell-accent);
+    background: linear-gradient(110deg, var(--shell-accent) 25%, #b4a0ff 45%, var(--shell-accent) 65%);
+    background-size: 240% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: wowTitle 1100ms cubic-bezier(.16,1,.3,1) 300ms backwards, wowShimmer 7s ease-in-out 1.5s infinite;
+  }
+  .hero-visual .portrait-frame { animation: wowPortrait 1200ms cubic-bezier(.16,1,.3,1) 180ms backwards; }
+  .portrait-frame { box-shadow: 0 24px 65px rgba(79,209,163,.18), 0 0 0 1px rgba(79,209,163,.28); }
+  .hero-actions .button-primary { position: relative; overflow: hidden; }
+  .hero-actions .button-primary::after {
+    content: ""; position: absolute; inset: -50% auto -50% -60%; width: 35%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);
+    transform: skewX(-20deg); transition: left 700ms cubic-bezier(.16,1,.3,1); pointer-events: none;
+  }
+  .hero-actions .button-primary:hover::after,
+  .hero-actions .button-primary:focus-visible::after { left: 130%; }
+}
+@media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+  .portrait-frame, .service-card, .project-card, .work-card, .education-card {
+    transform: perspective(1000px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+    transition: transform 300ms ease, box-shadow 300ms ease;
+  }
+  .wow-tilting { box-shadow: 0 24px 48px rgba(0,0,0,.16), 0 0 0 1px rgba(79,209,163,.35); }
+  .spot-glow { background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 50%), rgba(79,209,163,.26), transparent 65%); }
+}
+@media (max-width: 760px) {
+  .wow-aurora i { filter: blur(35px); opacity: .24; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wow-aurora i { animation: none; }
+  .wow-tilting { transform: none !important; }
+}
