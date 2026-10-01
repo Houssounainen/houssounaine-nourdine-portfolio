@@ -111,3 +111,15 @@
   .value-row span { animation: none !important; }
   .section-heading .kicker::after { transition: none; width: 46px; }
 }
+
+/* Feedback on the education cards, including keyboard navigation. */
+@media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+  .education-card {
+    transition: translate 240ms ease, box-shadow 240ms ease;
+  }
+  .education-card:hover,
+  .education-card:focus-within {
+    translate: 0 -4px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, .12);
+  }
+}
