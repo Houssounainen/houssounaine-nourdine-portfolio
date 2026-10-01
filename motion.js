@@ -104,3 +104,71 @@
     if (magnet && !magnet.contains(event.relatedTarget)) magnet.style.translate = "";
   });
 })();
+
+/* Direction artistique : entrée cinématique, aurore et profondeur interactive. */
+(() => {
+  const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const pointer = window.matchMedia("(hover: hover) and (pointer: fine)");
+  const hero = document.querySelector(".hero");
+  if (!hero) return;
+  const aura = document.createElement("div");
+  aura.className = "wow-aurora";
+  aura.setAttribute("aria-hidden", "true");
+  aura.innerHTML = "<i></i><i></i><i></i>";
+  hero.prepend(aura);
+
+  const tiltSelector = ".portrait-frame, .service-card, .project-card, .work-card, .education-card";
+  let activeCard = null, frame = 0, latestEvent = null;
+  function reset() {
+    if (activeCard) {
+      activeCard.style.removeProperty("--tilt-x");
+      activeCard.style.removeProperty("--tilt-y");
+      activeCard.classList.remove("wow-tilting");
+      activeCard = null;
+    }
+  }
+  document.addEventListener("pointermove", (event) => {
+    if (preference.matches || !pointer.matches || event.pointerType === "touch") return;
+    latestEvent = event;
+    if (frame) return;
+    frame = window.requestAnimationFrame(() => {
+      frame = 0;
+      const card = latestEvent.target.closest?.(tiltSelector);
+      if (card !== activeCard) reset();
+      if (!card) return;
+      activeCard = card;
+      const rect = card.getBoundingClientRect();
+      const x = Math.max(-1, Math.min(1, (latestEvent.clientX - rect.left) / rect.width * 2 - 1));
+      const y = Math.max(-1, Math.min(1, (latestEvent.clientY - rect.top) / rect.height * 2 - 1));
+      card.style.setProperty("--tilt-x", (-y * 7).toFixed(2) + "deg");
+      card.style.setProperty("--tilt-y", (x * 9).toFixed(2) + "deg");
+      card.classList.add("wow-tilting");
+    });
+  }, { passive: true });
+  document.addEventListener("pointerout", (event) => {
+    if (activeCard && !activeCard.contains(event.relatedTarget)) reset();
+  });
+  window.addEventListener("blur", reset);
+  preference.addEventListener("change", reset);
+  pointer.addEventListener("change", reset);
+
+  /* Rejouer une transition une seule fois par changement de rubrique. */
+  let route = null;
+  function enterRoute() {
+    const next = document.body.dataset.route;
+    if (!next || route === next) return;
+    route = next;
+    reset();
+    if (preference.matches) return;
+    document.querySelectorAll('[data-route]:not([hidden])').forEach(section => {
+      section.getAnimations().filter(animation => animation.id === "wow-route").forEach(animation => animation.cancel());
+      if (typeof section.animate !== "function") return;
+      section.animate([
+        { opacity: .2, translate: "0 32px" },
+        { opacity: 1, translate: "0 0" }
+      ], { id: "wow-route", duration: 650, easing: "cubic-bezier(.16,1,.3,1)" });
+    });
+  }
+  new MutationObserver(enterRoute).observe(document.body, { attributes: true, attributeFilter: ["data-route"] });
+  enterRoute();
+})();
