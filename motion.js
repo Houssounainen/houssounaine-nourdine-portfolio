@@ -5,7 +5,7 @@
 (() => {
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-  const SPOT_SELECTOR = ".service-card, .project-card, .client-card, .work-card, .metric, .thesis-card, .timeline-card, .aed-card, .aed-doc-card, .aed-law";
+  const SPOT_SELECTOR = ".service-card, .project-card, .client-card, .work-card, .metric, .thesis-card, .education-card, .timeline-card, .aed-card, .aed-doc-card, .aed-law";
   const MAGNET_SELECTOR = ".button, .sidebar-cta";
 
   /* 1. Apparition échelonnée des éléments frères */
