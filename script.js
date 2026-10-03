@@ -4,10 +4,31 @@ const CONTACT_EMAIL = "houssounainen@gmail.com";
 const SITE_ORIGIN = "https://houssounainenourdine.vercel.app";
 const GA_MEASUREMENT_ID = "G-1LL57GXLVY";
 const FEATURE_FLAGS = Object.freeze({ testimonials: false, publications: false, resume: false });
-const RESUME_URL = "";
+const RESUME_URL = "assets/cv-houssounaine-nourdine.pdf";
 
 const translations = {
   fr: {
+    discussProject: "Discuter d’un projet",
+    methodKicker: "Ma méthode",
+    methodTitle: "Une idée claire. Un plan concret. Des résultats suivis.",
+    methodIntro: "Quatre étapes pour construire une présence digitale cohérente et faire évoluer les actions avec les résultats.",
+    method1Title: "Comprendre",
+    method1Body: "Analyser la marque, ses publics et les objectifs de communication.",
+    method2Title: "Structurer",
+    method2Body: "Définir les messages, les canaux et le calendrier éditorial.",
+    method3Title: "Créer & coordonner",
+    method3Body: "Rédiger, produire, valider et publier avec une équipe alignée.",
+    method4Title: "Mesurer & ajuster",
+    method4Body: "Suivre les indicateurs, partager les bilans et adapter les prochaines actions.",
+    featuredCases: "Trois projets, trois dimensions de mon travail.",
+    otherCases: "Autres collaborations",
+    dialogChallenge: "Le défi",
+    nextCase: "Projet suivant",
+    galleryHint: "Ouvrez une création pour découvrir son contexte. Sur mobile, glissez pour parcourir la sélection.",
+    zoomWork: "Agrandir l’image",
+    resetZoom: "Réduire l’image",
+    galleryContext: "Contexte",
+    cvNote: "CV · PDF · Français",
     skip: "Aller au contenu",
     navAbout: "À propos", navExpertise: "Expertises", navJourney: "Parcours", navProjects: "Projets", navWorks: "Créations", navClients: "Clients", navContact: "Me contacter", navAssociation: "Association", navAssociationShort: "AEDBVT",
     assocKicker: "Engagement associatif", assocTitle: "AEDBVT — l’association qui rassemble nos étudiants à Tuléar.", assocLead: "Un espace associatif complet : actualités, événements, réunions, membres, organigramme, cotisations, devis, factures, reçus PDF, statuts, règlement et administration.", assocDemo: "Simulation officielle de travail — données fictives et documents marqués simulation",
@@ -61,6 +82,27 @@ const translations = {
     dialogRole: "Mon rôle", dialogPeriod: "Période", dialogActions: "Actions principales", dialogResults: "Résultats et faits marquants", officialLink: "Lien officiel", siteLink: "Site officiel", testimonialsKicker: "Témoignages", testimonialsTitle: "Ce qu’ils disent de notre collaboration.", publicationsKicker: "Publications & réflexions", publicationsTitle: "Partager les méthodes derrière les résultats.", resumeTitle: "Télécharger mon parcours complet.", resumeDownload: "Télécharger le CV", statsCaption: "Statistiques Facebook — du 1er janvier au 29 août 2026"
   },
   en: {
+    discussProject: "Discuss a project",
+    methodKicker: "My approach",
+    methodTitle: "A clear idea. A practical plan. Tracked results.",
+    methodIntro: "Four steps to build a consistent digital presence and refine actions using the results.",
+    method1Title: "Understand",
+    method1Body: "Analyse the brand, its audiences and its communication goals.",
+    method2Title: "Structure",
+    method2Body: "Define messages, channels and the editorial calendar.",
+    method3Title: "Create & coordinate",
+    method3Body: "Write, produce, approve and publish with an aligned team.",
+    method4Title: "Measure & refine",
+    method4Body: "Track indicators, share reports and adapt the next actions.",
+    featuredCases: "Three projects, three sides of my work.",
+    otherCases: "Other collaborations",
+    dialogChallenge: "The challenge",
+    nextCase: "Next project",
+    galleryHint: "Open a creative work to explore its context. On mobile, swipe to browse the selection.",
+    zoomWork: "Enlarge image",
+    resetZoom: "Reset image",
+    galleryContext: "Context",
+    cvNote: "CV · PDF · French",
     skip: "Skip to content",
     navAbout: "About", navExpertise: "Expertise", navJourney: "Journey", navProjects: "Projects", navWorks: "Creative work", navClients: "Clients", navContact: "Contact me", navAssociation: "Association", navAssociationShort: "AEDBVT",
     assocKicker: "Community engagement", assocTitle: "AEDBVT — the association that brings our students together in Toliara.", assocLead: "A complete association workspace: news, events, meetings, members, organisation chart, dues, quotes, invoices, PDF receipts, statutes, internal rules and administration. The app content remains mainly in French.", assocDemo: "Official working simulation — fictional data and documents clearly marked as simulation",
@@ -191,6 +233,20 @@ const works = [
   { id: 40, src: "assets/works/40-wedis-film-serie-sport.jpg", client: "WEDIS Tuléar", category: "media", format: "square", title: ["Campagne choix de programmes", "Programming choice campaign"] }
 ];
 
+const projectChallenges = {
+  "sfcb": [
+    "Transformer une couverture régulière de l’actualité du FC Barcelone en une communauté engagée.",
+    "Turn regular FC Barcelona news coverage into an engaged community."
+  ],
+  "raiky": [
+    "Coordonner des contenus, des validations et une équipe créative pour un portefeuille multisectoriel.",
+    "Coordinate content, approvals and a creative team across a multi-sector portfolio."
+  ],
+  "tfc": [
+    "Développer la communauté du club et accompagner ses événements avec une communication régulière.",
+    "Grow the club’s community and support its events through consistent communication."
+  ]
+};
 const projectData = {
   sfcb: {
     title: "Houssounaine S-FCB", type: ["Projet personnel phare", "Flagship personal project"],
@@ -369,6 +425,7 @@ function setRoute(route, shouldScroll = true) {
   currentRoute = ROUTES.includes(route) ? route : "about";
   body.dataset.route = currentRoute;
   const activeSections = [];
+  updateReadingContext();
 
   document.querySelectorAll("[data-route]").forEach((section) => {
     section.hidden = section.dataset.route !== currentRoute;
@@ -419,6 +476,7 @@ function setLanguage(language) {
   setTheme(root.dataset.theme || "dark");
   updateDocumentMetadata();
 
+  updateReadingContext();
   renderClients(currentClientFilter);
   renderWorkFilters();
   renderWorks();
@@ -426,6 +484,13 @@ function setLanguage(language) {
   if (currentWorkId && document.querySelector("#work-dialog").open) updateWorkDialog();
 }
 
+function updateReadingContext() {
+  const routes = ["about", "expertise", "journey", "projects", "works", "clients", "association", "contact"];
+  const keys = ["navAbout", "navExpertise", "navJourney", "navProjects", "navWorks", "navClients", "navAssociation", "navContact"];
+  const index = Math.max(routes.indexOf(currentRoute), 0);
+  document.querySelector("#reading-index").textContent = String(index + 1).padStart(2, "0") + " / 08";
+  document.querySelector("#reading-title").textContent = translations[currentLanguage][keys[index]];
+}
 function setTheme(theme) {
   root.dataset.theme = theme;
   localStorage.setItem("portfolio-theme", theme);
@@ -540,13 +605,42 @@ function updateWorkDialog() {
   image.alt = `${work.title[index]} — ${work.client}`;
   document.querySelector("#work-dialog-sector").textContent = workSectors[work.category][index];
   document.querySelector("#work-dialog-title").textContent = work.title[index];
-  document.querySelector("#work-dialog-description").textContent = translations[currentLanguage].workDescription;
+  document.querySelector("#work-dialog-description").textContent = currentLanguage === "fr"
+    ? `Création « ${work.title[index]} » pour ${work.client} · ${workSectors[work.category][index]}.`
+    : `Creative work “${work.title[index]}” for ${work.client} · ${workSectors[work.category][index]}.`;
+  document.querySelector("#work-dialog").classList.remove("work-zoomed");
+  const zoom = document.querySelector("#work-zoom");
+  zoom.setAttribute("aria-pressed", "false");
+  zoom.textContent = translations[currentLanguage].zoomWork;
+  renderWorkThumbnails();
   document.querySelector("#work-dialog-client").textContent = work.client;
 
   const position = Math.max(visibleWorks.findIndex((item) => item.id === currentWorkId), 0);
   document.querySelector("#work-dialog-position").textContent = `${position + 1} / ${visibleWorks.length}`;
 }
 
+function renderWorkThumbnails() {
+  const grid = document.querySelector("#work-thumbnails");
+  grid.setAttribute("aria-label", currentLanguage === "fr" ? "Sélection des créations" : "Creative work selection");
+  grid.replaceChildren(...visibleWorks.map(work => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "work-thumbnail";
+    button.setAttribute("aria-label", work.title[localeIndex()] + " — " + work.client);
+    button.setAttribute("aria-current", String(work.id === currentWorkId));
+    const image = document.createElement("img");
+    image.src = work.src;
+    image.alt = "";
+    image.loading = "lazy";
+    button.append(image);
+    button.addEventListener("click", () => {
+      currentWorkId = work.id;
+      updateWorkDialog();
+      document.querySelector("#work-zoom").focus({ preventScroll: true });
+    });
+    return button;
+  }));
+}
 function openWork(id) {
   if (!works.some((work) => work.id === id)) return;
   currentWorkId = id;
@@ -573,6 +667,7 @@ function openProject(id) {
   document.querySelector("#dialog-type").textContent = project.type[index];
   document.querySelector("#dialog-title").textContent = project.title;
   document.querySelector("#dialog-summary").textContent = project.summary[index];
+  document.querySelector("#dialog-challenge").textContent = projectChallenges[id]?.[index] || project.summary[index];
   document.querySelector("#dialog-role").textContent = project.role[index];
   document.querySelector("#dialog-period").textContent = project.period[index];
 
@@ -784,6 +879,30 @@ function init() {
   const projectDialog = document.querySelector("#project-dialog");
   const workDialog = document.querySelector("#work-dialog");
   const privacyDialog = document.querySelector("#privacy-dialog");
+  document.querySelector("#case-next").addEventListener("click", () => {
+    const ids = Object.keys(projectData);
+    openProject(ids[(ids.indexOf(currentProjectId) + 1) % ids.length]);
+    projectDialog.scrollTop = 0;
+  });
+  document.querySelector("#work-zoom").addEventListener("click", event => {
+    const enlarged = workDialog.classList.toggle("work-zoomed");
+    event.currentTarget.setAttribute("aria-pressed", String(enlarged));
+    event.currentTarget.textContent = translations[currentLanguage][enlarged ? "resetZoom" : "zoomWork"];
+  });
+  let swipe = null;
+  const figure = workDialog.querySelector(".work-dialog-figure");
+  figure.addEventListener("pointerdown", event => {
+    if (event.isPrimary && event.pointerType !== "mouse" && !workDialog.classList.contains("work-zoomed"))
+      swipe = { id: event.pointerId, x: event.clientX, y: event.clientY };
+  });
+  figure.addEventListener("pointerup", event => {
+    if (!swipe || swipe.id !== event.pointerId) return;
+    const dx = event.clientX - swipe.x, dy = event.clientY - swipe.y;
+    swipe = null;
+    if (Math.abs(dx) >= 70 && Math.abs(dx) > Math.abs(dy) * 1.3) stepWork(dx < 0 ? 1 : -1);
+  });
+  figure.addEventListener("pointercancel", () => { swipe = null; });
+  workDialog.addEventListener("close", () => { swipe = null; workDialog.classList.remove("work-zoomed"); });
   projectDialog.querySelector(".dialog-close").addEventListener("click", () => closeDialog(projectDialog));
   workDialog.querySelector(".dialog-close").addEventListener("click", () => closeDialog(workDialog));
   privacyDialog.querySelector(".dialog-close").addEventListener("click", () => closeDialog(privacyDialog));
