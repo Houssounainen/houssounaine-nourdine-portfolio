@@ -162,7 +162,8 @@
     });
   }, { passive: true });
   document.addEventListener("pointerout", (event) => {
-    if (latestEvent || (activeCard && !(event.relatedTarget instanceof Node && activeCard.contains(event.relatedTarget)))) reset();
+    const card = activeCard || latestEvent?.target.closest?.(tiltSelector);
+    if (card && !(event.relatedTarget instanceof Node && card.contains(event.relatedTarget))) reset();
   });
   window.addEventListener("blur", reset);
   preference.addEventListener("change", () => {
@@ -195,4 +196,69 @@
   }
   new MutationObserver(enterRoute).observe(document.body, { attributes: true, attributeFilter: ["data-route"] });
   enterRoute();
+})();
+
+/* Décor et animations de contenu : aucune modification des textes ou des liens. */
+(() => {
+  const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const main = document.querySelector("#main");
+  const visual = document.querySelector(".hero-visual");
+  if (!main) return;
+  if (visual) {
+    const decor = document.createElement("div");
+    decor.className = "living-orbits";
+    decor.setAttribute("aria-hidden", "true");
+    decor.innerHTML = '<span class="living-ring"></span><span class="living-ring"></span>'
+      + Array.from({ length: 8 }, (_, index) => '<i style="--particle:' + index + '"></i>').join("");
+    visual.prepend(decor);
+  }
+  function pauseDecor() {
+    document.body.classList.toggle("living-paused", document.hidden);
+  }
+  document.addEventListener("visibilitychange", pauseDecor);
+  pauseDecor();
+
+  const cardSelector = ".project-card, .work-card, .client-card, .education-card";
+  const displayed = new WeakSet();
+  const running = new Set();
+  let pending = 0;
+  function animateCards() {
+    pending = 0;
+    let index = 0;
+    main.querySelectorAll(cardSelector).forEach(card => {
+      if (card.closest("[hidden]")) { displayed.delete(card); return; }
+      if (displayed.has(card)) return;
+      displayed.add(card);
+      if (preference.matches || typeof card.animate !== "function") return;
+      const animation = card.animate([
+        { opacity: 0, translate: "0 24px", scale: .96 },
+        { opacity: 1, translate: "0 0", scale: 1 }
+      ], {
+        duration: 540, delay: Math.min(index++, 7) * 45,
+        easing: "cubic-bezier(.16,1,.3,1)", fill: "backwards"
+      });
+      running.add(animation);
+      animation.onfinish = animation.oncancel = () => running.delete(animation);
+    });
+  }
+  function scheduleCards() {
+    if (!pending) pending = window.requestAnimationFrame(animateCards);
+  }
+  new MutationObserver(scheduleCards).observe(main, {
+    childList: true, subtree: true, attributes: true, attributeFilter: ["hidden"]
+  });
+  scheduleCards();
+
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => entry.target.classList.toggle("living-in-view", entry.isIntersecting));
+    }, { threshold: .45 });
+    main.querySelectorAll(".timeline-item").forEach(item => observer.observe(item));
+  }
+  preference.addEventListener("change", () => {
+    if (preference.matches) {
+      running.forEach(animation => animation.cancel());
+      running.clear();
+    }
+  });
 })();
