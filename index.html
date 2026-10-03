@@ -113,7 +113,7 @@
         <span class="theme-label">Mode sombre</span>
         <span class="theme-switch" aria-hidden="true"><b></b></span>
       </button>
-      <a class="sidebar-cta" href="/contact" data-route-link="contact"><span data-i18n="contactMe">Me contacter</span><span aria-hidden="true">↗</span></a>
+      <a class="sidebar-cta" href="/contact" data-route-link="contact"><span data-i18n="discussProject">Discuter d’un projet</span><span aria-hidden="true">↗</span></a>
     </div>
   </aside>
 
@@ -176,6 +176,7 @@
   </nav>
 
   <main class="site-main" id="main">
+    <div class="reading-context"><span class="reading-index" id="reading-index">01 / 08</span><span id="reading-title">À propos</span><a href="/contact" data-route-link="contact" data-i18n="discussProject">Discuter d’un projet</a></div>
     <section class="hero section" data-route="about" aria-labelledby="hero-title">
       <div class="hero-orb hero-orb-one" aria-hidden="true"></div>
       <div class="hero-orb hero-orb-two" aria-hidden="true"></div>
@@ -191,8 +192,9 @@
               <span data-i18n="viewProjects">Voir mes projets</span>
               <span aria-hidden="true">↗</span>
             </a>
-            <a class="button button-secondary" href="/contact" data-route-link="contact" data-i18n="contactMe">Me contacter</a>
+            <a class="button button-secondary" href="/contact" data-route-link="contact" data-i18n="discussProject">Discuter d’un projet</a>
           </div>
+          <a class="editorial-cv" href="assets/cv-houssounaine-nourdine.pdf" download data-i18n="resumeDownload">Télécharger le CV</a>
           <ul class="hero-tags" aria-label="Domaines d’expertise">
             <li data-i18n="tagStrategy">Stratégie social media</li>
             <li data-i18n="tagLeadership">Management d’équipe</li>
@@ -268,6 +270,19 @@
           <h3 data-i18n="thesisTitle">Étude d'impacts du marketing d'influence sur la performance des marques entre notoriété et conversion : cas des influenceurs malgaches.</h3>
           <p data-i18n="thesisSubtitle">Mémoire de Master en Gestion — Parcours Marketing relationnel et International.</p>
         </div>
+      </div>
+    </section>
+
+    <section class="section method-section" data-route="about" aria-labelledby="method-title">
+      <div class="container">
+        <div class="section-heading reveal"><p class="kicker" data-i18n="methodKicker">Ma méthode</p><h2 id="method-title" data-i18n="methodTitle">Une idée claire. Un plan concret. Des résultats suivis.</h2><p data-i18n="methodIntro">Quatre étapes pour construire une présence digitale cohérente et faire évoluer les actions avec les résultats.</p></div>
+        <ol class="method-grid">
+          <li class="method-step reveal"><span class="method-number" aria-hidden="true">01</span><h3 data-i18n="method1Title">Comprendre</h3><p data-i18n="method1Body">Analyser la marque, ses publics et les objectifs de communication.</p></li>
+          <li class="method-step reveal"><span class="method-number" aria-hidden="true">02</span><h3 data-i18n="method2Title">Structurer</h3><p data-i18n="method2Body">Définir les messages, les canaux et le calendrier éditorial.</p></li>
+          <li class="method-step reveal"><span class="method-number" aria-hidden="true">03</span><h3 data-i18n="method3Title">Créer & coordonner</h3><p data-i18n="method3Body">Rédiger, produire, valider et publier avec une équipe alignée.</p></li>
+          <li class="method-step reveal"><span class="method-number" aria-hidden="true">04</span><h3 data-i18n="method4Title">Mesurer & ajuster</h3><p data-i18n="method4Body">Suivre les indicateurs, partager les bilans et adapter les prochaines actions.</p></li>
+        </ol>
+        <a class="button button-primary" href="/contact" data-route-link="contact" data-i18n="discussProject">Discuter d’un projet</a>
       </div>
     </section>
 
@@ -449,6 +464,7 @@
           <p data-i18n="projectsIntro">Découvrez mon rôle, mes actions et les résultats disponibles pour chaque projet.</p>
         </div>
 
+        <p class="editorial-intro" data-i18n="featuredCases">Trois projets, trois dimensions de mon travail.</p>
         <div class="filters reveal" role="group" aria-label="Filtrer les projets">
           <button class="filter-button active" type="button" data-project-filter="all" data-i18n="filterAll">Tous</button>
           <button class="filter-button" type="button" data-project-filter="personal" data-i18n="filterPersonal">Projet personnel</button>
@@ -457,7 +473,8 @@
         </div>
 
         <div class="project-grid" id="project-grid">
-          <article class="project-card project-featured reveal" data-category="personal" data-project="sfcb">
+          <article class="project-card project-featured reveal editorial-feature" data-category="personal" data-project="sfcb">
+            <figure class="editorial-cover editorial-cover-sfcb"><img src="assets/stats-facebook-2026-a.webp" alt="Statistiques Facebook de Houssounaine S-FCB" loading="lazy"><figcaption>01 / Influence</figcaption></figure>
             <div class="project-card-top">
               <span class="project-logo project-logo-personal"><img src="assets/portrait-hero-cutout.webp" alt="Houssounaine S-FCB" loading="lazy"></span>
               <span class="project-type" data-i18n="projectPersonal">Projet personnel</span>
@@ -470,14 +487,16 @@
             <button class="project-open" type="button" data-i18n="viewCase">Voir l’étude de cas</button>
           </article>
 
-          <article class="project-card reveal" data-category="management" data-project="raiky">
+          <article class="project-card reveal editorial-feature" data-category="management" data-project="raiky">
+            <figure class="editorial-cover editorial-cover-raiky"><img src="assets/about-workspace.jpg" alt="Houssounaine Nourdine dans son environnement de travail" loading="lazy"><figcaption>02 / Leadership</figcaption></figure>
             <div class="project-card-top"><span class="project-logo"><img src="assets/logos/raiky.jpg" alt="Logo Raiky" loading="lazy"></span><span class="project-type" data-i18n="projectManagement">Management</span></div>
             <div><h3>Raiky</h3><p data-i18n="raikySummary">Pilotage d’un portefeuille digital, organisation des processus et coordination d’une équipe créative.</p></div>
             <div class="project-proof"><strong>24</strong><span data-i18n="managedPages">pages supervisées</span></div>
             <button class="project-open" type="button" data-i18n="viewCase">Voir l’étude de cas</button>
           </article>
 
-          <article class="project-card reveal" data-category="client" data-project="tfc">
+          <article class="project-card reveal editorial-feature" data-category="client" data-project="tfc">
+            <figure class="editorial-cover editorial-cover-tfc"><img src="assets/logos/tulear-fitness.jpg" alt="Logo Tulear Fitness Club" loading="lazy"><figcaption>03 / Community</figcaption></figure>
             <div class="project-card-top"><span class="project-logo"><img src="assets/logos/tulear-fitness.jpg" alt="Logo Tulear Fitness Club" loading="lazy"></span><span class="project-type">Fitness</span></div>
             <div><h3>Tulear Fitness Club</h3><p data-i18n="tfcSummary">Une stratégie communautaire régulière soutenant la croissance et les campagnes événementielles.</p></div>
             <div class="project-proof"><strong>+10 K</strong><span data-i18n="newFollowers">nouveaux abonnés</span></div>
@@ -548,6 +567,7 @@
           <p data-i18n="worksIntro">Une sélection professionnelle parmi 40 affiches réalisées pour des marques de secteurs variés.</p>
         </div>
 
+        <p class="gallery-hint" data-i18n="galleryHint">Ouvrez une création pour découvrir son contexte. Sur mobile, glissez pour parcourir la sélection.</p>
         <div class="works-toolbar reveal">
           <div class="filters works-filters" id="works-filters" role="group" aria-label="Filtrer les créations par secteur"></div>
           <p class="works-count" id="works-count" aria-live="polite"></p>
@@ -628,6 +648,10 @@
           <p class="kicker" data-i18n="contactKicker">Construisons la suite</p>
           <h2 id="contact-title" data-i18n="contactTitle">Une opportunité, une mission ou une collaboration ?</h2>
           <p data-i18n="contactIntro">Décrivez votre besoin. Je vous répondrai dès que possible pour discuter de la meilleure manière d’avancer ensemble.</p>
+          <div class="contact-primary-actions">
+            <a class="button button-primary" href="mailto:houssounainen@gmail.com?subject=Projet%20de%20collaboration" data-i18n="discussProject">Discuter d’un projet</a>
+            <a class="button button-secondary" href="assets/cv-houssounaine-nourdine.pdf" download data-i18n="resumeDownload">Télécharger le CV</a>
+          </div><p class="cv-note" data-i18n="cvNote">CV · PDF · Français</p>
           <div class="contact-links">
             <a href="mailto:houssounainen@gmail.com"><span aria-hidden="true">@</span><span>houssounainen@gmail.com</span></a>
             <a href="https://wa.me/261344886137" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">↗</span><span>+261 34 48 861 37</span></a>
@@ -692,6 +716,7 @@
       <p class="kicker" id="dialog-type"></p>
       <h2 id="dialog-title"></h2>
       <p class="dialog-summary" id="dialog-summary"></p>
+      <div class="dialog-challenge"><h3 data-i18n="dialogChallenge">Le défi</h3><p id="dialog-challenge"></p></div>
       <div class="dialog-columns">
         <div><h3 data-i18n="dialogRole">Mon rôle</h3><p id="dialog-role"></p></div>
         <div><h3 data-i18n="dialogPeriod">Période</h3><p id="dialog-period"></p></div>
@@ -700,6 +725,7 @@
       <div class="dialog-section"><h3 data-i18n="dialogResults">Résultats et faits marquants</h3><ul id="dialog-results"></ul></div>
       <div class="dialog-media" id="dialog-media" hidden></div>
       <div class="dialog-links" id="dialog-links"></div>
+      <div class="case-navigation"><button class="button button-secondary" id="case-next" type="button"><span data-i18n="nextCase">Projet suivant</span><span aria-hidden="true"> ↗</span></button></div>
     </div>
   </dialog>
 
@@ -707,23 +733,25 @@
     <button class="dialog-close icon-button" type="button" aria-label="Fermer">×</button>
     <div class="work-dialog-layout">
       <figure class="work-dialog-figure">
-        <img id="work-dialog-image" src="" alt="">
+        <img id="work-dialog-image" alt="">
       </figure>
       <div class="work-dialog-copy">
         <p class="kicker" id="work-dialog-sector"></p>
         <h2 id="work-dialog-title"></h2>
-        <p id="work-dialog-description"></p>
+        <p id="work-dialog-description" aria-live="polite"></p>
+        <button class="button button-secondary" type="button" id="work-zoom" aria-pressed="false" data-i18n="zoomWork">Agrandir l’image</button>
         <dl>
           <div><dt data-i18n="workClient">Client</dt><dd id="work-dialog-client"></dd></div>
           <div><dt data-i18n="workRole">Rôle</dt><dd data-i18n="workRoleValue">Conception graphique complète</dd></div>
         </dl>
         <div class="work-dialog-nav" aria-label="Parcourir les créations">
           <button class="button button-secondary" id="work-previous" type="button" data-i18n="previousWork">Précédente</button>
-          <span id="work-dialog-position"></span>
+          <span id="work-dialog-position" aria-live="polite"></span>
           <button class="button button-primary" id="work-next" type="button" data-i18n="nextWork">Suivante</button>
         </div>
       </div>
     </div>
+    <div class="work-thumbnails" id="work-thumbnails" role="group" aria-label="Sélection des créations"></div>
   </dialog>
 
   <dialog class="privacy-dialog" id="privacy-dialog" aria-labelledby="privacy-title">
