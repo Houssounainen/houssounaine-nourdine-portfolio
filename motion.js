@@ -3,7 +3,8 @@
 /* Couche d'animations additive : n'utilise que des éléments et classes déjà présents.
    Chargé avant script.js afin que les délais d'apparition soient posés avant l'affichage. */
 (() => {
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const reduced = motionPreference.matches;
   const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
   const SPOT_SELECTOR = ".service-card, .project-card, .client-card, .work-card, .metric, .thesis-card, .education-card, .timeline-card, .aed-card, .aed-doc-card, .aed-law";
   const MAGNET_SELECTOR = ".button, .sidebar-cta";
@@ -57,6 +58,7 @@
   document.body.append(cursor);
   let targetX = 0, targetY = 0, currentX = 0, currentY = 0, running = false;
   function follow() {
+    if (motionPreference.matches) { running = false; cursor.classList.remove("on"); return; }
     currentX += (targetX - currentX) * 0.14;
     currentY += (targetY - currentY) * 0.14;
     cursor.style.transform = `translate3d(${currentX.toFixed(1)}px, ${currentY.toFixed(1)}px, 0)`;
@@ -64,6 +66,7 @@
     else running = false;
   }
   document.addEventListener("pointermove", (event) => {
+    if (motionPreference.matches) return;
     targetX = event.clientX;
     targetY = event.clientY;
     cursor.classList.add("on");
@@ -73,6 +76,7 @@
 
   /* 5. Éclairage des cartes + boutons magnétiques (délégation d'événements) */
   document.addEventListener("pointerover", (event) => {
+    if (motionPreference.matches) return;
     const card = event.target.closest?.(SPOT_SELECTOR);
     if (!card || card.classList.contains("has-spot")) return;
     if (window.getComputedStyle(card).position === "static") card.style.position = "relative";
@@ -84,6 +88,7 @@
   });
 
   document.addEventListener("pointermove", (event) => {
+    if (motionPreference.matches) return;
     const card = event.target.closest?.(".has-spot");
     if (card) {
       const rect = card.getBoundingClientRect();
@@ -99,9 +104,15 @@
     }
   }, { passive: true });
 
+  motionPreference.addEventListener("change", () => {
+    if (!motionPreference.matches) return;
+    cursor.classList.remove("on");
+    document.querySelectorAll(MAGNET_SELECTOR).forEach(element => { element.style.translate = ""; });
+  });
+
   document.addEventListener("pointerout", (event) => {
     const magnet = event.target.closest?.(MAGNET_SELECTOR);
-    if (magnet && !magnet.contains(event.relatedTarget)) magnet.style.translate = "";
+    if (magnet && !(event.relatedTarget instanceof Node && magnet.contains(event.relatedTarget))) magnet.style.translate = "";
   });
 })();
 
@@ -120,6 +131,9 @@
   const tiltSelector = ".portrait-frame, .service-card, .project-card, .work-card, .education-card";
   let activeCard = null, frame = 0, latestEvent = null;
   function reset() {
+    if (frame) window.cancelAnimationFrame(frame);
+    frame = 0;
+    latestEvent = null;
     if (activeCard) {
       activeCard.style.removeProperty("--tilt-x");
       activeCard.style.removeProperty("--tilt-y");
@@ -133,23 +147,30 @@
     if (frame) return;
     frame = window.requestAnimationFrame(() => {
       frame = 0;
-      const card = latestEvent.target.closest?.(tiltSelector);
+      if (!latestEvent || preference.matches || !pointer.matches) return;
+      const event = latestEvent;
+      const card = event.target.closest?.(tiltSelector);
       if (card !== activeCard) reset();
       if (!card) return;
       activeCard = card;
       const rect = card.getBoundingClientRect();
-      const x = Math.max(-1, Math.min(1, (latestEvent.clientX - rect.left) / rect.width * 2 - 1));
-      const y = Math.max(-1, Math.min(1, (latestEvent.clientY - rect.top) / rect.height * 2 - 1));
+      const x = Math.max(-1, Math.min(1, (event.clientX - rect.left) / rect.width * 2 - 1));
+      const y = Math.max(-1, Math.min(1, (event.clientY - rect.top) / rect.height * 2 - 1));
       card.style.setProperty("--tilt-x", (-y * 7).toFixed(2) + "deg");
       card.style.setProperty("--tilt-y", (x * 9).toFixed(2) + "deg");
       card.classList.add("wow-tilting");
     });
   }, { passive: true });
   document.addEventListener("pointerout", (event) => {
-    if (activeCard && !activeCard.contains(event.relatedTarget)) reset();
+    if (latestEvent || (activeCard && !(event.relatedTarget instanceof Node && activeCard.contains(event.relatedTarget)))) reset();
   });
   window.addEventListener("blur", reset);
-  preference.addEventListener("change", reset);
+  preference.addEventListener("change", () => {
+    reset();
+    if (preference.matches) document.querySelectorAll("[data-route]").forEach(section => {
+      section.getAnimations?.().filter(animation => animation.id === "wow-route").forEach(animation => animation.cancel());
+    });
+  });
   pointer.addEventListener("change", reset);
 
   /* Rejouer une transition une seule fois par changement de rubrique. */
@@ -161,7 +182,10 @@
     reset();
     if (preference.matches) return;
     document.querySelectorAll('[data-route]:not([hidden])').forEach(section => {
-      section.getAnimations().filter(animation => animation.id === "wow-route").forEach(animation => animation.cancel());
+      section.classList.remove("route-enter");
+      if (typeof section.getAnimations === "function") {
+        section.getAnimations().filter(animation => animation.id === "wow-route").forEach(animation => animation.cancel());
+      }
       if (typeof section.animate !== "function") return;
       section.animate([
         { opacity: .2, translate: "0 32px" },

@@ -187,3 +187,10 @@
   .wow-aurora i { animation: none; }
   .wow-tilting { transform: none !important; }
 }
+
+/* La transition WAAPI de motion.js remplace l’ancienne transition CSS. */
+[data-route].route-enter { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .button, .sidebar-cta { translate: none !important; }
+  .portrait-frame { --portrait-shift-x: 0px; --portrait-shift-y: 0px; }
+}
