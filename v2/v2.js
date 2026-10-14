@@ -558,8 +558,9 @@
       event.preventDefault();
       const data = new FormData(event.currentTarget);
       const fr = state.lang === "fr";
-      const subject = `[Portfolio] ${data.get("type")} — ${data.get("subject")}`;
-      const message = `${fr ? "Nom" : "Name"}: ${data.get("name")}\n${fr ? "E-mail" : "Email"}: ${data.get("email")}\n${fr ? "Type de demande" : "Request type"}: ${data.get("type")}\n\n${data.get("message")}`;
+      const type = $('input[name="type"]:checked + span', event.currentTarget)?.textContent || data.get("type");
+      const subject = `[Portfolio] ${type} — ${data.get("subject")}`;
+      const message = `${fr ? "Nom" : "Name"}: ${data.get("name")}\n${fr ? "E-mail" : "Email"}: ${data.get("email")}\n${fr ? "Type de demande" : "Request type"}: ${type}\n\n${data.get("message")}`;
       $("[data-form-status]").textContent = T("formReady");
       window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
     });
