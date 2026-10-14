@@ -566,6 +566,16 @@
     });
   }
 
+  /* Anciennes adresses (/projects, /works…) : défilement vers la section correspondante. */
+  const LEGACY_SECTIONS = { expertise: "expertises", journey: "parcours", projects: "projets", works: "creations", clients: "clients", contact: "contact" };
+  function scrollToLegacyRoute() {
+    const target = LEGACY_SECTIONS[window.location.pathname.replace(/^\/+|\/+$/g, "")];
+    const section = target && document.getElementById(target);
+    if (!section) return;
+    window.history.replaceState(null, "", `/${window.location.search}#${target}`);
+    window.requestAnimationFrame(() => section.scrollIntoView({ behavior: "auto" }));
+  }
+
   /* ---------- Démarrage ---------- */
   function init() {
     if (typeof translations === "undefined") return;
@@ -581,6 +591,7 @@
     setupPointer();
     setupContact();
     startRotator();
+    scrollToLegacyRoute();
     tickClock();
     window.setInterval(tickClock, 20000);
 

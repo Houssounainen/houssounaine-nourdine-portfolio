@@ -19,7 +19,7 @@
   const KEY = "aedbvt_state_v3";
   const ADMIN_NAME = "Houssounaine Nourdine";
   const COTISATION = 30000;
-  const LOGO = "assets/aedbvt-logo.webp";
+  const LOGO = "/assets/aedbvt-logo.webp";
   const ar = (n) => `${Number(n).toLocaleString("fr-FR")} Ar`;
   const parse = (s) => new Date(s);
   const dayKey = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;

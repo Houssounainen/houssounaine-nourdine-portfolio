@@ -3,11 +3,11 @@
   "short_name": "Houssounaine",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f8fafc",
-  "theme_color": "#0b132b",
+  "background_color": "#f2eee5",
+  "theme_color": "#141311",
   "icons": [
     {
-      "src": "assets/profile.webp",
+      "src": "/assets/profile.webp",
       "sizes": "900x900",
       "type": "image/webp",
       "purpose": "any"

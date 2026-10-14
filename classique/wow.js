@@ -153,7 +153,7 @@
     band.className = "container wow-marquee";
     const label = document.createElement("a");
     label.className = "wow-marquee-label";
-    label.href = "/clients";
+    label.href = "/classique/clients";
     label.dataset.wowRoute = "clients";
     const track = document.createElement("div");
     track.className = "wow-marquee-track";
