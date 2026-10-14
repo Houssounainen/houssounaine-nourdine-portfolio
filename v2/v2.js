@@ -9,6 +9,8 @@
   const reduced = () => reducedQuery.matches;
   const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
   const EMAIL = "houssounainen@gmail.com";
+  const GA_MEASUREMENT_ID = "G-1LL57GXLVY";
+  const CONSENT_KEY = "portfolio-cookie-consent";
   const asset = (path) => `/${path.replace(/^\/+/, "")}`;
 
   const store = {
@@ -21,7 +23,7 @@
     fr: {
       edition: "Édition", values: "Valeurs", localTime: "heure locale", sinceText: "au service des communautés",
       assocOpen: "Ouvrir l’espace AEDBVT", copyHint: "Cliquer pour copier", copied: "Adresse e-mail copiée ✓",
-      classic: "Version classique", backTop: "Haut de page ↑", privacyV2: "Cette version n’utilise ni cookie ni outil de mesure d’audience.",
+      classic: "Version classique", backTop: "Haut de page ↑", cookieSettings: "Gérer les cookies",
       cursorView: "Voir", cursorOpen: "Ouvrir", worksShown: (shown, total) => `${shown} / ${total} créations`,
       themeToDark: "Activer le mode sombre", themeToLight: "Activer le mode clair", langLabel: "Passer le site en anglais",
       menuOpen: "Ouvrir le menu", menuClose: "Fermer le menu",
@@ -30,7 +32,7 @@
     en: {
       edition: "Edition", values: "Values", localTime: "local time", sinceText: "serving communities",
       assocOpen: "Open the AEDBVT space", copyHint: "Click to copy", copied: "Email address copied ✓",
-      classic: "Classic version", backTop: "Back to top ↑", privacyV2: "This version uses no cookies and no audience measurement tools.",
+      classic: "Classic version", backTop: "Back to top ↑", cookieSettings: "Manage cookies",
       cursorView: "View", cursorOpen: "Open", worksShown: (shown, total) => `${shown} / ${total} creative works`,
       themeToDark: "Enable dark mode", themeToLight: "Enable light mode", langLabel: "Switch website to French",
       menuOpen: "Open menu", menuClose: "Close menu",
@@ -280,6 +282,7 @@
     if (!projectData[id]) return;
     state.caseId = id;
     fillCase(id);
+    track("view_case_study", { project: id });
     openModal($("[data-case-modal]"));
   }
 
@@ -344,6 +347,7 @@
   function openWork(id) {
     state.workId = id;
     updateLightbox();
+    track("view_creative_work", { work_id: id });
     openModal($("[data-lightbox]"));
   }
   function stepWork(direction) {
@@ -562,6 +566,7 @@
       const subject = `[Portfolio] ${type} — ${data.get("subject")}`;
       const message = `${fr ? "Nom" : "Name"}: ${data.get("name")}\n${fr ? "E-mail" : "Email"}: ${data.get("email")}\n${fr ? "Type de demande" : "Request type"}: ${type}\n\n${data.get("message")}`;
       $("[data-form-status]").textContent = T("formReady");
+      track("contact_form_prepare", { request_type: String(data.get("type")) });
       window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
     });
   }
@@ -574,6 +579,61 @@
     if (!section) return;
     window.history.replaceState(null, "", `/${window.location.search}#${target}`);
     window.requestAnimationFrame(() => section.scrollIntoView({ behavior: "auto" }));
+  }
+
+  /* ---------- Statistiques (Google Analytics, uniquement avec consentement) ---------- */
+  function track(name, parameters = {}) {
+    if (typeof window.gtag === "function") window.gtag("event", name, parameters);
+  }
+  function enableAnalytics() {
+    if (!GA_MEASUREMENT_ID) return;
+    if (document.querySelector("#ga-script")) {
+      window.gtag("consent", "update", { analytics_storage: "granted" });
+      return;
+    }
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    window.gtag("consent", "default", {
+      analytics_storage: "granted", ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied",
+      functionality_storage: "granted", security_storage: "granted"
+    });
+    window.gtag("js", new Date());
+    window.gtag("config", GA_MEASUREMENT_ID, { send_page_view: false });
+    const script = document.createElement("script");
+    script.id = "ga-script";
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_MEASUREMENT_ID)}`;
+    document.head.append(script);
+    track("page_view", { page_title: document.title, page_location: window.location.href, page_path: `${window.location.pathname}${window.location.search}` });
+  }
+  function setupConsent() {
+    const bar = $("[data-consent]");
+    const consent = store.get(CONSENT_KEY);
+    if (consent === "accepted") enableAnalytics();
+    if (!consent) bar.hidden = false;
+    $$("[data-cookie]", bar).forEach((button) => button.addEventListener("click", () => {
+      const accepted = button.dataset.cookie === "accept";
+      store.set(CONSENT_KEY, accepted ? "accepted" : "rejected");
+      bar.hidden = true;
+      if (accepted) enableAnalytics();
+      else if (typeof window.gtag === "function") window.gtag("consent", "update", { analytics_storage: "denied" });
+    }));
+    $("[data-cookie-settings]").addEventListener("click", () => {
+      $("[data-privacy-modal]").close();
+      bar.hidden = false;
+    });
+
+    /* Événements utiles, identiques à la version classique. */
+    document.addEventListener("click", (event) => {
+      const link = event.target.closest?.("a[href]");
+      if (!link) return;
+      const href = link.getAttribute("href");
+      if (href.startsWith("https://wa.me/")) track("click_whatsapp");
+      else if (href.startsWith("mailto:")) track("click_email");
+      else if (href.includes("linkedin.com")) track("click_social", { network: "linkedin" });
+      else if (href.includes("facebook.com")) track("click_social", { network: "facebook" });
+      else if (href.includes("instagram.com")) track("click_social", { network: "instagram" });
+    });
   }
 
   /* ---------- Démarrage ---------- */
@@ -590,6 +650,7 @@
     setupNav();
     setupPointer();
     setupContact();
+    setupConsent();
     startRotator();
     scrollToLegacyRoute();
     tickClock();

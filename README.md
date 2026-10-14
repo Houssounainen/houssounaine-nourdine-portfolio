@@ -37,7 +37,9 @@ Portfolio personnel bilingue de Houssounaine Nourdine, Lead Community Manager sp
 
 ## Modifier le contenu
 
-Les textes de la page d’accueil sont dans `index.html` ; les traductions, études de cas, créations et clients dans `v2/data.js`. L’ancienne version garde ses propres données dans `classique/script.js` (Google Analytics 4 y reste configuré via `GA_MEASUREMENT_ID`).
+Les textes de la page d’accueil sont dans `index.html` ; les traductions, études de cas, créations et clients dans `v2/data.js`. L’ancienne version garde ses propres données dans `classique/script.js`.
+
+Google Analytics 4 (`GA_MEASUREMENT_ID` dans `v2/v2.js` et `classique/script.js`) ne se charge qu’après acceptation du bandeau de confidentialité ; le choix est partagé entre les deux versions et modifiable via « Confidentialité → Gérer les cookies ».
 
 ## Hébergement statique
 

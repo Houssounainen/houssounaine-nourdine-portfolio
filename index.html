@@ -453,10 +453,22 @@
     <p class="label" data-i18n="privacyKicker">Données personnelles</p>
     <h2 id="privacy-title" data-i18n="privacyTitle">Politique de confidentialité</h2>
     <p data-i18n="privacyBody1">Ce portfolio ne stocke aucune donnée personnelle sur un serveur. Le formulaire prépare un e-mail dans l’application de messagerie du visiteur.</p>
-    <p data-x="privacyV2">Cette version n’utilise ni cookie ni outil de mesure d’audience.</p>
+    <p data-i18n="privacyBody2">Les informations communiquées sont utilisées uniquement pour répondre à la demande. Avec votre accord, Google Analytics mesure anonymement l’audience et l’utilisation du portfolio.</p>
+    <button class="btn btn-line" type="button" data-cookie-settings data-x="cookieSettings">Gérer les cookies</button>
   </dialog>
 
   <div class="toast" role="status" aria-live="polite" data-toast></div>
+
+  <aside class="consent-bar" data-consent aria-label="Préférences de confidentialité" hidden>
+    <div>
+      <strong data-i18n="cookieTitle">Respect de votre vie privée</strong>
+      <p data-i18n="cookieBody">Ce site utilise des préférences essentielles. Google Analytics est activé uniquement avec votre accord afin de mesurer l’audience.</p>
+    </div>
+    <div class="consent-actions">
+      <button class="btn btn-line" type="button" data-cookie="reject" data-i18n="cookieReject">Refuser</button>
+      <button class="btn btn-solid" type="button" data-cookie="accept" data-i18n="cookieAccept">Accepter</button>
+    </div>
+  </aside>
 
   <script src="/v2/data.js" defer></script>
   <script src="/v2/v2.js" defer></script>
