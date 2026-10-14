@@ -20,6 +20,10 @@ Portfolio personnel bilingue de Houssounaine Nourdine, Lead Community Manager sp
 - bouton WhatsApp ;
 - préférences de confidentialité ;
 - métadonnées SEO et données structurées ;
+- préchargeur cinématique (une fois par session) et constellation interactive dans l’accueil ;
+- bandeau défilant des logos clients ;
+- palette de commandes (`Ctrl/⌘ + K` ou `/`) : navigation, thème, langue, copie de l’e-mail ;
+- bascule de thème avec transition circulaire (View Transitions API) ;
 - accessibilité clavier et prise en charge de `prefers-reduced-motion`.
 
 ## Fichiers
@@ -27,6 +31,8 @@ Portfolio personnel bilingue de Houssounaine Nourdine, Lead Community Manager sp
 - `index.html` : structure et contenus ;
 - `styles.css` : identité visuelle, responsive design et thèmes ;
 - `script.js` : traduction, filtres, dialogues, formulaire et interactions ;
+- `motion.js` / `motion.css` : animations d’apparition, halo, inclinaison des cartes ;
+- `wow.js` / `wow.css` : préchargeur, constellation, bandeau clients, palette de commandes, transition de thème ;
 - `vercel.json` : routes propres et en-têtes de sécurité pour Vercel ;
 - `assets/` : portraits, créations, logos clients, statistiques et favicon ;
 - `robots.txt` et `sitemap.xml` : indexation.

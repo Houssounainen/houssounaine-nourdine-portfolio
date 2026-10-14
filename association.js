@@ -369,8 +369,8 @@
     root.classList.toggle("aed-font-xlarge", a.font >= 2);
     root.classList.toggle("aed-high-contrast", !!a.contrast);
     root.classList.toggle("aed-calm", !!a.calm);
-    $('.aed-access [data-v="contrast"]', root).forEach((b) => b.setAttribute("aria-pressed", String(!!a.contrast)));
-    $('.aed-access [data-v="calm"]', root).forEach((b) => b.setAttribute("aria-pressed", String(!!a.calm)));
+    $$('.aed-access [data-v="contrast"]', root).forEach((b) => b.setAttribute("aria-pressed", String(!!a.contrast)));
+    $$('.aed-access [data-v="calm"]', root).forEach((b) => b.setAttribute("aria-pressed", String(!!a.calm)));
   }
 
   const R = {};
@@ -542,7 +542,7 @@
     $("#aed-ticker").innerHTML = text + text;
   }
   function paintChrome() {
-    $('[data-aed="role"]', root).forEach((b) => { const on = b.dataset.v === S.role; b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); });
+    $$('[data-aed="role"]', root).forEach((b) => { const on = b.dataset.v === S.role; b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); });
     applyAccessibility();
     const n = unseen(), bell = $("#aed-bell");
     bell.hidden = !n; bell.textContent = n;
@@ -580,7 +580,7 @@
     requestAnimationFrame(step);
   }
   function enhanceMotion(scope) {
-    const items = $(".aed-card, .aed-ev, .aed-alert, .aed-faq, .aed-tree > ul > li, .aed-ph, .aed-chips, .aed-doc-card, .aed-law, .aed-governance-roadmap", scope);
+    const items = $$(".aed-card, .aed-ev, .aed-alert, .aed-faq, .aed-tree > ul > li, .aed-ph, .aed-chips, .aed-doc-card, .aed-law, .aed-governance-roadmap", scope);
     items.forEach((el, i) => {
       el.style.setProperty("--aed-i", Math.min(i, 12));
       el.classList.add("aed-motion-item");

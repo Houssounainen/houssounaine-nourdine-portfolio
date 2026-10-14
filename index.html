@@ -34,6 +34,17 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="motion.css">
   <link rel="stylesheet" href="association.css">
+  <link rel="stylesheet" href="wow.css">
+  <script>
+    (function () {
+      try {
+        if (sessionStorage.getItem("wow-intro-seen") || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      } catch (error) { return; }
+      var root = document.documentElement;
+      root.classList.add("wow-intro-on");
+      setTimeout(function () { root.classList.add("wow-intro-done"); }, 4000);
+    })();
+  </script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -58,6 +69,15 @@
   </script>
 </head>
 <body>
+  <div class="wow-intro" aria-hidden="true">
+    <div class="wow-intro-panel"></div>
+    <div class="wow-intro-panel"></div>
+    <div class="wow-intro-inner">
+      <p class="wow-intro-name"><span>Houssounaine</span><span>Nourdine</span></p>
+      <div class="wow-intro-bar"><i></i></div>
+      <div class="wow-intro-meta"><span>Lead Community Manager · Portfolio 2026</span><span class="wow-intro-count">000</span></div>
+    </div>
+  </div>
   <a class="skip-link" href="#main" data-i18n="skip">Aller au contenu</a>
 
   <aside class="site-sidebar" id="primary-nav" aria-label="Navigation principale">
@@ -751,5 +771,6 @@
   <script src="motion.js" defer></script>
   <script src="script.js" defer></script>
   <script src="association.js" defer></script>
+  <script src="wow.js" defer></script>
 </body>
 </html>
