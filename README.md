@@ -31,6 +31,8 @@ Portfolio personnel bilingue de Houssounaine Nourdine, Lead Community Manager sp
 - `index.html` : page d’accueil « Édition 2026 » (page unique, style affiche sombre vert / bleu ciel / rouge, typographie Montserrat et manuscrite, grille bento, ruban fixe de raccourcis vers les sections, section « Merci ! » avec QR code) ;
 - `assets/qr-portfolio.svg` : QR code vers le portfolio ;
 - `v2/` : styles (`v2.css`), interactions (`v2.js`) et contenus bilingues partagés (`data.js`) de la page d’accueil ;
+- `v2/features.js` / `features.css` : créations en « stories », visite guidée de 30 s, quiz « Quel service pour vous ? » et mode présentation ;
+- `projets/<id>/` : pages dédiées aux études de cas, générées par `node scripts/build-pages.mjs` (ajouter `--images` pour régénérer les images de partage `assets/og/`) — à relancer après toute modification de `v2/data.js` ;
 - `classique/` : ancienne version multi-rubriques, accessible sur `/classique`, avec l’espace AEDBVT sur `/classique/association` ;
 - `vercel.json` : redirections, routes et en-têtes de sécurité pour Vercel (les anciennes adresses `/projects`, `/works`… mènent à la section correspondante) ;
 - `assets/` : portraits, créations (52, dont une vidéo dans `assets/videos/` en WebM et MP4), logos clients, statistiques et favicon ;

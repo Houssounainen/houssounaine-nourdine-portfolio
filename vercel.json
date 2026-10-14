@@ -17,6 +17,11 @@
       "source": "/v2/index.html",
       "destination": "/",
       "permanent": false
+    },
+    {
+      "source": "/projets",
+      "destination": "/#projets",
+      "permanent": false
     }
   ],
   "rewrites": [
