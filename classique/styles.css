@@ -1526,3 +1526,8 @@ html[data-theme="dark"] .theme-switch b { transform: translateX(16px); backgroun
   .mobile-bottom-nav a:hover,
   .mobile-bottom-nav a.active { transform: none; }
 }
+
+/* Logos des réseaux à la place des initiales (FB, IG, in) */
+.proof-logos { display: inline-flex; align-items: center; gap: 8px; }
+.proof-logos .brand-logo { width: 34px; height: 34px; }
+.contact-links .brand-logo { width: 18px; height: 18px; }
