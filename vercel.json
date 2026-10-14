@@ -46,7 +46,7 @@
     },
     {
       "source": "/classique/:route(expertise|journey|projects|works|clients|association|contact)",
-      "destination": "/classique/index.html"
+      "destination": "/classique"
     }
   ],
   "headers": [
