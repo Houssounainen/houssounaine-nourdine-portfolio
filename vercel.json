@@ -2,6 +2,23 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/association",
+      "destination": "/classique/association",
+      "permanent": false
+    },
+    {
+      "source": "/v2",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/v2/index.html",
+      "destination": "/",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/expertise",
@@ -24,12 +41,12 @@
       "destination": "/"
     },
     {
-      "source": "/association",
+      "source": "/contact",
       "destination": "/"
     },
     {
-      "source": "/contact",
-      "destination": "/"
+      "source": "/classique/:route(expertise|journey|projects|works|clients|association|contact)",
+      "destination": "/classique"
     }
   ],
   "headers": [

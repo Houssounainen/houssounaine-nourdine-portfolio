@@ -116,27 +116,27 @@ const translations = {
 };
 
 const clients = [
-  { name: "Raiky", logo: "assets/logos/raiky.jpg", sector: ["Agence & digital", "Agency & digital"], status: "current" },
-  { name: "Tulear Fitness Club", logo: "assets/logos/tulear-fitness.jpg", sector: ["Fitness", "Fitness"], status: "current" },
-  { name: "Univpass", logo: "assets/logos/univpass.jpg", sector: ["EdTech", "EdTech"], status: "current" },
-  { name: "Le Jardin Tuléar", logo: "assets/logos/le-jardin.jpg", sector: ["Restaurant", "Restaurant"], status: "current" },
-  { name: "Indian Basket", logo: "assets/logos/indian-basket.jpg", sector: ["Commerce", "Retail"], status: "current" },
-  { name: "Homeopharma Tuléar", logo: "assets/logos/homeopharma.jpg", sector: ["Bien-être", "Wellness"], status: "current" },
-  { name: "Total Tools Shop Tuléar", logo: "assets/logos/total-tools.jpg", sector: ["Outillage", "Tools"], status: "current" },
-  { name: "WEDIS Tuléar", logo: "assets/logos/wedis.jpg", sector: ["Télévision & services", "TV & services"], status: "current" },
-  { name: "Shain Lodge", logo: "assets/logos/shain-lodge.jpg", sector: ["Tourisme", "Tourism"], status: "current" },
-  { name: "Raiky Academy", logo: "assets/logos/raiky-academy.jpg", sector: ["Formation", "Training"], status: "current" },
-  { name: "Mad Sud Voyage", logo: "assets/logos/mad-sud-voyage.jpg", sector: ["Voyage", "Travel"], status: "current" },
-  { name: "Quincaillerie Tayyebi Tuléar", logo: "assets/logos/quincaillerie-tayyebi.jpg", sector: ["Quincaillerie", "Hardware"], status: "current" },
-  { name: "Tranombarotra Moïse", logo: "assets/logos/tranombarotra-moise.jpg", sector: ["Commerce", "Retail"], status: "current" },
-  { name: "Gass’Kaly", logo: "assets/logos/gass-kaly.jpg", sector: ["Traiteur", "Catering"], status: "current" },
-  { name: "Escapade — Hôtel & Restaurant", logo: "assets/logos/escapade.jpg", sector: ["Hôtellerie", "Hospitality"], status: "current" },
-  { name: "Prolavage Tuléar", logo: "assets/logos/prolavage.jpg", sector: ["Services", "Services"], status: "current" },
-  { name: "Sunset Madiorano", logo: "assets/logos/sunset-madiorano.jpg", sector: ["Tourisme", "Tourism"], status: "current" },
-  { name: "La Signature de Hoby", logo: "assets/logos/signature-hoby.jpg", sector: ["Mode & création", "Fashion & design"], status: "current" },
-  { name: "Marina Blue", logo: "assets/logos/marina-blue.jpg", sector: ["Tourisme", "Tourism"], status: "former" },
-  { name: "Quincaillerie Vao2 Sanfil Tuléar", logo: "assets/logos/vao2.jpg", sector: ["Quincaillerie", "Hardware"], status: "former" },
-  { name: "KS Beauty Toliara", logo: "assets/logos/ks-beauty.jpg", sector: ["Beauté", "Beauty"], status: "former" }
+  { name: "Raiky", logo: "/assets/logos/raiky.jpg", sector: ["Agence & digital", "Agency & digital"], status: "current" },
+  { name: "Tulear Fitness Club", logo: "/assets/logos/tulear-fitness.jpg", sector: ["Fitness", "Fitness"], status: "current" },
+  { name: "Univpass", logo: "/assets/logos/univpass.jpg", sector: ["EdTech", "EdTech"], status: "current" },
+  { name: "Le Jardin Tuléar", logo: "/assets/logos/le-jardin.jpg", sector: ["Restaurant", "Restaurant"], status: "current" },
+  { name: "Indian Basket", logo: "/assets/logos/indian-basket.jpg", sector: ["Commerce", "Retail"], status: "current" },
+  { name: "Homeopharma Tuléar", logo: "/assets/logos/homeopharma.jpg", sector: ["Bien-être", "Wellness"], status: "current" },
+  { name: "Total Tools Shop Tuléar", logo: "/assets/logos/total-tools.jpg", sector: ["Outillage", "Tools"], status: "current" },
+  { name: "WEDIS Tuléar", logo: "/assets/logos/wedis.jpg", sector: ["Télévision & services", "TV & services"], status: "current" },
+  { name: "Shain Lodge", logo: "/assets/logos/shain-lodge.jpg", sector: ["Tourisme", "Tourism"], status: "current" },
+  { name: "Raiky Academy", logo: "/assets/logos/raiky-academy.jpg", sector: ["Formation", "Training"], status: "current" },
+  { name: "Mad Sud Voyage", logo: "/assets/logos/mad-sud-voyage.jpg", sector: ["Voyage", "Travel"], status: "current" },
+  { name: "Quincaillerie Tayyebi Tuléar", logo: "/assets/logos/quincaillerie-tayyebi.jpg", sector: ["Quincaillerie", "Hardware"], status: "current" },
+  { name: "Tranombarotra Moïse", logo: "/assets/logos/tranombarotra-moise.jpg", sector: ["Commerce", "Retail"], status: "current" },
+  { name: "Gass’Kaly", logo: "/assets/logos/gass-kaly.jpg", sector: ["Traiteur", "Catering"], status: "current" },
+  { name: "Escapade — Hôtel & Restaurant", logo: "/assets/logos/escapade.jpg", sector: ["Hôtellerie", "Hospitality"], status: "current" },
+  { name: "Prolavage Tuléar", logo: "/assets/logos/prolavage.jpg", sector: ["Services", "Services"], status: "current" },
+  { name: "Sunset Madiorano", logo: "/assets/logos/sunset-madiorano.jpg", sector: ["Tourisme", "Tourism"], status: "current" },
+  { name: "La Signature de Hoby", logo: "/assets/logos/signature-hoby.jpg", sector: ["Mode & création", "Fashion & design"], status: "current" },
+  { name: "Marina Blue", logo: "/assets/logos/marina-blue.jpg", sector: ["Tourisme", "Tourism"], status: "former" },
+  { name: "Quincaillerie Vao2 Sanfil Tuléar", logo: "/assets/logos/vao2.jpg", sector: ["Quincaillerie", "Hardware"], status: "former" },
+  { name: "KS Beauty Toliara", logo: "/assets/logos/ks-beauty.jpg", sector: ["Beauté", "Beauty"], status: "former" }
 ];
 
 const workSectors = {
@@ -149,46 +149,46 @@ const workSectors = {
 };
 
 const works = [
-  { id: 1, src: "assets/works/01-indian-basket-italie.jpg", client: "Indian Basket", category: "retail", format: "square", title: ["Campagne teaser — Saveurs d’Italie", "Teaser campaign — Flavours of Italy"] },
-  { id: 2, src: "assets/works/02-indian-basket-mango.jpg", client: "Indian Basket", category: "retail", format: "square", featured: true, title: ["Campagne produit — Mango", "Product campaign — Mango"] },
-  { id: 3, src: "assets/works/03-indian-basket-mms.jpg", client: "Indian Basket", category: "retail", format: "portrait", featured: true, title: ["Campagne produit — M&M’s", "Product campaign — M&M’s"] },
-  { id: 4, src: "assets/works/04-indian-basket-gato.jpg", client: "Indian Basket", category: "retail", format: "square", featured: true, title: ["Campagne produit — Gato", "Product campaign — Gato"] },
-  { id: 5, src: "assets/works/05-vao2-grillage-pvc.jpg", client: "Quincaillerie Vao2 Tuléar", category: "hardware", format: "landscape", featured: true, title: ["Arrivage — Grillage moustiquaire", "New arrival — Insect screen"] },
-  { id: 6, src: "assets/works/06-vao2-papier-abrasif.jpg", client: "Quincaillerie Vao2 Tuléar", category: "hardware", format: "landscape", title: ["Catalogue produit — Papier abrasif", "Product catalogue — Sandpaper"] },
-  { id: 7, src: "assets/works/07-indian-basket-independance.jpg", client: "Indian Basket", category: "retail", format: "square", title: ["Fête de l’Indépendance", "Independence Day"] },
-  { id: 8, src: "assets/works/08-indian-basket-glace.jpg", client: "Indian Basket", category: "retail", format: "portrait", title: ["Nouveauté — Glace", "New product — Ice cream"] },
-  { id: 9, src: "assets/works/09-signature-academy.jpg", client: "La Signature de Hoby", category: "creative", format: "square", featured: true, title: ["Annonce événementielle — Academy", "Event announcement — Academy"] },
-  { id: 10, src: "assets/works/10-signature-hoby.jpg", client: "La Signature de Hoby", category: "creative", format: "square", featured: true, title: ["Présentation de marque", "Brand presentation"] },
-  { id: 11, src: "assets/works/11-vao2-abattant.jpg", client: "Quincaillerie Vao2 Tuléar", category: "hardware", format: "landscape", title: ["Arrivage — Abattant WC", "New arrival — Toilet seat"] },
-  { id: 12, src: "assets/works/12-homeopharma-soiree.jpg", client: "Homeopharma Tuléar", category: "wellness", format: "portrait", title: ["Routine bien-être du soir", "Evening wellness routine"] },
-  { id: 13, src: "assets/works/13-vao2-eid.jpg", client: "Quincaillerie Vao2 Tuléar", category: "hardware", format: "square", title: ["Communication événementielle — Eid", "Event communication — Eid"] },
-  { id: 14, src: "assets/works/14-homeopharma-neem.jpg", client: "Homeopharma Tuléar", category: "wellness", format: "portrait", featured: true, title: ["Campagne soin du visage", "Facial care campaign"] },
-  { id: 15, src: "assets/works/15-total-testeur.jpg", client: "Total Tools Shop Tuléar", category: "hardware", format: "landscape", title: ["Fiche produit — Testeur digital", "Product card — Digital tester"] },
-  { id: 16, src: "assets/works/16-homeopharma-infusion.jpg", client: "Homeopharma Tuléar", category: "wellness", format: "portrait", featured: true, title: ["Campagne infusion après-repas", "After-meal infusion campaign"] },
-  { id: 17, src: "assets/works/17-homeopharma-cernes.jpg", client: "Homeopharma Tuléar", category: "wellness", format: "square", title: ["Campagne sérum anti-cernes", "Eye serum campaign"] },
-  { id: 18, src: "assets/works/18-total-groupe.jpg", client: "Total Tools Shop Tuléar", category: "hardware", format: "square", featured: true, title: ["Campagne groupe électrogène", "Generator campaign"] },
-  { id: 19, src: "assets/works/19-total-agrafeuse.jpg", client: "Total Tools Shop Tuléar", category: "hardware", format: "landscape", title: ["Fiche produit — Agrafeuse", "Product card — Staple gun"] },
-  { id: 20, src: "assets/works/20-total-decametre.jpg", client: "Total Tools Shop Tuléar", category: "hardware", format: "portrait", title: ["Nouveauté — Décamètre", "New product — Measuring tape"] },
-  { id: 21, src: "assets/works/21-shain-cheat-meal.jpg", client: "Shain Lodge", category: "hospitality", format: "square", title: ["Campagne restauration — Cheat meal", "Dining campaign — Cheat meal"] },
-  { id: 22, src: "assets/works/22-homeopharma-ete.jpg", client: "Homeopharma Tuléar", category: "wellness", format: "portrait", title: ["Campagne saisonnière — Été", "Seasonal campaign — Summer"] },
-  { id: 23, src: "assets/works/23-shain-salary-nord.jpg", client: "Shain Lodge", category: "hospitality", format: "square", featured: true, title: ["Destination — Salary Nord", "Destination — Salary Nord"] },
-  { id: 24, src: "assets/works/24-shain-restauration.jpg", client: "Shain Lodge", category: "hospitality", format: "square", featured: true, title: ["Campagne restauration", "Dining campaign"] },
-  { id: 25, src: "assets/works/25-gass-kaly-mariages.jpg", client: "Gass’Kaly", category: "hospitality", format: "square", featured: true, title: ["Campagne mariage & réception", "Wedding & reception campaign"] },
-  { id: 26, src: "assets/works/26-gass-kaly-client.jpg", client: "Gass’Kaly", category: "hospitality", format: "square", title: ["Preuve sociale — Client satisfait", "Social proof — Happy client"] },
-  { id: 27, src: "assets/works/27-ks-beauty-soins.jpg", client: "KS Beauty Toliara", category: "wellness", format: "square", featured: true, title: ["Campagne soins du visage", "Facial treatment campaign"] },
-  { id: 28, src: "assets/works/28-homeopharma-peau.jpg", client: "Homeopharma Tuléar", category: "wellness", format: "square", title: ["Campagne SOS peau", "Skin SOS campaign"] },
-  { id: 29, src: "assets/works/29-gass-kaly-saveurs.jpg", client: "Gass’Kaly", category: "hospitality", format: "square", featured: true, title: ["Campagne culinaire — Saveurs raffinées", "Culinary campaign — Refined flavours"] },
-  { id: 30, src: "assets/works/30-marina-blue-chandeleur.jpg", client: "Marina Blue", category: "hospitality", format: "square", title: ["Événement enfants — Chandeleur", "Children’s event — Candlemas"] },
-  { id: 31, src: "assets/works/31-wedis-weekend.jpg", client: "WEDIS Tuléar", category: "media", format: "square", title: ["Campagne week-end", "Weekend campaign"] },
-  { id: 32, src: "assets/works/32-wedis-match.jpg", client: "WEDIS Tuléar", category: "media", format: "square", featured: true, title: ["Affiche sportive — France vs Maroc", "Sports poster — France vs Morocco"] },
-  { id: 33, src: "assets/works/33-le-jardin-assiette.jpg", client: "Le Jardin Tuléar", category: "hospitality", format: "portrait", featured: true, title: ["Campagne culinaire — Le kiff pur", "Culinary campaign — Pure enjoyment"] },
-  { id: 34, src: "assets/works/34-le-jardin-assiette-vertical.jpg", client: "Le Jardin Tuléar", category: "hospitality", format: "portrait", title: ["Déclinaison culinaire", "Culinary adaptation"] },
-  { id: 35, src: "assets/works/35-ks-beauty-hydrafacial.jpg", client: "KS Beauty Toliara", category: "wellness", format: "square", title: ["Campagne Hydrafacial", "Hydrafacial campaign"] },
-  { id: 36, src: "assets/works/36-wedis-programmes.jpg", client: "WEDIS Tuléar", category: "media", format: "square", title: ["Campagne programmes du week-end", "Weekend programming campaign"] },
-  { id: 37, src: "assets/works/37-ks-beauty-prendre-soin.jpg", client: "KS Beauty Toliara", category: "wellness", format: "square", title: ["Campagne prendre soin de soi", "Self-care campaign"] },
-  { id: 38, src: "assets/works/38-le-jardin-aubergine.jpg", client: "Le Jardin Tuléar", category: "hospitality", format: "portrait", featured: true, title: ["Campagne culinaire — Aubergine", "Culinary campaign — Aubergine"] },
-  { id: 39, src: "assets/works/39-wedis-bonus-internet.jpg", client: "WEDIS Tuléar", category: "media", format: "square", featured: true, title: ["Campagne promotionnelle — Bonus internet", "Promotional campaign — Internet bonus"] },
-  { id: 40, src: "assets/works/40-wedis-film-serie-sport.jpg", client: "WEDIS Tuléar", category: "media", format: "square", title: ["Campagne choix de programmes", "Programming choice campaign"] }
+  { id: 1, src: "/assets/works/01-indian-basket-italie.jpg", client: "Indian Basket", category: "retail", format: "square", title: ["Campagne teaser — Saveurs d’Italie", "Teaser campaign — Flavours of Italy"] },
+  { id: 2, src: "/assets/works/02-indian-basket-mango.jpg", client: "Indian Basket", category: "retail", format: "square", featured: true, title: ["Campagne produit — Mango", "Product campaign — Mango"] },
+  { id: 3, src: "/assets/works/03-indian-basket-mms.jpg", client: "Indian Basket", category: "retail", format: "portrait", featured: true, title: ["Campagne produit — M&M’s", "Product campaign — M&M’s"] },
+  { id: 4, src: "/assets/works/04-indian-basket-gato.jpg", client: "Indian Basket", category: "retail", format: "square", featured: true, title: ["Campagne produit — Gato", "Product campaign — Gato"] },
+  { id: 5, src: "/assets/works/05-vao2-grillage-pvc.jpg", client: "Quincaillerie Vao2 Tuléar", category: "hardware", format: "landscape", featured: true, title: ["Arrivage — Grillage moustiquaire", "New arrival — Insect screen"] },
+  { id: 6, src: "/assets/works/06-vao2-papier-abrasif.jpg", client: "Quincaillerie Vao2 Tuléar", category: "hardware", format: "landscape", title: ["Catalogue produit — Papier abrasif", "Product catalogue — Sandpaper"] },
+  { id: 7, src: "/assets/works/07-indian-basket-independance.jpg", client: "Indian Basket", category: "retail", format: "square", title: ["Fête de l’Indépendance", "Independence Day"] },
+  { id: 8, src: "/assets/works/08-indian-basket-glace.jpg", client: "Indian Basket", category: "retail", format: "portrait", title: ["Nouveauté — Glace", "New product — Ice cream"] },
+  { id: 9, src: "/assets/works/09-signature-academy.jpg", client: "La Signature de Hoby", category: "creative", format: "square", featured: true, title: ["Annonce événementielle — Academy", "Event announcement — Academy"] },
+  { id: 10, src: "/assets/works/10-signature-hoby.jpg", client: "La Signature de Hoby", category: "creative", format: "square", featured: true, title: ["Présentation de marque", "Brand presentation"] },
+  { id: 11, src: "/assets/works/11-vao2-abattant.jpg", client: "Quincaillerie Vao2 Tuléar", category: "hardware", format: "landscape", title: ["Arrivage — Abattant WC", "New arrival — Toilet seat"] },
+  { id: 12, src: "/assets/works/12-homeopharma-soiree.jpg", client: "Homeopharma Tuléar", category: "wellness", format: "portrait", title: ["Routine bien-être du soir", "Evening wellness routine"] },
+  { id: 13, src: "/assets/works/13-vao2-eid.jpg", client: "Quincaillerie Vao2 Tuléar", category: "hardware", format: "square", title: ["Communication événementielle — Eid", "Event communication — Eid"] },
+  { id: 14, src: "/assets/works/14-homeopharma-neem.jpg", client: "Homeopharma Tuléar", category: "wellness", format: "portrait", featured: true, title: ["Campagne soin du visage", "Facial care campaign"] },
+  { id: 15, src: "/assets/works/15-total-testeur.jpg", client: "Total Tools Shop Tuléar", category: "hardware", format: "landscape", title: ["Fiche produit — Testeur digital", "Product card — Digital tester"] },
+  { id: 16, src: "/assets/works/16-homeopharma-infusion.jpg", client: "Homeopharma Tuléar", category: "wellness", format: "portrait", featured: true, title: ["Campagne infusion après-repas", "After-meal infusion campaign"] },
+  { id: 17, src: "/assets/works/17-homeopharma-cernes.jpg", client: "Homeopharma Tuléar", category: "wellness", format: "square", title: ["Campagne sérum anti-cernes", "Eye serum campaign"] },
+  { id: 18, src: "/assets/works/18-total-groupe.jpg", client: "Total Tools Shop Tuléar", category: "hardware", format: "square", featured: true, title: ["Campagne groupe électrogène", "Generator campaign"] },
+  { id: 19, src: "/assets/works/19-total-agrafeuse.jpg", client: "Total Tools Shop Tuléar", category: "hardware", format: "landscape", title: ["Fiche produit — Agrafeuse", "Product card — Staple gun"] },
+  { id: 20, src: "/assets/works/20-total-decametre.jpg", client: "Total Tools Shop Tuléar", category: "hardware", format: "portrait", title: ["Nouveauté — Décamètre", "New product — Measuring tape"] },
+  { id: 21, src: "/assets/works/21-shain-cheat-meal.jpg", client: "Shain Lodge", category: "hospitality", format: "square", title: ["Campagne restauration — Cheat meal", "Dining campaign — Cheat meal"] },
+  { id: 22, src: "/assets/works/22-homeopharma-ete.jpg", client: "Homeopharma Tuléar", category: "wellness", format: "portrait", title: ["Campagne saisonnière — Été", "Seasonal campaign — Summer"] },
+  { id: 23, src: "/assets/works/23-shain-salary-nord.jpg", client: "Shain Lodge", category: "hospitality", format: "square", featured: true, title: ["Destination — Salary Nord", "Destination — Salary Nord"] },
+  { id: 24, src: "/assets/works/24-shain-restauration.jpg", client: "Shain Lodge", category: "hospitality", format: "square", featured: true, title: ["Campagne restauration", "Dining campaign"] },
+  { id: 25, src: "/assets/works/25-gass-kaly-mariages.jpg", client: "Gass’Kaly", category: "hospitality", format: "square", featured: true, title: ["Campagne mariage & réception", "Wedding & reception campaign"] },
+  { id: 26, src: "/assets/works/26-gass-kaly-client.jpg", client: "Gass’Kaly", category: "hospitality", format: "square", title: ["Preuve sociale — Client satisfait", "Social proof — Happy client"] },
+  { id: 27, src: "/assets/works/27-ks-beauty-soins.jpg", client: "KS Beauty Toliara", category: "wellness", format: "square", featured: true, title: ["Campagne soins du visage", "Facial treatment campaign"] },
+  { id: 28, src: "/assets/works/28-homeopharma-peau.jpg", client: "Homeopharma Tuléar", category: "wellness", format: "square", title: ["Campagne SOS peau", "Skin SOS campaign"] },
+  { id: 29, src: "/assets/works/29-gass-kaly-saveurs.jpg", client: "Gass’Kaly", category: "hospitality", format: "square", featured: true, title: ["Campagne culinaire — Saveurs raffinées", "Culinary campaign — Refined flavours"] },
+  { id: 30, src: "/assets/works/30-marina-blue-chandeleur.jpg", client: "Marina Blue", category: "hospitality", format: "square", title: ["Événement enfants — Chandeleur", "Children’s event — Candlemas"] },
+  { id: 31, src: "/assets/works/31-wedis-weekend.jpg", client: "WEDIS Tuléar", category: "media", format: "square", title: ["Campagne week-end", "Weekend campaign"] },
+  { id: 32, src: "/assets/works/32-wedis-match.jpg", client: "WEDIS Tuléar", category: "media", format: "square", featured: true, title: ["Affiche sportive — France vs Maroc", "Sports poster — France vs Morocco"] },
+  { id: 33, src: "/assets/works/33-le-jardin-assiette.jpg", client: "Le Jardin Tuléar", category: "hospitality", format: "portrait", featured: true, title: ["Campagne culinaire — Le kiff pur", "Culinary campaign — Pure enjoyment"] },
+  { id: 34, src: "/assets/works/34-le-jardin-assiette-vertical.jpg", client: "Le Jardin Tuléar", category: "hospitality", format: "portrait", title: ["Déclinaison culinaire", "Culinary adaptation"] },
+  { id: 35, src: "/assets/works/35-ks-beauty-hydrafacial.jpg", client: "KS Beauty Toliara", category: "wellness", format: "square", title: ["Campagne Hydrafacial", "Hydrafacial campaign"] },
+  { id: 36, src: "/assets/works/36-wedis-programmes.jpg", client: "WEDIS Tuléar", category: "media", format: "square", title: ["Campagne programmes du week-end", "Weekend programming campaign"] },
+  { id: 37, src: "/assets/works/37-ks-beauty-prendre-soin.jpg", client: "KS Beauty Toliara", category: "wellness", format: "square", title: ["Campagne prendre soin de soi", "Self-care campaign"] },
+  { id: 38, src: "/assets/works/38-le-jardin-aubergine.jpg", client: "Le Jardin Tuléar", category: "hospitality", format: "portrait", featured: true, title: ["Campagne culinaire — Aubergine", "Culinary campaign — Aubergine"] },
+  { id: 39, src: "/assets/works/39-wedis-bonus-internet.jpg", client: "WEDIS Tuléar", category: "media", format: "square", featured: true, title: ["Campagne promotionnelle — Bonus internet", "Promotional campaign — Internet bonus"] },
+  { id: 40, src: "/assets/works/40-wedis-film-serie-sport.jpg", client: "WEDIS Tuléar", category: "media", format: "square", title: ["Campagne choix de programmes", "Programming choice campaign"] }
 ];
 
 const projectData = {
@@ -200,7 +200,7 @@ const projectData = {
     actions: [["Veille et couverture de l’actualité sportive", "Rédaction, création, programmation et publication", "Animation de communauté et analyse des performances", "Contenus viraux et collaborations sponsorisées"], ["Sports news monitoring and coverage", "Writing, creation, scheduling and publishing", "Community engagement and performance analysis", "Viral content and sponsored collaborations"]],
     results: [["Plus de 271 000 abonnés Facebook", "49 M de portée, du 1er janvier au 30 septembre 2024", "100,4 M de vues et 4,2 M d’interactions, du 1er janvier au 29 août 2026", "Une publication à 2,2 M de vues sur la période 2026", "28 publications virales et jusqu’à 60 000 J’aime sur une publication", "50 inscriptions via le code 1xBet HOUSSOU9"], ["Over 271,000 Facebook followers", "49M reach from January 1 to September 30, 2024", "100.4M views and 4.2M interactions from January 1 to August 29, 2026", "One post reached 2.2M views during the 2026 period", "28 viral posts and up to 60,000 likes on one post", "50 registrations through 1xBet code HOUSSOU9"]],
     links: [{ label: "Facebook", url: "https://www.facebook.com/houssounainen/" }, { label: "Instagram", url: "https://www.instagram.com/houssounaine_sfcb/" }],
-    media: ["assets/stats-facebook-2026-a.webp", "assets/stats-facebook-2026-b.webp"]
+    media: ["/assets/stats-facebook-2026-a.webp", "/assets/stats-facebook-2026-b.webp"]
   },
   raiky: {
     title: "Raiky", type: ["Management & Community Management", "Management & Community Management"],
@@ -297,6 +297,7 @@ let currentWorkId = null;
 let visibleWorks = [];
 let currentRoute = "about";
 
+const BASE_PATH = "/classique";
 const ROUTES = Object.freeze(["about", "expertise", "journey", "projects", "works", "clients", "association", "contact"]);
 const ROUTE_PATHS = Object.freeze({ about: "", expertise: "expertise", journey: "journey", projects: "projects", works: "works", clients: "clients", association: "association", contact: "contact" });
 const ROUTE_TITLES = Object.freeze({
@@ -318,7 +319,7 @@ function routeFromLocation() {
   const hashRoute = window.location.hash.match(/^#\/?([a-z-]+)/)?.[1];
   if (ROUTES.includes(hashRoute)) return hashRoute;
   if (cleanRoutesEnabled()) {
-    const path = window.location.pathname.replace(/^\/+|\/+$/g, "");
+    const path = window.location.pathname.replace(BASE_PATH, "").replace(/^\/+|\/+$/g, "");
     const route = Object.keys(ROUTE_PATHS).find((key) => ROUTE_PATHS[key] === path);
     if (route) return route;
   }
@@ -327,7 +328,7 @@ function routeFromLocation() {
 
 function routeUrl(route) {
   if (cleanRoutesEnabled()) {
-    const path = route === "about" ? "/" : `/${ROUTE_PATHS[route]}`;
+    const path = route === "about" ? BASE_PATH : `${BASE_PATH}/${ROUTE_PATHS[route]}`;
     return currentLanguage === "en" ? `${path}?lang=en` : path;
   }
   return `#/${route}`;
@@ -336,7 +337,7 @@ function routeUrl(route) {
 function updateDocumentMetadata() {
   const label = ROUTE_TITLES[currentLanguage][currentRoute];
   const pageTitle = `${label} — Houssounaine Nourdine`;
-  const routePath = currentRoute === "about" ? "/" : `/${ROUTE_PATHS[currentRoute]}`;
+  const routePath = currentRoute === "about" ? BASE_PATH : `${BASE_PATH}/${ROUTE_PATHS[currentRoute]}`;
   const canonicalUrl = new URL(routePath, SITE_ORIGIN);
   if (currentLanguage === "en") canonicalUrl.searchParams.set("lang", "en");
 

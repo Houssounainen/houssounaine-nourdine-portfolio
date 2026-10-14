@@ -28,21 +28,18 @@ Portfolio personnel bilingue de Houssounaine Nourdine, Lead Community Manager sp
 
 ## Fichiers
 
-- `index.html` : structure et contenus ;
-- `styles.css` : identité visuelle, responsive design et thèmes ;
-- `script.js` : traduction, filtres, dialogues, formulaire et interactions ;
-- `motion.js` / `motion.css` : animations d’apparition, halo, inclinaison des cartes ;
-- `wow.js` / `wow.css` : préchargeur, constellation, bandeau clients, palette de commandes, transition de thème ;
-- `v2/` : proposition de refonte « Édition 2026 » (page unique, grille bento, typographie cinétique) accessible sur `/v2`, avec les mêmes contenus (`v2/data.js`) ;
-- `vercel.json` : routes propres et en-têtes de sécurité pour Vercel ;
+- `index.html` : page d’accueil « Édition 2026 » (page unique, grille bento, typographie cinétique) ;
+- `v2/` : styles (`v2.css`), interactions (`v2.js`) et contenus bilingues partagés (`data.js`) de la page d’accueil ;
+- `classique/` : ancienne version multi-rubriques, accessible sur `/classique`, avec l’espace AEDBVT sur `/classique/association` ;
+- `vercel.json` : redirections, routes et en-têtes de sécurité pour Vercel (les anciennes adresses `/projects`, `/works`… mènent à la section correspondante) ;
 - `assets/` : portraits, créations, logos clients, statistiques et favicon ;
 - `robots.txt` et `sitemap.xml` : indexation.
 
 ## Modifier le contenu
 
-Les textes statiques se trouvent dans `index.html`. Les traductions, études de cas, créations et clients sont centralisés dans `script.js`.
+Les textes de la page d’accueil sont dans `index.html` ; les traductions, études de cas, créations et clients dans `v2/data.js`. L’ancienne version garde ses propres données dans `classique/script.js`.
 
-Pour activer Google Analytics 4, renseigner la constante `GA_MEASUREMENT_ID` au début de `script.js`.
+Google Analytics 4 (`GA_MEASUREMENT_ID` dans `v2/v2.js` et `classique/script.js`) ne se charge qu’après acceptation du bandeau de confidentialité ; le choix est partagé entre les deux versions et modifiable via « Confidentialité → Gérer les cookies ».
 
 ## Hébergement statique
 
@@ -52,4 +49,4 @@ Le formulaire prépare un e-mail dans l’application du visiteur et ne stocke a
 
 Adresse officielle : [houssounainenourdine.vercel.app](https://houssounainenourdine.vercel.app/).
 
-Le site est déployé automatiquement sur Vercel depuis la branche `main`. Les rubriques utilisent des URL propres (`/projects`, `/works`, `/clients`, etc.).
+Le site est déployé automatiquement sur Vercel depuis la branche `main`. Les anciennes URL de rubriques (`/projects`, `/works`, `/clients`, etc.) ouvrent la page d’accueil sur la section correspondante ; `/association` redirige vers `/classique/association`.
