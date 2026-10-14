@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="fr" data-theme="light">
+<html lang="fr" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f2eee5">
+  <meta name="theme-color" content="#050b14">
   <meta name="description" content="Portfolio de Houssounaine Nourdine, Lead Community Manager spécialisé en marketing digital, relationnel et d’influence à Toliara, Madagascar.">
   <meta name="author" content="Houssounaine Nourdine">
   <meta name="google-site-verification" content="zaMI-RB9JueBIQVOzMstAiMLGIBl3FtRl6ycM8WiK4Q" />
@@ -52,20 +52,38 @@
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500..900;1,800..900&family=Kaushan+Script&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/v2/v2.css">
   <script>
     (function () {
       try {
         var stored = localStorage.getItem("v2-theme");
-        var dark = stored ? stored === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
-        document.documentElement.dataset.theme = dark ? "dark" : "light";
+        document.documentElement.dataset.theme = stored === "light" ? "light" : "dark";
       } catch (error) { /* stockage indisponible */ }
       document.documentElement.classList.add("js");
     })();
   </script>
 </head>
 <body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="i-facebook" viewBox="0 0 24 24"><path fill="currentColor" d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.69.24 2.69.24v2.97h-1.52c-1.49 0-1.96.93-1.96 1.89v2.25h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07Z"/></symbol>
+    <symbol id="i-instagram" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.3"/></g><circle cx="17.6" cy="6.4" r="1.3" fill="currentColor"/></symbol>
+    <symbol id="i-linkedin" viewBox="0 0 24 24"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z"/></symbol>
+    <symbol id="i-whatsapp" viewBox="0 0 32 32"><path fill="currentColor" d="M16 3a12.7 12.7 0 0 0-11 19.1L3.3 28.7l6.8-1.8A12.8 12.8 0 1 0 16 3Zm0 23.2c-2 0-3.9-.5-5.5-1.5l-.4-.2-4 1 1.1-3.9-.2-.4a10.3 10.3 0 1 1 9 5Zm5.7-7.7c-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-1.8-.9-3-1.6-4.2-3.7-.3-.6.3-.5.9-1.7.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 3s1.3 3.5 1.5 3.8c.2.2 2.6 4 6.4 5.6.9.4 1.6.6 2.1.8.9.3 1.7.2 2.4.1.7-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.2-.3-.2-.6-.4Z"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="19" height="15" rx="3"/><path d="m3.5 7 8.5 6 8.5-6"/></g></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19M12 2.5c2.6 2.8 3.9 6 3.9 9.5S14.6 18.7 12 21.5M12 2.5C9.4 5.3 8.1 8.5 8.1 12s1.3 6.7 3.9 9.5"/></g></symbol>
+    <symbol id="i-verified" viewBox="0 0 24 24"><path fill="#38bdf8" d="m12 1 2.6 2.1 3.3-.3 1 3.2 2.9 1.6-1 3.2 1 3.2-2.9 1.6-1 3.2-3.3-.3L12 23l-2.6-2.1-3.3.3-1-3.2-2.9-1.6 1-3.2-1-3.2L5.1 6.4l1-3.2 3.3.3Z"/><path fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="m7.6 12.2 3 3 5.8-6"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20.5a7 7 0 0 1 14 0"/></g></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/></g></symbol>
+    <symbol id="i-route" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8.5 18H15a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h6.5"/></g></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="m4 18 5.5-5.5 3.5 3.5 2.5-2.5L20 18"/></g></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0M16 5a3 3 0 0 1 0 6M17.5 14a5 5 0 0 1 3.5 6"/></g></symbol>
+    <symbol id="i-cap" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m2 9 10-5 10 5-10 5Z"/><path d="M6 11.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-4.5"/></g></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M21.5 2.5 10 14M21.5 2.5 14.5 21.5 10 14 2.5 9.5Z"/></symbol>
+    <symbol id="i-scan" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3M7 12h10"/></symbol>
+  </svg>
   <a class="skip" href="#main" data-i18n="skip">Aller au contenu</a>
   <div class="progress" aria-hidden="true"></div>
   <div class="cursor" aria-hidden="true"><span></span></div>
@@ -75,39 +93,14 @@
       <img src="/assets/profile.webp" alt="" width="40" height="40">
       <span><strong>H. Nourdine</strong><small class="clock" data-clock>Toliara —:—</small></span>
     </a>
-    <nav class="bar-nav" aria-label="Sections">
-      <a href="#profil" data-i18n="navAbout">À propos</a>
-      <a href="#expertises" data-i18n="navExpertise">Expertises</a>
-      <a href="#parcours" data-i18n="navJourney">Parcours</a>
-      <a href="#projets" data-i18n="navProjects">Projets</a>
-      <a href="#creations" data-i18n="navWorks">Créations</a>
-      <a href="#clients" data-i18n="navClients">Clients</a>
-      <a href="#contact" data-i18n="navContact">Me contacter</a>
-      <span class="bar-nav-pill" aria-hidden="true"></span>
-    </nav>
     <div class="bar-tools">
       <button class="chip" type="button" data-lang-toggle><span class="lang-now">FR</span><span aria-hidden="true">/</span><span class="lang-alt">EN</span></button>
       <button class="chip chip-icon" type="button" data-theme-toggle>
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
       </button>
-      <button class="chip chip-icon menu-toggle" type="button" aria-expanded="false" aria-controls="sheet">
-        <span></span><span></span>
-      </button>
     </div>
   </header>
 
-  <div class="sheet" id="sheet" hidden>
-    <nav aria-label="Menu">
-      <a href="#profil"><i>01</i><span data-i18n="navAbout">À propos</span></a>
-      <a href="#expertises"><i>02</i><span data-i18n="navExpertise">Expertises</span></a>
-      <a href="#parcours"><i>03</i><span data-i18n="navJourney">Parcours</span></a>
-      <a href="#projets"><i>04</i><span data-i18n="navProjects">Projets</span></a>
-      <a href="#creations"><i>05</i><span data-i18n="navWorks">Créations</span></a>
-      <a href="#clients"><i>06</i><span data-i18n="navClients">Clients</span></a>
-      <a href="#association"><i>07</i><span data-i18n="navAssociation">Association</span></a>
-      <a href="#contact"><i>08</i><span data-i18n="navContact">Me contacter</span></a>
-    </nav>
-  </div>
 
   <main id="main">
     <!-- HERO -->
@@ -118,7 +111,8 @@
       </div>
 
       <h1 class="hero-title" id="hero-title">
-        <span class="sr-only"><span data-i18n="heroGreeting">Bonjour, je suis</span> Houssounaine Nourdine.</span>
+        <span class="greeting" data-i18n="heroGreeting">Bonjour, je suis</span>
+        <span class="sr-only">Houssounaine Nourdine.</span>
         <span class="line" aria-hidden="true" data-split>Houssounaine</span>
         <span class="line line-2" aria-hidden="true"><span data-split>Nourdine</span><em class="dot">.</em></span>
       </h1>
@@ -131,12 +125,24 @@
 
       <div class="hero-foot">
         <div class="hero-copy">
+          <div class="id-badge">
+            <img src="/assets/profile.webp" alt="" width="56" height="56">
+            <div>
+              <strong>Houssounaine <span>Nourdine</span> <svg class="verified" role="img" aria-label="Profil vérifié"><use href="#i-verified"/></svg></strong>
+              <small>Lead Community Manager · Raiky</small>
+              <span class="follow"><span data-x="follow">Suivez-moi</span>
+                <a href="https://www.facebook.com/houssounainen/" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><svg class="ico"><use href="#i-facebook"/></svg></a>
+                <a href="https://www.instagram.com/houssounaine_sfcb/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg class="ico"><use href="#i-instagram"/></svg></a>
+                <a href="https://mg.linkedin.com/in/houssounaine-nourdine-341108290" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><svg class="ico"><use href="#i-linkedin"/></svg></a>
+              </span>
+            </div>
+          </div>
           <p class="hero-role"><span data-i18n="heroRole">Marketing digital, relationnel et d’influence</span></p>
           <p class="rotator" aria-hidden="true"><span class="rotator-word" data-rotate="tagStrategy,tagLeadership,tagInfluence">Stratégie social media</span></p>
           <p class="hero-intro" data-i18n="heroIntro">J’aide les marques à structurer leur présence digitale, à développer des communautés engagées et à transformer leur visibilité en résultats mesurables.</p>
         </div>
         <div class="hero-actions">
-          <a class="btn btn-solid magnetic" href="#projets"><span data-i18n="viewProjects">Voir mes projets</span><span aria-hidden="true">↘</span></a>
+          <a class="btn btn-solid btn-pill magnetic" href="#projets"><span data-i18n="viewProjects">Voir mes projets</span><span class="btn-arrow" aria-hidden="true"><svg><use href="#i-arrow"/></svg></span></a>
           <a class="btn btn-line magnetic" href="#contact"><span data-i18n="contactMe">Me contacter</span></a>
         </div>
       </div>
@@ -148,7 +154,7 @@
     </div>
 
     <!-- PROFIL / BENTO -->
-    <section class="section" id="profil" aria-labelledby="profil-title">
+    <section class="section" id="profil" data-num="01" aria-labelledby="profil-title">
       <header class="head">
         <p class="label"><i>01</i><span data-i18n="aboutKicker">À propos</span></p>
         <h2 id="profil-title" class="reveal-words" data-i18n="aboutTitle">Une vision créative, structurée et orientée résultats.</h2>
@@ -226,7 +232,7 @@
     </section>
 
     <!-- EXPERTISES -->
-    <section class="section section-ink" id="expertises" aria-labelledby="expertises-title">
+    <section class="section section-ink" id="expertises" data-num="02" aria-labelledby="expertises-title">
       <header class="head head-split">
         <div>
           <p class="label"><i>02</i><span data-i18n="expertiseKicker">Expertises</span></p>
@@ -264,7 +270,7 @@
     </section>
 
     <!-- PARCOURS -->
-    <section class="section" id="parcours" aria-labelledby="parcours-title">
+    <section class="section" id="parcours" data-num="03" aria-labelledby="parcours-title">
       <header class="head head-split">
         <div>
           <p class="label"><i>03</i><span data-i18n="journeyKicker">Parcours</span></p>
@@ -290,7 +296,7 @@
     </section>
 
     <!-- PROJETS -->
-    <section class="section" id="projets" aria-labelledby="projets-title">
+    <section class="section" id="projets" data-num="04" aria-labelledby="projets-title">
       <header class="head head-split">
         <div>
           <p class="label"><i>04</i><span data-i18n="projectsKicker">Projets sélectionnés</span></p>
@@ -308,7 +314,7 @@
     </section>
 
     <!-- CRÉATIONS -->
-    <section class="section section-ink" id="creations" aria-labelledby="creations-title">
+    <section class="section section-ink" id="creations" data-num="05" aria-labelledby="creations-title">
       <header class="head head-split">
         <div>
           <p class="label"><i>05</i><span data-i18n="worksKicker">Créations graphiques</span></p>
@@ -320,12 +326,12 @@
         <div class="filters" role="group" aria-label="Filtrer les créations par secteur" data-work-filters></div>
         <p class="mono works-count" data-works-count aria-live="polite"></p>
       </div>
-      <div class="masonry" data-works></div>
+      <div class="frame"><div class="masonry" data-works></div></div>
       <div class="center"><button class="btn btn-line btn-invert" type="button" data-works-toggle data-i18n="worksViewAll">Voir toutes les réalisations</button></div>
     </section>
 
     <!-- CLIENTS -->
-    <section class="section" id="clients" aria-labelledby="clients-title">
+    <section class="section" id="clients" data-num="06" aria-labelledby="clients-title">
       <header class="head head-split">
         <div>
           <p class="label"><i>06</i><span data-i18n="clientsKicker">Portefeuille clients</span></p>
@@ -341,7 +347,7 @@
     </section>
 
     <!-- ASSOCIATION -->
-    <section class="section" id="association" aria-labelledby="association-title">
+    <section class="section" id="association" data-num="07" aria-labelledby="association-title">
       <div class="assoc reveal">
         <img src="/assets/aedbvt-logo.webp" alt="Logo de l’AEDBVT" width="512" height="512" loading="lazy">
         <div>
@@ -355,7 +361,7 @@
     </section>
 
     <!-- CONTACT -->
-    <section class="section contact" id="contact" aria-labelledby="contact-title">
+    <section class="section contact" id="contact" data-num="08" aria-labelledby="contact-title">
       <p class="label"><i>08</i><span data-i18n="contactKicker">Construisons la suite</span></p>
       <h2 id="contact-title" class="contact-title reveal-words" data-i18n="contactTitle">Une opportunité, une mission ou une collaboration ?</h2>
       <div class="contact-grid">
@@ -366,11 +372,11 @@
             <small data-x="copyHint">Cliquer pour copier</small>
           </button>
           <ul class="contact-links">
-            <li><a href="mailto:houssounainen@gmail.com">E-mail <span aria-hidden="true">↗</span></a></li>
-            <li><a href="https://wa.me/261344886137" target="_blank" rel="noopener noreferrer">WhatsApp · +261 34 48 861 37 <span aria-hidden="true">↗</span></a></li>
-            <li><a href="https://mg.linkedin.com/in/houssounaine-nourdine-341108290" target="_blank" rel="noopener noreferrer">LinkedIn <span aria-hidden="true">↗</span></a></li>
-            <li><a href="https://www.facebook.com/houssounainen/" target="_blank" rel="noopener noreferrer">Facebook <span aria-hidden="true">↗</span></a></li>
-            <li><a href="https://www.instagram.com/houssounaine_sfcb/" target="_blank" rel="noopener noreferrer">Instagram <span aria-hidden="true">↗</span></a></li>
+            <li><a class="social-link social-mail" href="mailto:houssounainen@gmail.com"><svg class="ico"><use href="#i-mail"/></svg><span>E-mail</span><i aria-hidden="true">↗</i></a></li>
+            <li><a class="social-link social-whatsapp" href="https://wa.me/261344886137" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-whatsapp"/></svg><span>WhatsApp · +261 34 48 861 37</span><i aria-hidden="true">↗</i></a></li>
+            <li><a class="social-link social-linkedin" href="https://mg.linkedin.com/in/houssounaine-nourdine-341108290" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-linkedin"/></svg><span>LinkedIn</span><i aria-hidden="true">↗</i></a></li>
+            <li><a class="social-link social-facebook" href="https://www.facebook.com/houssounainen/" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-facebook"/></svg><span>Facebook</span><i aria-hidden="true">↗</i></a></li>
+            <li><a class="social-link social-instagram" href="https://www.instagram.com/houssounaine_sfcb/" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-instagram"/></svg><span>Instagram</span><i aria-hidden="true">↗</i></a></li>
           </ul>
         </div>
         <form class="form" data-contact-form>
@@ -388,10 +394,44 @@
           </fieldset>
           <label class="field"><textarea name="message" rows="5" placeholder=" " required></textarea><span data-i18n="formMessage">Message</span></label>
           <label class="consent"><input type="checkbox" name="consent" required><span data-i18n="formConsent">J’accepte que mes informations soient utilisées uniquement pour répondre à ma demande.</span></label>
-          <button class="btn btn-solid btn-wide magnetic" type="submit"><span data-i18n="formSend">Préparer l’e-mail</span><span aria-hidden="true">↗</span></button>
+          <button class="btn btn-solid btn-wide btn-pill magnetic" type="submit"><span data-i18n="formSend">Préparer l’e-mail</span><span class="btn-arrow" aria-hidden="true"><svg><use href="#i-send"/></svg></span></button>
           <p class="note" data-i18n="formNote">Le formulaire ouvre votre application de messagerie ; aucune donnée n’est stockée sur ce site.</p>
           <p class="status" data-form-status role="status" aria-live="polite"></p>
         </form>
+      </div>
+    </section>
+
+    <!-- MERCI -->
+    <section class="section merci" id="merci" aria-labelledby="merci-title">
+      <div class="merci-grid">
+        <div class="merci-copy reveal">
+          <h2 id="merci-title" class="script" data-x="thanks">Merci !</h2>
+          <p data-i18n="heroIntro">J’aide les marques à structurer leur présence digitale, à développer des communautés engagées et à transformer leur visibilité en résultats mesurables.</p>
+          <div class="id-badge">
+            <img src="/assets/profile.webp" alt="" width="56" height="56">
+            <div>
+              <strong>Houssounaine <span>Nourdine</span> <svg class="verified" role="img" aria-label="Profil vérifié"><use href="#i-verified"/></svg></strong>
+              <small>Lead Community Manager · Raiky</small>
+              <span class="follow"><span data-x="follow">Suivez-moi</span>
+                <a href="https://www.facebook.com/houssounainen/" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><svg class="ico"><use href="#i-facebook"/></svg></a>
+                <a href="https://www.instagram.com/houssounaine_sfcb/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg class="ico"><use href="#i-instagram"/></svg></a>
+                <a href="https://mg.linkedin.com/in/houssounaine-nourdine-341108290" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><svg class="ico"><use href="#i-linkedin"/></svg></a>
+              </span>
+            </div>
+          </div>
+          <p class="mono rights">© <span data-year></span> Houssounaine Nourdine — <span data-x="rights">Tous droits réservés.</span></p>
+          <span class="bar-accent" aria-hidden="true"></span>
+        </div>
+        <div class="merci-side reveal">
+          <img class="merci-portrait" src="/assets/portrait-hero-cutout.webp" alt="" width="1536" height="1536" loading="lazy">
+          <div class="qr-card">
+            <svg class="qr-scan" aria-hidden="true"><use href="#i-scan"/></svg>
+            <img src="/assets/qr-portfolio.svg" alt="QR code vers houssounainenourdine.vercel.app" width="180" height="180" loading="lazy">
+            <strong data-x="thanksScan">Scannez pour partager mon portfolio</strong>
+            <span class="mono">houssounainenourdine.vercel.app</span>
+            <span class="qr-icons" aria-hidden="true"><svg class="ico"><use href="#i-facebook"/></svg><svg class="ico"><use href="#i-instagram"/></svg><svg class="ico"><use href="#i-linkedin"/></svg><svg class="ico"><use href="#i-whatsapp"/></svg></span>
+          </div>
+        </div>
       </div>
     </section>
   </main>
@@ -405,12 +445,32 @@
         <a href="#privacy" data-privacy data-i18n="privacy">Confidentialité</a>
         <a href="#top" data-x="backTop">Haut de page ↑</a>
       </nav>
-      <p class="mono">© <span data-year></span> Houssounaine Nourdine</p>
+      <div class="foot-social">
+        <a href="https://www.facebook.com/houssounainen/" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><svg class="ico"><use href="#i-facebook"/></svg></a>
+        <a href="https://www.instagram.com/houssounaine_sfcb/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg class="ico"><use href="#i-instagram"/></svg></a>
+        <a href="https://mg.linkedin.com/in/houssounaine-nourdine-341108290" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><svg class="ico"><use href="#i-linkedin"/></svg></a>
+        <a href="https://wa.me/261344886137" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><svg class="ico"><use href="#i-whatsapp"/></svg></a>
+      </div>
     </div>
   </footer>
 
+
+  <nav class="dock" aria-label="Raccourcis vers les sections">
+    <span class="dock-read" aria-hidden="true"></span>
+    <div class="dock-track">
+      <span class="dock-pill" aria-hidden="true"></span>
+      <a href="#profil"><svg aria-hidden="true"><use href="#i-user"/></svg><span data-i18n="navAbout">À propos</span></a>
+      <a href="#expertises"><svg aria-hidden="true"><use href="#i-layers"/></svg><span data-i18n="navExpertise">Expertises</span></a>
+      <a href="#parcours"><svg aria-hidden="true"><use href="#i-route"/></svg><span data-i18n="navJourney">Parcours</span></a>
+      <a href="#projets"><svg aria-hidden="true"><use href="#i-chart"/></svg><span data-i18n="navProjects">Projets</span></a>
+      <a href="#creations"><svg aria-hidden="true"><use href="#i-image"/></svg><span data-i18n="navWorks">Créations</span></a>
+      <a href="#clients"><svg aria-hidden="true"><use href="#i-users"/></svg><span data-i18n="navClients">Clients</span></a>
+      <a href="#association"><svg aria-hidden="true"><use href="#i-cap"/></svg><span data-i18n="navAssociationShort">AEDBVT</span></a>
+      <a href="#contact"><svg aria-hidden="true"><use href="#i-mail"/></svg><span data-i18n="navContact">Me contacter</span></a>
+    </div>
+  </nav>
   <a class="wa" href="https://wa.me/261344886137?text=Bonjour%20Houssounaine%2C%20je%20vous%20contacte%20depuis%20votre%20portfolio." target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
-    <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3a12.7 12.7 0 0 0-11 19.1L3.3 28.7l6.8-1.8A12.8 12.8 0 1 0 16 3Zm0 23.2c-2 0-3.9-.5-5.5-1.5l-.4-.2-4 1 1.1-3.9-.2-.4a10.3 10.3 0 1 1 9 5Zm5.7-7.7c-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-1.8-.9-3-1.6-4.2-3.7-.3-.6.3-.5.9-1.7.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 3s1.3 3.5 1.5 3.8c.2.2 2.6 4 6.4 5.6.9.4 1.6.6 2.1.8.9.3 1.7.2 2.4.1.7-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.2-.3-.2-.6-.4Z"/></svg>
+    <svg aria-hidden="true"><use href="#i-whatsapp"/></svg>
   </a>
 
   <dialog class="modal case-modal" data-case-modal aria-labelledby="case-title">

@@ -26,7 +26,8 @@
       classic: "Version classique", backTop: "Haut de page ↑", cookieSettings: "Gérer les cookies",
       cursorView: "Voir", cursorOpen: "Ouvrir", worksShown: (shown, total) => `${shown} / ${total} créations`,
       themeToDark: "Activer le mode sombre", themeToLight: "Activer le mode clair", langLabel: "Passer le site en anglais",
-      menuOpen: "Ouvrir le menu", menuClose: "Fermer le menu",
+      thanks: "Merci !", thanksScan: "Scannez pour partager mon portfolio", follow: "Suivez-moi", rights: "Tous droits réservés.",
+      dockLabel: "Raccourcis vers les sections",
       ticker: ["<b>271 K+</b> abonnés Facebook", "<b>100,4 M</b> vues en 2026", "<b>24</b> pages clientes supervisées", "<b>40</b> affiches conçues", "<b>21</b> marques accompagnées", "Master en Gestion <b>2026</b>"]
     },
     en: {
@@ -35,7 +36,8 @@
       classic: "Classic version", backTop: "Back to top ↑", cookieSettings: "Manage cookies",
       cursorView: "View", cursorOpen: "Open", worksShown: (shown, total) => `${shown} / ${total} creative works`,
       themeToDark: "Enable dark mode", themeToLight: "Enable light mode", langLabel: "Switch website to French",
-      menuOpen: "Open menu", menuClose: "Close menu",
+      thanks: "Thank you!", thanksScan: "Scan to share my portfolio", follow: "Follow me", rights: "All rights reserved.",
+      dockLabel: "Section shortcuts",
       ticker: ["<b>271 K+</b> Facebook followers", "<b>100.4 M</b> views in 2026", "<b>24</b> client pages supervised", "<b>40</b> posters designed", "<b>21</b> brands supported", "Master’s in Management <b>2026</b>"]
     }
   };
@@ -47,11 +49,11 @@
     { id: "tfc", category: "client", logo: "assets/logos/tulear-fitness.jpg", typeText: "Fitness", summary: "tfcSummary", proof: "+10 K", proofKey: "newFollowers" },
     { id: "univpass", category: "client", logo: "assets/logos/univpass.jpg", typeText: "EdTech", summary: "univpassSummary", proof: "48", proofKey: "contentsMonth" },
     { id: "le-jardin", category: "client", logo: "assets/logos/le-jardin.jpg", type: "restaurant", summary: "gardenSummary", proof: "2025", proofKey: "sinceMarch" },
-    { id: "indian-basket", category: "client", logo: "assets/logos/indian-basket.jpg", type: "retail", summary: "indianSummary", proof: "FB", proofKey: "managedChannel" },
-    { id: "homeopharma", category: "client", logo: "assets/logos/homeopharma.jpg", type: "wellness", summary: "homeoSummary", proof: "FB", proofKey: "localPage" },
+    { id: "indian-basket", category: "client", logo: "assets/logos/indian-basket.jpg", type: "retail", summary: "indianSummary", proof: "FB", proofIcons: ["facebook"], proofKey: "managedChannel" },
+    { id: "homeopharma", category: "client", logo: "assets/logos/homeopharma.jpg", type: "wellness", summary: "homeoSummary", proof: "FB", proofIcons: ["facebook"], proofKey: "localPage" },
     { id: "total-tools", category: "client", logo: "assets/logos/total-tools.jpg", type: "tools", summary: "totalSummary", proof: "360°", proofKey: "contentProcess" },
     { id: "wedis", category: "client", logo: "assets/logos/wedis.jpg", typeText: "Automation", summary: "wedisSummary", proof: "7", proofKey: "botFunctions" },
-    { id: "shain", category: "client", logo: "assets/logos/shain-lodge.jpg", type: "tourism", summary: "shainSummary", proof: "FB + IG", proofKey: "managedChannels" }
+    { id: "shain", category: "client", logo: "assets/logos/shain-lodge.jpg", type: "tourism", summary: "shainSummary", proof: "FB + IG", proofIcons: ["facebook", "instagram"], proofKey: "managedChannels" }
   ];
 
   const state = {
@@ -62,6 +64,10 @@
     })(),
     projectFilter: "all", clientFilter: "current", worksFilter: "all", allWorks: false, visibleWorks: [], workId: null
   };
+  /* Icônes (symboles SVG déclarés dans index.html). */
+  const BRANDS = { facebook: "Facebook", instagram: "Instagram", linkedin: "LinkedIn", whatsapp: "WhatsApp", globe: "Site" };
+  const icon = (name, className = "ico") => `<svg class="${className} ${className}-${name}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
+  const iconFor = (label) => ({ facebook: "facebook", instagram: "instagram", linkedin: "linkedin", whatsapp: "whatsapp" })[label.toLowerCase()] || "globe";
   const T = (key) => translations[state.lang][key] ?? extra[state.lang][key] ?? "";
   const idx = () => (state.lang === "fr" ? 0 : 1);
 
@@ -81,7 +87,7 @@
     $("[data-lang-toggle]").setAttribute("aria-label", T("langLabel"));
     $$("[data-close]").forEach((button) => button.setAttribute("aria-label", T("close")));
     updateThemeLabel();
-    updateMenuLabel();
+    $(".dock").setAttribute("aria-label", T("dockLabel"));
     renderTicker();
     renderCases();
     renderWorkFilters();
@@ -100,7 +106,7 @@
   /* ---------- Thème ---------- */
   function updateThemeLabel() {
     $("[data-theme-toggle]").setAttribute("aria-label", root.dataset.theme === "dark" ? T("themeToLight") : T("themeToDark"));
-    $('meta[name="theme-color"]').content = root.dataset.theme === "dark" ? "#0f0e0d" : "#f2eee5";
+    $('meta[name="theme-color"]').content = root.dataset.theme === "dark" ? "#050b14" : "#eef6f3";
   }
   function toggleTheme(event) {
     const next = root.dataset.theme === "dark" ? "light" : "dark";
@@ -151,6 +157,7 @@
         span.className = "char";
         span.textContent = char;
         span.style.setProperty("--i", String(index + groupIndex * 6));
+        span.style.setProperty("--p", (index / Math.max(text.length - 1, 1)).toFixed(3));
         element.append(span);
       });
     });
@@ -167,6 +174,11 @@
         const inner = document.createElement("span");
         inner.textContent = word;
         inner.style.setProperty("--i", String(index));
+        const gradientFrom = words.length - Math.max(1, Math.round(words.length / 3));
+        if (index >= gradientFrom) {
+          inner.className = "grad";
+          inner.style.setProperty("--p", ((index - gradientFrom) / Math.max(words.length - 1 - gradientFrom, 1)).toFixed(3));
+        }
         wrap.append(inner);
         element.append(wrap, document.createTextNode(" "));
       });
@@ -246,7 +258,13 @@
       $(".case-type", card).textContent = item.typeText || T(item.type);
       $("h3", card).textContent = project.title;
       $(".case-copy p", card).textContent = T(item.summary);
-      $(".case-proof strong", card).textContent = item.proof;
+      const proof = $(".case-proof strong", card);
+      if (item.proofIcons) {
+        proof.className = "proof-icons";
+        proof.innerHTML = item.proofIcons.map((name) => icon(name, "brand")).join("");
+        proof.setAttribute("aria-label", item.proofIcons.map((name) => BRANDS[name]).join(" + "));
+        proof.setAttribute("role", "img");
+      } else proof.textContent = item.proof;
       $(".case-proof span", card).textContent = T(item.proofKey);
       card.setAttribute("aria-label", `${T("viewCase")} — ${project.title}`);
       card.addEventListener("click", () => openCase(item.id));
@@ -266,9 +284,13 @@
     const list = (items) => items.map((text) => Object.assign(document.createElement("li"), { textContent: text }));
     $("[data-case-actions]", modal).replaceChildren(...list(project.actions[i]));
     $("[data-case-results]", modal).replaceChildren(...list(project.results[i]));
-    $("[data-case-links]", modal).replaceChildren(...project.links.map((link) => Object.assign(document.createElement("a"), {
-      href: link.url, target: "_blank", rel: "noopener noreferrer", textContent: `${link.label} ↗`
-    })));
+    $("[data-case-links]", modal).replaceChildren(...project.links.map((link) => {
+      const anchor = Object.assign(document.createElement("a"), { href: link.url, target: "_blank", rel: "noopener noreferrer" });
+      anchor.className = `social-link social-${iconFor(link.label)}`;
+      anchor.innerHTML = `${icon(iconFor(link.label))}<span></span><i aria-hidden="true">↗</i>`;
+      $("span", anchor).textContent = link.label;
+      return anchor;
+    }));
     const media = $("[data-case-media]", modal);
     media.hidden = !project.media;
     media.replaceChildren(...(project.media || []).map((source) => {
@@ -435,17 +457,28 @@
     observeReveals();
   }
 
-  /* ---------- Navigation ---------- */
+  /* ---------- Navigation : ruban fixe de raccourcis ---------- */
   function setupNav() {
-    const nav = $(".bar-nav");
-    const pill = $(".bar-nav-pill");
-    const links = $$(".bar-nav a");
+    const dock = $(".dock");
+    const track = $(".dock-track", dock);
+    const pill = $(".dock-pill", dock);
+    const links = $$(".dock a", dock);
+    let current = null;
     function movePill(link) {
-      if (!link) { pill.style.opacity = "0"; links.forEach((item) => item.classList.remove("is-on")); return; }
-      links.forEach((item) => item.classList.toggle("is-on", item === link));
+      if (link === current) return;
+      current = link;
+      links.forEach((item) => {
+        item.classList.toggle("is-on", item === link);
+        if (item === link) item.setAttribute("aria-current", "true"); else item.removeAttribute("aria-current");
+      });
+      if (!link) { pill.style.opacity = "0"; return; }
       pill.style.opacity = "1";
       pill.style.width = `${link.offsetWidth}px`;
       pill.style.translate = `${link.offsetLeft}px 0`;
+      /* Sur mobile, garder le raccourci actif visible dans le ruban. */
+      if (track.scrollWidth > track.clientWidth) {
+        track.scrollTo({ left: link.offsetLeft - track.clientWidth / 2 + link.offsetWidth / 2, behavior: reduced() ? "auto" : "smooth" });
+      }
     }
     const sections = links.map((link) => $(link.getAttribute("href"))).filter(Boolean);
     if ("IntersectionObserver" in window) {
@@ -458,46 +491,26 @@
       }, { threshold: [0, .15, .3, .5], rootMargin: "-30% 0px -40% 0px" });
       sections.forEach((section) => spy.observe(section));
     }
+    window.addEventListener("resize", () => { const link = current; current = null; movePill(link); });
 
-    /* Masquer la barre en descendant, la montrer en remontant. */
+    /* Masquer la barre du haut en descendant ; progression de lecture dans le ruban. */
     const bar = $(".bar");
     const progress = $(".progress");
     let lastY = window.scrollY, ticking = false;
     function onScroll() {
       ticking = false;
       const y = window.scrollY;
-      bar.classList.toggle("hide", y > 400 && y > lastY && !$(".sheet.open"));
+      bar.classList.toggle("hide", y > 400 && y > lastY);
+      dock.classList.toggle("is-visible", y > innerHeight * .35);
       lastY = y;
       const max = document.documentElement.scrollHeight - innerHeight;
-      progress.style.transform = `scaleX(${max > 0 ? Math.min(y / max, 1) : 0})`;
+      const ratio = max > 0 ? Math.min(y / max, 1) : 0;
+      progress.style.transform = `scaleX(${ratio})`;
+      dock.style.setProperty("--read", ratio.toFixed(3));
       updateTimeline();
     }
     window.addEventListener("scroll", () => { if (!ticking) { ticking = true; window.requestAnimationFrame(onScroll); } }, { passive: true });
     onScroll();
-
-    /* Menu plein écran (mobile et tablette). */
-    const toggle = $(".menu-toggle");
-    const sheet = $("#sheet");
-    function setMenu(open) {
-      toggle.setAttribute("aria-expanded", String(open));
-      updateMenuLabel();
-      if (open) {
-        sheet.hidden = false;
-        window.requestAnimationFrame(() => sheet.classList.add("open"));
-        document.body.classList.add("locked");
-      } else {
-        sheet.classList.remove("open");
-        document.body.classList.remove("locked");
-        window.setTimeout(() => { if (!sheet.classList.contains("open")) sheet.hidden = true; }, reduced() ? 0 : 700);
-      }
-    }
-    toggle.addEventListener("click", () => setMenu(toggle.getAttribute("aria-expanded") !== "true"));
-    $$("a", sheet).forEach((link) => link.addEventListener("click", () => setMenu(false)));
-    document.addEventListener("keydown", (event) => { if (event.key === "Escape" && sheet.classList.contains("open")) { setMenu(false); toggle.focus(); } });
-  }
-  function updateMenuLabel() {
-    const toggle = $(".menu-toggle");
-    toggle.setAttribute("aria-label", toggle.getAttribute("aria-expanded") === "true" ? T("menuClose") : T("menuOpen"));
   }
 
   /* Ligne de progression du parcours. */
@@ -530,6 +543,13 @@
       const target = event.target.closest?.("[data-cursor]");
       cursor.classList.toggle("big", Boolean(target));
       if (target) label.textContent = T(target.dataset.cursor === "view" ? "cursorView" : "cursorOpen");
+
+      const glow = event.target.closest?.(".tile, .case, .diploma, .client, .qr-card");
+      if (glow) {
+        const rect = glow.getBoundingClientRect();
+        glow.style.setProperty("--mx", `${(x - rect.left).toFixed(0)}px`);
+        glow.style.setProperty("--my", `${(y - rect.top).toFixed(0)}px`);
+      }
 
       const magnet = event.target.closest?.(".magnetic");
       if (magnet) {
@@ -639,7 +659,7 @@
   /* ---------- Démarrage ---------- */
   function init() {
     if (typeof translations === "undefined") return;
-    $("[data-year]").textContent = String(new Date().getFullYear());
+    $$("[data-year]").forEach((element) => { element.textContent = String(new Date().getFullYear()); });
     splitChars();
     fitTitle();
     if (document.fonts?.ready) document.fonts.ready.then(fitTitle);
