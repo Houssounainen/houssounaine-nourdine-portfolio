@@ -456,6 +456,23 @@ body::before {
 .lightbox .modal-close { position: absolute; top: 18px; right: 18px; margin: 0; }
 .lightbox figure { margin: 0; }
 .lightbox img { width: 100%; max-height: 78dvh; object-fit: contain; border-radius: 14px; background: var(--paper-2); }
+.lightbox video { display: block; width: 100%; max-height: 78dvh; border-radius: 14px; background: #000; }
+.lightbox [hidden] { display: none; }
+
+/* Créations vidéo */
+.work-video { background: #000; }
+.work-preview { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .4s; }
+.work-video:hover .work-preview { opacity: 1; }
+.work-play {
+  position: absolute; top: 12px; left: 12px; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px 6px 8px;
+  border-radius: 999px; background: var(--red); color: #fff; font: 800 11px/1 var(--display); letter-spacing: .06em; text-transform: uppercase;
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--red) 45%, transparent);
+}
+.work-play svg { width: 16px; height: 16px; }
+@media (prefers-reduced-motion: no-preference) {
+  .work-play { animation: playPulse 2.4s ease-in-out infinite; }
+}
+@keyframes playPulse { 50% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--red) 0%, transparent), 0 8px 22px color-mix(in srgb, var(--red) 45%, transparent); } }
 .lb-copy { display: grid; gap: 14px; }
 .lb-copy h2 { font-size: clamp(28px, 3vw, 44px); }
 .lb-copy p { color: var(--muted); }

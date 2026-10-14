@@ -33,7 +33,7 @@ Portfolio personnel bilingue de Houssounaine Nourdine, Lead Community Manager sp
 - `v2/` : styles (`v2.css`), interactions (`v2.js`) et contenus bilingues partagés (`data.js`) de la page d’accueil ;
 - `classique/` : ancienne version multi-rubriques, accessible sur `/classique`, avec l’espace AEDBVT sur `/classique/association` ;
 - `vercel.json` : redirections, routes et en-têtes de sécurité pour Vercel (les anciennes adresses `/projects`, `/works`… mènent à la section correspondante) ;
-- `assets/` : portraits, créations, logos clients, statistiques et favicon ;
+- `assets/` : portraits, créations (52, dont une vidéo dans `assets/videos/` en WebM et MP4), logos clients, statistiques et favicon ;
 - `robots.txt` et `sitemap.xml` : indexation.
 
 ## Modifier le contenu
