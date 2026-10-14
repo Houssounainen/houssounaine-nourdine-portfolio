@@ -11,6 +11,13 @@
   const EMAIL = "houssounainen@gmail.com";
   const GA_MEASUREMENT_ID = "G-1LL57GXLVY";
   const CONSENT_KEY = "portfolio-cookie-consent";
+  /* Sources vidéo : WebM (VP9) puis MP4 (H.264) pour couvrir tous les navigateurs. */
+  const setVideoSources = (video, paths) => {
+    video.replaceChildren(...paths.map((path) => Object.assign(document.createElement("source"), {
+      src: asset(path), type: path.endsWith(".webm") ? "video/webm" : "video/mp4"
+    })));
+    video.load();
+  };
   const asset = (path) => `/${path.replace(/^\/+/, "")}`;
 
   const store = {
@@ -28,7 +35,8 @@
       themeToDark: "Activer le mode sombre", themeToLight: "Activer le mode clair", langLabel: "Passer le site en anglais",
       thanks: "Merci !", thanksScan: "Scannez pour partager mon portfolio", follow: "Suivez-moi", rights: "Tous droits réservés.",
       dockLabel: "Raccourcis vers les sections",
-      ticker: ["<b>271 K+</b> abonnés Facebook", "<b>100,4 M</b> vues en 2026", "<b>24</b> pages clientes supervisées", "<b>40</b> affiches conçues", "<b>21</b> marques accompagnées", "Master en Gestion <b>2026</b>"]
+      videoDescription: "Film de présentation en motion design, conçu pour raconter l’offre et l’équipe de la marque.", videoRole: "Motion design & montage", cursorPlay: "Lire", videoBadge: "Vidéo",
+      ticker: ["<b>271 K+</b> abonnés Facebook", "<b>100,4 M</b> vues en 2026", "<b>24</b> pages clientes supervisées", "<b>51</b> affiches conçues", "<b>21</b> marques accompagnées", "Master en Gestion <b>2026</b>"]
     },
     en: {
       edition: "Edition", values: "Values", localTime: "local time", sinceText: "serving communities",
@@ -38,7 +46,8 @@
       themeToDark: "Enable dark mode", themeToLight: "Enable light mode", langLabel: "Switch website to French",
       thanks: "Thank you!", thanksScan: "Scan to share my portfolio", follow: "Follow me", rights: "All rights reserved.",
       dockLabel: "Section shortcuts",
-      ticker: ["<b>271 K+</b> Facebook followers", "<b>100.4 M</b> views in 2026", "<b>24</b> client pages supervised", "<b>40</b> posters designed", "<b>21</b> brands supported", "Master’s in Management <b>2026</b>"]
+      videoDescription: "Motion design brand film, made to tell the story of the brand’s offer and team.", videoRole: "Motion design & editing", cursorPlay: "Play", videoBadge: "Video",
+      ticker: ["<b>271 K+</b> Facebook followers", "<b>100.4 M</b> views in 2026", "<b>24</b> client pages supervised", "<b>51</b> posters designed", "<b>21</b> brands supported", "Master’s in Management <b>2026</b>"]
     }
   };
 
@@ -330,8 +339,8 @@
     state.visibleWorks.forEach((work, index) => {
       const button = document.createElement("button");
       button.type = "button";
-      button.className = "work reveal";
-      button.dataset.cursor = "view";
+      button.className = `work reveal${work.video ? " work-video" : ""}`;
+      button.dataset.cursor = work.video ? "play" : "view";
       button.style.setProperty("--d", String(index % 4));
       button.setAttribute("aria-label", `${T("openWork")} — ${work.title[idx()]}`);
       const image = Object.assign(document.createElement("img"), { src: asset(work.src), alt: `${work.title[idx()]} — ${work.client}`, loading: "lazy", decoding: "async" });
@@ -342,6 +351,23 @@
         Object.assign(document.createElement("strong"), { textContent: work.title[idx()] })
       );
       button.append(image, info);
+      if (work.video) {
+        /* Aperçu muet au survol, lecture complète dans la visionneuse. */
+        const badge = document.createElement("span");
+        badge.className = "work-play";
+        badge.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5.5v13l11-6.5Z"/></svg><b></b>`;
+        $("b", badge).textContent = T("videoBadge");
+        button.append(badge);
+        if (finePointer.matches && !reduced()) {
+          const preview = Object.assign(document.createElement("video"), { muted: true, loop: true, playsInline: true, preload: "none", poster: asset(work.src) });
+          setVideoSources(preview, work.video);
+          preview.className = "work-preview";
+          preview.setAttribute("aria-hidden", "true");
+          button.insertBefore(preview, info);
+          button.addEventListener("pointerenter", () => { preview.play().catch(() => {}); });
+          button.addEventListener("pointerleave", () => { preview.pause(); });
+        }
+      }
       button.addEventListener("click", () => openWork(work.id));
       grid.append(button);
     });
@@ -356,15 +382,28 @@
     if (!work) return;
     const box = $("[data-lightbox]");
     const image = $("[data-lb-image]", box);
-    image.src = asset(work.src);
-    image.alt = `${work.title[idx()]} — ${work.client}`;
+    const video = $("[data-lb-video]", box);
+    video.pause();
+    image.hidden = Boolean(work.video);
+    video.hidden = !work.video;
+    if (work.video) {
+      video.poster = asset(work.src);
+      if (video.dataset.work !== String(work.id)) { setVideoSources(video, work.video); video.dataset.work = String(work.id); }
+      video.setAttribute("aria-label", `${work.title[idx()]} — ${work.client}`);
+    } else {
+      if (video.dataset.work) { video.replaceChildren(); video.load(); delete video.dataset.work; }
+      image.src = asset(work.src);
+      image.alt = `${work.title[idx()]} — ${work.client}`;
+    }
     $("[data-lb-sector]", box).textContent = workSectors[work.category][idx()];
     $("[data-lb-title]", box).textContent = work.title[idx()];
-    $("[data-lb-description]", box).textContent = T("workDescription");
+    $("[data-lb-description]", box).textContent = work.video ? T("videoDescription") : T("workDescription");
+    $('[data-i18n="workRoleValue"]', box).textContent = work.video ? T("videoRole") : T("workRoleValue");
     $("[data-lb-client]", box).textContent = work.client;
     const position = Math.max(state.visibleWorks.findIndex((item) => item.id === state.workId), 0);
     $("[data-lb-pos]", box).textContent = `${String(position + 1).padStart(2, "0")} / ${String(state.visibleWorks.length).padStart(2, "0")}`;
-    if (!reduced() && typeof image.animate === "function") image.animate([{ opacity: 0, scale: .96 }, { opacity: 1, scale: 1 }], { duration: 450, easing: "cubic-bezier(.16,1,.3,1)" });
+    const media = work.video ? video : image;
+    if (!reduced() && typeof media.animate === "function") media.animate([{ opacity: 0, scale: .96 }, { opacity: 1, scale: 1 }], { duration: 450, easing: "cubic-bezier(.16,1,.3,1)" });
   }
   function openWork(id) {
     state.workId = id;
@@ -419,11 +458,12 @@
     $("[data-lb-prev]").addEventListener("click", () => stepWork(-1));
     $("[data-lb-next]").addEventListener("click", () => stepWork(1));
     document.addEventListener("keydown", (event) => {
-      if (!lightbox.open) return;
+      if (!lightbox.open || event.target instanceof HTMLVideoElement) return;
       if (event.key === "ArrowLeft") stepWork(-1);
       if (event.key === "ArrowRight") stepWork(1);
     });
     let touchX = null;
+    lightbox.addEventListener("close", () => $("[data-lb-video]", lightbox).pause());
     lightbox.addEventListener("touchstart", (event) => { touchX = event.touches[0].clientX; }, { passive: true });
     lightbox.addEventListener("touchend", (event) => {
       if (touchX === null) return;
@@ -542,7 +582,7 @@
       if (!frame) frame = window.requestAnimationFrame(follow);
       const target = event.target.closest?.("[data-cursor]");
       cursor.classList.toggle("big", Boolean(target));
-      if (target) label.textContent = T(target.dataset.cursor === "view" ? "cursorView" : "cursorOpen");
+      if (target) label.textContent = T({ view: "cursorView", play: "cursorPlay" }[target.dataset.cursor] || "cursorOpen");
 
       const glow = event.target.closest?.(".tile, .case, .diploma, .client, .qr-card");
       if (glow) {
