@@ -33,6 +33,7 @@ Portfolio personnel bilingue de Houssounaine Nourdine, Lead Community Manager sp
 - `script.js` : traduction, filtres, dialogues, formulaire et interactions ;
 - `motion.js` / `motion.css` : animations d’apparition, halo, inclinaison des cartes ;
 - `wow.js` / `wow.css` : préchargeur, constellation, bandeau clients, palette de commandes, transition de thème ;
+- `v2/` : proposition de refonte « Édition 2026 » (page unique, grille bento, typographie cinétique) accessible sur `/v2`, avec les mêmes contenus (`v2/data.js`) ;
 - `vercel.json` : routes propres et en-têtes de sécurité pour Vercel ;
 - `assets/` : portraits, créations, logos clients, statistiques et favicon ;
 - `robots.txt` et `sitemap.xml` : indexation.
