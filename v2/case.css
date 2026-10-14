@@ -1,0 +1,46 @@
+/* Pages projet (/projets/<id>) — complète v2.css. */
+.case-page { padding-bottom: 40px; }
+.case-bar { position: sticky; z-index: 20; top: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px var(--gutter); background: color-mix(in srgb, var(--paper) 80%, transparent); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+.case-back { display: inline-flex; align-items: center; gap: 10px; font: 700 14px var(--display); text-decoration: none; }
+.case-back svg { width: 20px; height: 20px; transition: translate .3s var(--ease); }
+.case-back:hover svg { translate: -4px 0; }
+.case-page main > section, .case-page main > nav { width: min(calc(100% - var(--gutter) * 2), 1180px); margin-inline: auto; }
+.case-hero { display: grid; grid-template-columns: 1fr 300px; align-items: center; gap: clamp(24px, 5vw, 60px); padding: clamp(50px, 8vw, 100px) 0 40px; }
+.case-hero h1 { margin: 6px 0 18px; font-size: clamp(48px, 8vw, 110px); font-weight: 900; letter-spacing: -.05em; line-height: .95; background: linear-gradient(100deg, var(--ink) 45%, var(--sky)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.case-hero .label i { width: auto; padding: 0 10px; }
+.case-lead { max-width: 60ch; color: var(--muted); font-size: clamp(17px, 1.6vw, 21px); }
+.case-proof-card { display: grid; justify-items: center; gap: 10px; padding: 28px 22px; border-radius: 28px; text-align: center; background: var(--stripes), var(--grad); color: #04121f; box-shadow: 0 30px 70px color-mix(in srgb, var(--accent) 25%, transparent); }
+.case-proof-card img { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; background: #fff; border: 5px solid rgba(255, 255, 255, .8); }
+.case-proof-card strong { font: 900 54px/1 var(--display); letter-spacing: -.04em; }
+.case-proof-card span { font-weight: 700; }
+.case-body { display: grid; gap: 40px; padding-bottom: 40px; }
+.case-body h2, .case-cta h2, .case-others h2 { margin-bottom: 16px; font-size: clamp(24px, 2.6vw, 34px); font-weight: 900; }
+.case-page .case-facts { margin: 0; }
+.case-works-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.case-works-grid figure { margin: 0; }
+.case-works-grid img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 14px; transition: scale .5s var(--ease); }
+.case-works-grid figure:hover img { scale: 1.03; }
+.case-works-grid figcaption { margin-top: 6px; color: var(--muted); font-size: 13px; }
+.case-cta { padding: clamp(28px, 4vw, 46px); border-radius: 28px; background: var(--stripes), linear-gradient(120deg, color-mix(in srgb, var(--accent) 80%, #000), color-mix(in srgb, var(--sky) 80%, #000)); color: #fff; }
+.case-cta p { max-width: 56ch; margin-bottom: 22px; color: rgba(255, 255, 255, .88); font-size: 18px; }
+.case-cta-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.case-cta .btn-solid { background: #fff; color: #04121f; border-color: #fff; }
+.case-cta .btn-arrow { background: #25d366; }
+.case-cta .btn-line { border-color: rgba(255, 255, 255, .7); color: #fff; }
+.case-cta .btn-line::before { background: #fff; }
+.case-cta .btn-line:hover { color: #04121f; }
+.case-cta .ico { width: 18px; height: 18px; }
+.case-others { padding: 50px 0 20px; }
+.case-others-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.case-others-grid a { display: grid; grid-template-columns: 48px 1fr; gap: 4px 14px; align-items: center; padding: 16px; border: 1px solid var(--line); border-radius: 18px; background: var(--card); text-decoration: none; transition: border-color .3s, translate .3s var(--ease); }
+.case-others-grid a:hover { border-color: var(--sky); translate: 0 -3px; }
+.case-others-grid img { grid-row: span 2; width: 48px; height: 48px; border-radius: 12px; object-fit: cover; background: #fff; }
+.case-others-grid strong { font: 800 16px var(--display); }
+.case-others-grid span { color: var(--muted); font-size: 13px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.case-foot { padding: 30px var(--gutter); color: var(--muted); font-size: 14px; text-align: center; }
+.case-foot a { color: var(--ink); font-weight: 700; text-decoration: none; }
+.case-page .toast { bottom: 24px; }
+@media (max-width: 760px) {
+  .case-hero { grid-template-columns: 1fr; }
+  .case-proof-card { justify-self: start; width: 100%; }
+}

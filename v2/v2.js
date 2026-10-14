@@ -35,6 +35,7 @@
       themeToDark: "Activer le mode sombre", themeToLight: "Activer le mode clair", langLabel: "Passer le site en anglais",
       thanks: "Merci !", thanksScan: "Scannez pour partager mon portfolio", follow: "Suivez-moi", rights: "Tous droits réservés.",
       dockLabel: "Raccourcis vers les sections",
+      casePage: "Voir la page du projet", share: "Partager", linkCopied: "Lien copié ✓",
       videoDescription: "Film de présentation en motion design, conçu pour raconter l’offre et l’équipe de la marque.", videoRole: "Motion design & montage", cursorPlay: "Lire", videoBadge: "Vidéo",
       ticker: ["<b>271 K+</b> abonnés Facebook", "<b>100,4 M</b> vues en 2026", "<b>24</b> pages clientes supervisées", "<b>51</b> affiches conçues", "<b>21</b> marques accompagnées", "Master en Gestion <b>2026</b>"]
     },
@@ -46,24 +47,14 @@
       themeToDark: "Enable dark mode", themeToLight: "Enable light mode", langLabel: "Switch website to French",
       thanks: "Thank you!", thanksScan: "Scan to share my portfolio", follow: "Follow me", rights: "All rights reserved.",
       dockLabel: "Section shortcuts",
+      casePage: "Open the project page", share: "Share", linkCopied: "Link copied ✓",
       videoDescription: "Motion design brand film, made to tell the story of the brand’s offer and team.", videoRole: "Motion design & editing", cursorPlay: "Play", videoBadge: "Video",
       ticker: ["<b>271 K+</b> Facebook followers", "<b>100.4 M</b> views in 2026", "<b>24</b> client pages supervised", "<b>51</b> posters designed", "<b>21</b> brands supported", "Master’s in Management <b>2026</b>"]
     }
   };
 
-  /* Cartes projets : reprise des éléments de la version principale. */
-  const cases = [
-    { id: "sfcb", category: "personal", logo: "assets/portrait-hero-cutout.webp", type: "projectPersonal", summary: "sfcbSummary", proof: "100,4 M", proofKey: "views2026", featured: true },
-    { id: "raiky", category: "management", logo: "assets/logos/raiky.jpg", type: "projectManagement", summary: "raikySummary", proof: "24", proofKey: "managedPages" },
-    { id: "tfc", category: "client", logo: "assets/logos/tulear-fitness.jpg", typeText: "Fitness", summary: "tfcSummary", proof: "+10 K", proofKey: "newFollowers" },
-    { id: "univpass", category: "client", logo: "assets/logos/univpass.jpg", typeText: "EdTech", summary: "univpassSummary", proof: "48", proofKey: "contentsMonth" },
-    { id: "le-jardin", category: "client", logo: "assets/logos/le-jardin.jpg", type: "restaurant", summary: "gardenSummary", proof: "2025", proofKey: "sinceMarch" },
-    { id: "indian-basket", category: "client", logo: "assets/logos/indian-basket.jpg", type: "retail", summary: "indianSummary", proof: "FB", proofIcons: ["facebook"], proofKey: "managedChannel" },
-    { id: "homeopharma", category: "client", logo: "assets/logos/homeopharma.jpg", type: "wellness", summary: "homeoSummary", proof: "FB", proofIcons: ["facebook"], proofKey: "localPage" },
-    { id: "total-tools", category: "client", logo: "assets/logos/total-tools.jpg", type: "tools", summary: "totalSummary", proof: "360°", proofKey: "contentProcess" },
-    { id: "wedis", category: "client", logo: "assets/logos/wedis.jpg", typeText: "Automation", summary: "wedisSummary", proof: "7", proofKey: "botFunctions" },
-    { id: "shain", category: "client", logo: "assets/logos/shain-lodge.jpg", type: "tourism", summary: "shainSummary", proof: "FB + IG", proofIcons: ["facebook", "instagram"], proofKey: "managedChannels" }
-  ];
+  /* Cartes projets : définies dans data.js (partagées avec les pages projet). */
+  const cases = caseCards;
 
   const state = {
     lang: (() => {
@@ -83,6 +74,7 @@
   /* ---------- Langue ---------- */
   function applyLanguage() {
     root.lang = state.lang;
+    window.setTimeout(() => document.dispatchEvent(new CustomEvent("hn:lang", { detail: state.lang })), 0);
     $$("[data-i18n]").forEach((element) => {
       const value = translations[state.lang][element.dataset.i18n];
       if (value) element.textContent = value;
@@ -276,7 +268,7 @@
       } else proof.textContent = item.proof;
       $(".case-proof span", card).textContent = T(item.proofKey);
       card.setAttribute("aria-label", `${T("viewCase")} — ${project.title}`);
-      card.addEventListener("click", () => openCase(item.id));
+      card.addEventListener("click", () => openCase(item.id, card));
       grid.append(card);
     });
     observeReveals(grid);
@@ -300,6 +292,10 @@
       $("span", anchor).textContent = link.label;
       return anchor;
     }));
+    const page = $("[data-case-page]", modal);
+    page.href = `/projets/${id}${state.lang === "en" ? "?lang=en" : ""}`;
+    $("[data-case-page-label]", modal).textContent = T("casePage");
+    $("[data-case-share-label]", modal).textContent = T("share");
     const media = $("[data-case-media]", modal);
     media.hidden = !project.media;
     media.replaceChildren(...(project.media || []).map((source) => {
@@ -309,12 +305,63 @@
       return figure;
     }));
   }
-  function openCase(id) {
+  /* La carte cliquée s'agrandit jusqu'à devenir la fenêtre de l'étude de cas (et s'y referme). */
+  let caseOrigin = null;
+  function flip(dialog, from, reverse = false) {
+    const target = dialog.getBoundingClientRect();
+    const origin = from.getBoundingClientRect();
+    if (!target.width || !origin.width) return null;
+    const start = {
+      transform: `translate(${origin.left - target.left}px, ${origin.top - target.top}px) scale(${origin.width / target.width}, ${origin.height / target.height})`,
+      borderRadius: "22px", opacity: 1
+    };
+    const end = { transform: "none", borderRadius: "28px", opacity: 1 };
+    const frames = reverse ? [end, { ...start, opacity: .4 }] : [start, end];
+    const animation = dialog.animate(frames, { duration: reverse ? 420 : 620, easing: "cubic-bezier(.16,1,.3,1)", fill: "both" });
+    $$(":scope > *", dialog).forEach((child, index) => child.animate(
+      reverse ? [{ opacity: 1 }, { opacity: 0 }] : [{ opacity: 0, translate: "0 18px" }, { opacity: 1, translate: "0 0" }],
+      { duration: reverse ? 160 : 420, delay: reverse ? 0 : 220 + Math.min(index, 6) * 35, easing: "ease-out", fill: "both" }
+    ));
+    return animation;
+  }
+  function openCase(id, origin = null) {
     if (!projectData[id]) return;
     state.caseId = id;
     fillCase(id);
     track("view_case_study", { project: id });
-    openModal($("[data-case-modal]"));
+    const dialog = $("[data-case-modal]");
+    caseOrigin = origin;
+    dialog.classList.toggle("flip", Boolean(origin) && !reduced());
+    openModal(dialog);
+    if (origin && !reduced() && typeof dialog.animate === "function") {
+      dialog.scrollTop = 0;
+      const animation = flip(dialog, origin);
+      if (animation) animation.onfinish = () => { animation.cancel(); $$(":scope > *", dialog).forEach((child) => child.getAnimations().forEach((item) => item.cancel())); };
+    }
+  }
+  function closeModal(dialog) {
+    if (!dialog.open || dialog.dataset.closing) return;
+    const origin = dialog.matches("[data-case-modal]") ? caseOrigin : null;
+    if (!origin || reduced() || typeof dialog.animate !== "function" || !origin.isConnected || origin.hidden) { dialog.close(); return; }
+    dialog.dataset.closing = "1";
+    const animation = flip(dialog, origin, true);
+    const done = () => {
+      delete dialog.dataset.closing;
+      dialog.close();
+      dialog.getAnimations().forEach((item) => item.cancel());
+      $$(":scope > *", dialog).forEach((child) => child.getAnimations().forEach((item) => item.cancel()));
+    };
+    if (animation) animation.onfinish = done; else done();
+  }
+  async function shareCase() {
+    const id = state.caseId;
+    const url = new URL(`/projets/${id}${state.lang === "en" ? "?lang=en" : ""}`, window.location.origin).href;
+    const title = `${projectData[id].title} — Houssounaine Nourdine`;
+    track("share_case_study", { project: id });
+    if (navigator.share) {
+      try { await navigator.share({ title, url }); return; } catch (error) { if (error.name === "AbortError") return; }
+    }
+    try { await navigator.clipboard.writeText(url); toast(T("linkCopied")); } catch (error) { window.location.href = url; }
   }
 
   /* ---------- Créations ---------- */
@@ -406,6 +453,7 @@
     if (!reduced() && typeof media.animate === "function") media.animate([{ opacity: 0, scale: .96 }, { opacity: 1, scale: 1 }], { duration: 450, easing: "cubic-bezier(.16,1,.3,1)" });
   }
   function openWork(id) {
+    if (hooks.openStories) { hooks.openStories(state.visibleWorks, id); return; }
     state.workId = id;
     updateLightbox();
     track("view_creative_work", { work_id: id });
@@ -449,10 +497,11 @@
         if (event.target === dialog) {
           const rect = dialog.getBoundingClientRect();
           const inside = event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom;
-          if (!inside) dialog.close();
+          if (!inside) closeModal(dialog);
         }
       });
-      $$("[data-close]", dialog).forEach((button) => button.addEventListener("click", () => dialog.close()));
+      $$("[data-close]", dialog).forEach((button) => button.addEventListener("click", () => closeModal(dialog)));
+      dialog.addEventListener("cancel", (event) => { event.preventDefault(); closeModal(dialog); });
     });
     const lightbox = $("[data-lightbox]");
     $("[data-lb-prev]").addEventListener("click", () => stepWork(-1));
@@ -696,6 +745,13 @@
     });
   }
 
+  /* ---------- API pour les modules complémentaires (features.js) ---------- */
+  const hooks = {};
+  window.HN = {
+    T, asset, icon, track, toast: (message) => toast(message), reduced, finePointer,
+    lang: () => state.lang, cases, openCase, openModal, closeModal, setVideoSources, hooks
+  };
+
   /* ---------- Démarrage ---------- */
   function init() {
     if (typeof translations === "undefined") return;
@@ -710,6 +766,7 @@
     setupNav();
     setupPointer();
     setupContact();
+    $("[data-case-share]").addEventListener("click", shareCase);
     setupConsent();
     startRotator();
     scrollToLegacyRoute();

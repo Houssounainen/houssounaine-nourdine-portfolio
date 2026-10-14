@@ -291,3 +291,17 @@ const projectData = {
     links: [{ label: "Site", url: "https://www.shainlodge.com/" }, { label: "Facebook", url: "https://www.facebook.com/61578050621176/" }, { label: "Instagram", url: "https://www.instagram.com/shainlodge/" }]
   }
 };
+
+/* Cartes projets (accueil et pages /projets/…). */
+const caseCards = [
+  { id: "sfcb", category: "personal", logo: "assets/portrait-hero-cutout.webp", type: "projectPersonal", summary: "sfcbSummary", proof: "100,4 M", proofKey: "views2026", featured: true },
+  { id: "raiky", category: "management", logo: "assets/logos/raiky.jpg", type: "projectManagement", summary: "raikySummary", proof: "24", proofKey: "managedPages" },
+  { id: "tfc", category: "client", logo: "assets/logos/tulear-fitness.jpg", typeText: "Fitness", summary: "tfcSummary", proof: "+10 K", proofKey: "newFollowers" },
+  { id: "univpass", category: "client", logo: "assets/logos/univpass.jpg", typeText: "EdTech", summary: "univpassSummary", proof: "48", proofKey: "contentsMonth" },
+  { id: "le-jardin", category: "client", logo: "assets/logos/le-jardin.jpg", type: "restaurant", summary: "gardenSummary", proof: "2025", proofKey: "sinceMarch" },
+  { id: "indian-basket", category: "client", logo: "assets/logos/indian-basket.jpg", type: "retail", summary: "indianSummary", proof: "FB", proofIcons: ["facebook"], proofKey: "managedChannel" },
+  { id: "homeopharma", category: "client", logo: "assets/logos/homeopharma.jpg", type: "wellness", summary: "homeoSummary", proof: "FB", proofIcons: ["facebook"], proofKey: "localPage" },
+  { id: "total-tools", category: "client", logo: "assets/logos/total-tools.jpg", type: "tools", summary: "totalSummary", proof: "360°", proofKey: "contentProcess" },
+  { id: "wedis", category: "client", logo: "assets/logos/wedis.jpg", typeText: "Automation", summary: "wedisSummary", proof: "7", proofKey: "botFunctions" },
+  { id: "shain", category: "client", logo: "assets/logos/shain-lodge.jpg", type: "tourism", summary: "shainSummary", proof: "FB + IG", proofIcons: ["facebook", "instagram"], proofKey: "managedChannels" }
+];
