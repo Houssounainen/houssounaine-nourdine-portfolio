@@ -8,6 +8,7 @@ const keys=[
   "association_name","association_short_name","association_city","association_country",
   "contact_email","contact_phone","official_address","support_email","privacy_email",
   "homepage_message","legal_status_note","administrator_display_name","annual_dues_ariary",
+  "mobile_money_mvola","mobile_money_orange","mobile_money_airtel","mobile_money_holder","mobile_money_instructions",
 ];
 
 export default async function InstitutionalSettingsPage(){
@@ -48,6 +49,13 @@ export default async function InstitutionalSettingsPage(){
         <label>Cotisation annuelle par défaut (Ar)<input type="number" min="1" name="annual_dues_ariary" defaultValue={Number(value("annual_dues_ariary","30000"))}/></label>
         <label>Texte d’accueil<textarea name="homepage_message" rows={4} defaultValue={value("homepage_message","Une application séparée pour gérer les membres, la vie associative, la trésorerie, les documents et la gouvernance avec des accès sécurisés.")}/></label>
         <label>Note de statut juridique<textarea name="legal_status_note" rows={4} defaultValue={value("legal_status_note","Le statut juridique et les formalités réglementaires de l’association restent à valider avant toute présentation institutionnelle définitive.")}/></label>
+      </article>
+
+      <article className="panel form-stack" id="paiement">
+        <div><h2>Paiement mobile</h2><p className="muted" style={{margin:"4px 0 0"}}>Numéros sur lesquels les membres envoient leur cotisation depuis l’application. Laisser vide pour masquer un opérateur.</p></div>
+        <div className="form-two"><label>Numéro MVola<input name="mobile_money_mvola" type="tel" placeholder="034 00 000 00" defaultValue={value("mobile_money_mvola")}/></label><label>Numéro Orange Money<input name="mobile_money_orange" type="tel" placeholder="032 00 000 00" defaultValue={value("mobile_money_orange")}/></label></div>
+        <div className="form-two"><label>Numéro Airtel Money<input name="mobile_money_airtel" type="tel" placeholder="033 00 000 00" defaultValue={value("mobile_money_airtel")}/></label><label>Nom du bénéficiaire affiché<input name="mobile_money_holder" placeholder="AEDBVT · Trésorerie" defaultValue={value("mobile_money_holder")}/></label></div>
+        <label>Consignes complémentaires (facultatif)<textarea name="mobile_money_instructions" rows={2} placeholder="Ex. Indiquez la référence AED-… dans le motif du transfert." defaultValue={value("mobile_money_instructions")}/></label>
       </article>
 
       <div className="settings-save-bar"><p>Les informations publiques sont réutilisées par l’accueil, le support et les pages institutionnelles.</p><button className="button primary">Enregistrer les paramètres</button></div>

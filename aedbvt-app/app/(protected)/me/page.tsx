@@ -78,7 +78,7 @@ export default async function MySpacePage() {
             {currentDue?<><div className="dues-card-title"><strong>{currentDue.cycle_label}</strong><span className={"badge dues-"+currentDue.current_status}>{dueLabels[currentDue.current_status]||currentDue.current_status}</span></div>
             <strong>{paid.toLocaleString("fr-FR")} / {effectiveDue.toLocaleString("fr-FR")} Ar</strong>
             <div className="progress-track"><i style={{width:dueProgress+"%"}} /></div>
-            <p>{due===0?"Cotisation à jour.":"Reste à régler : "+due.toLocaleString("fr-FR")+" Ar · échéance "+new Date(currentDue.due_on+"T12:00:00").toLocaleDateString("fr-FR")}</p></>:<p>Aucun exercice de cotisation ne vous est actuellement attribué.</p>}
+            <p>{due===0?"Cotisation à jour.":"Reste à régler : "+due.toLocaleString("fr-FR")+" Ar · échéance "+new Date(currentDue.due_on+"T12:00:00").toLocaleDateString("fr-FR")}</p>{due>0&&<Link className="button primary" href="/pay" style={{width:"100%",marginTop:8}}>Payer par mobile money</Link>}</>:<p>Aucun exercice de cotisation ne vous est actuellement attribué.</p>}
           </div>
         </div>
       </div>

@@ -229,7 +229,7 @@ export default async function FinancePage() {
     <section className="page manage-page">
       <header className="page-header">
         <div><h1>Finances</h1><p>Solde {fmt(balance)} sur {allLedger.length} écriture(s) récente(s), {accountBalances.length} compte(s) actif(s).</p></div>
-        <div className="header-actions"><Link className="button secondary" href="/finance/dues"><UiIcon name="users"/>Cotisations</Link>{expenseSheet()}{paymentSheet()}</div>
+        <div className="header-actions"><Link className="button secondary" href="/finance/mobile"><UiIcon name="phone"/>Paiements mobiles</Link><Link className="button secondary" href="/finance/dues"><UiIcon name="users"/>Cotisations</Link>{expenseSheet()}{paymentSheet()}</div>
       </header>
 
       <div className="stat-grid manage-stats">
