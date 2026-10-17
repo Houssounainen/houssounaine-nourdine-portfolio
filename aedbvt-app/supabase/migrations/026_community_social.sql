@@ -42,11 +42,11 @@ revoke all on function aedbvt_social_private.stamp_author() from public, anon, a
 -- ——— Stockage ———
 insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types)
 values('community-media','community-media',true,8388608,array['image/jpeg','image/png','image/webp','image/gif'])
-on conflict (id) do update set public=true,file_size_limit=8388608,allowed_mime_types=array['image/jpeg','image/png','image/webp','image/gif'];
+on conflict (id) do nothing;
 
 insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types)
 values('identity-photos','identity-photos',false,3145728,array['image/jpeg','image/png','image/webp'])
-on conflict (id) do update set public=false,file_size_limit=3145728,allowed_mime_types=array['image/jpeg','image/png','image/webp'];
+on conflict (id) do nothing;
 
 insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types)
 values('library-files','library-files',false,15728640,array[
@@ -54,37 +54,28 @@ values('library-files','library-files',false,15728640,array[
   'application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   'application/vnd.ms-excel','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   'application/vnd.ms-powerpoint','application/vnd.openxmlformats-officedocument.presentationml.presentation'])
-on conflict (id) do update set public=false,file_size_limit=15728640;
+on conflict (id) do nothing;
 
 -- Chaque membre écrit uniquement dans son dossier (premier segment = son identifiant).
-drop policy if exists community_media_insert on storage.objects;
 create policy community_media_insert on storage.objects for insert to authenticated
 with check (bucket_id='community-media' and public.is_active_account() and (storage.foldername(name))[1]=(select auth.uid())::text);
-drop policy if exists community_media_delete on storage.objects;
-create policy community_media_delete on storage.objects for delete to authenticated
+create policy community_media_remove on storage.objects for delete to authenticated
 using (bucket_id='community-media' and ((storage.foldername(name))[1]=(select auth.uid())::text or public.is_staff()));
 
-drop policy if exists identity_photos_read on storage.objects;
 create policy identity_photos_read on storage.objects for select to authenticated
 using (bucket_id='identity-photos' and ((storage.foldername(name))[1]=(select auth.uid())::text or public.is_staff()));
-drop policy if exists identity_photos_insert on storage.objects;
 create policy identity_photos_insert on storage.objects for insert to authenticated
 with check (bucket_id='identity-photos' and public.is_active_account() and (storage.foldername(name))[1]=(select auth.uid())::text);
-drop policy if exists identity_photos_update on storage.objects;
 create policy identity_photos_update on storage.objects for update to authenticated
 using (bucket_id='identity-photos' and (storage.foldername(name))[1]=(select auth.uid())::text);
-drop policy if exists identity_photos_delete on storage.objects;
-create policy identity_photos_delete on storage.objects for delete to authenticated
+create policy identity_photos_remove on storage.objects for delete to authenticated
 using (bucket_id='identity-photos' and ((storage.foldername(name))[1]=(select auth.uid())::text or public.is_staff()));
 
-drop policy if exists library_files_read on storage.objects;
 create policy library_files_read on storage.objects for select to authenticated
 using (bucket_id='library-files' and public.is_active_account());
-drop policy if exists library_files_insert on storage.objects;
 create policy library_files_insert on storage.objects for insert to authenticated
 with check (bucket_id='library-files' and public.is_active_account() and (storage.foldername(name))[1]=(select auth.uid())::text);
-drop policy if exists library_files_delete on storage.objects;
-create policy library_files_delete on storage.objects for delete to authenticated
+create policy library_files_remove on storage.objects for delete to authenticated
 using (bucket_id='library-files' and ((storage.foldername(name))[1]=(select auth.uid())::text or public.is_staff()));
 
 -- ——— Photo d’identité et couverture d’article ———
@@ -200,7 +191,6 @@ do $$
 declare t text;
 begin
   foreach t in array array['community_posts','community_post_comments','market_listings','library_items','game_scores'] loop
-    execute format('drop trigger if exists stamp_author on public.%I',t);
     execute format('create trigger stamp_author before insert or update on public.%I for each row execute function aedbvt_social_private.stamp_author()',t);
   end loop;
 end $$;
@@ -238,7 +228,7 @@ create policy posts_update on public.community_posts for update to authenticated
 
 create policy post_likes_read on public.community_post_likes for select to authenticated using (public.is_active_account());
 create policy post_likes_insert on public.community_post_likes for insert to authenticated with check (public.is_active_account() and user_id=(select auth.uid()));
-create policy post_likes_delete on public.community_post_likes for delete to authenticated using (user_id=(select auth.uid()));
+create policy post_likes_remove on public.community_post_likes for delete to authenticated using (user_id=(select auth.uid()));
 
 create policy post_comments_read on public.community_post_comments for select to authenticated using (public.is_active_account() and (deleted_at is null or author_id=(select auth.uid()) or public.is_staff()));
 create policy post_comments_insert on public.community_post_comments for insert to authenticated with check (public.is_active_account() and author_id=(select auth.uid()));
@@ -247,7 +237,7 @@ create policy post_comments_update on public.community_post_comments for update 
 
 create policy chat_likes_read on public.chat_message_likes for select to authenticated using (public.is_active_account());
 create policy chat_likes_insert on public.chat_message_likes for insert to authenticated with check (public.is_active_account() and user_id=(select auth.uid()));
-create policy chat_likes_delete on public.chat_message_likes for delete to authenticated using (user_id=(select auth.uid()));
+create policy chat_likes_remove on public.chat_message_likes for delete to authenticated using (user_id=(select auth.uid()));
 
 create policy market_read on public.market_listings for select to authenticated using (public.is_active_account() and (deleted_at is null or author_id=(select auth.uid()) or public.is_staff()));
 create policy market_insert on public.market_listings for insert to authenticated with check (public.is_active_account() and author_id=(select auth.uid()));
@@ -274,29 +264,14 @@ select p.id as post_id,
 from public.community_posts p where p.deleted_at is null;
 grant select on public.community_post_stats to authenticated;
 
--- Les RPC publiques exposent désormais l’image de couverture.
-drop function if exists public.get_public_articles();
-create function public.get_public_articles()
-returns table(id uuid,title text,slug text,excerpt text,body text,category text,published_at timestamptz,featured boolean,cover_url text)
+-- Images de couverture des actualités publiques (complète get_public_articles sans en changer la signature).
+create or replace function public.get_public_article_covers()
+returns table(slug text, cover_url text)
 language sql stable security definer set search_path=public as $$
-  select a.id,a.title,a.slug,a.excerpt,a.body,a.category,a.published_at,a.featured,a.cover_url
-  from public.articles a
-  where a.published=true and a.status='published'
-  order by a.featured desc,a.published_at desc nulls last,a.created_at desc
+  select a.slug, a.cover_url from public.articles a
+  where a.published=true and a.status='published' and a.cover_url is not null
 $$;
-
-drop function if exists public.get_public_article(text);
-create function public.get_public_article(p_slug text)
-returns table(id uuid,title text,slug text,excerpt text,body text,category text,published_at timestamptz,featured boolean,cover_url text)
-language sql stable security definer set search_path=public as $$
-  select a.id,a.title,a.slug,a.excerpt,a.body,a.category,a.published_at,a.featured,a.cover_url
-  from public.articles a
-  where a.slug=p_slug and a.published=true and a.status='published'
-  limit 1
-$$;
-revoke all on function public.get_public_articles() from public;
-revoke all on function public.get_public_article(text) from public;
-grant execute on function public.get_public_articles() to anon, authenticated;
-grant execute on function public.get_public_article(text) to anon, authenticated;
+revoke all on function public.get_public_article_covers() from public;
+grant execute on function public.get_public_article_covers() to anon, authenticated;
 
 commit;

@@ -45,19 +45,16 @@ grant select on public.mobile_payments to authenticated;
 create policy mobile_payments_read on public.mobile_payments for select to authenticated
 using (profile_id=(select auth.uid()) or public.is_finance());
 
-drop trigger if exists audit_mobile_payments on public.mobile_payments;
 create trigger audit_mobile_payments after insert or update or delete on public.mobile_payments
 for each row execute function public.audit_row();
 
 -- Justificatifs (capture d’écran du SMS de confirmation), privés.
 insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types)
 values('payment-proofs','payment-proofs',false,3145728,array['image/jpeg','image/png','image/webp'])
-on conflict (id) do update set public=false,file_size_limit=3145728,allowed_mime_types=array['image/jpeg','image/png','image/webp'];
+on conflict (id) do nothing;
 
-drop policy if exists payment_proofs_read on storage.objects;
 create policy payment_proofs_read on storage.objects for select to authenticated
 using (bucket_id='payment-proofs' and ((storage.foldername(name))[1]=(select auth.uid())::text or public.is_finance()));
-drop policy if exists payment_proofs_insert on storage.objects;
 create policy payment_proofs_insert on storage.objects for insert to authenticated
 with check (bucket_id='payment-proofs' and public.current_role() is not null and (storage.foldername(name))[1]=(select auth.uid())::text);
 
