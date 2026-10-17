@@ -40,9 +40,11 @@ export default async function NewsPage({
       </form>
 
       {articles.length?<div className="site-list">
-        {articles.map((article:any)=><Link href={"/news/"+article.slug} key={article.id}>
+        {articles.map((article:any)=><Link href={"/news/"+article.slug} key={article.id} className={article.cover_url?"has-cover":undefined}>
           <span className="meta">{article.published_at?day(article.published_at):""}</span>
           <div><h3>{article.title}{article.featured&&<> <span className="badge featured">À la une</span></>}</h3><p>{article.category||"Actualité"}{article.excerpt?" — "+article.excerpt:""}</p></div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          {article.cover_url&&<img className="site-list-cover" src={article.cover_url} alt="" loading="lazy"/>}
         </Link>)}
       </div>:<p className="site-empty">{q||cat!=="Toutes"?"Aucune publication ne correspond à ces critères.":"Aucune publication pour le moment."}</p>}
     </section>

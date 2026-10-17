@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { Sheet } from "@/components/sheet";
+import { ImagePicker } from "@/components/image-picker";
 import { createClient } from "@/lib/supabase/server";
 import { can } from "@/lib/access";
 import { ARTICLE_CATEGORIES, articleStatusLabel } from "@/lib/content";
@@ -21,7 +23,7 @@ export default async function ContentPage({
   const [{data:profile},{data:rows}]=await Promise.all([
     supabase.from("profiles").select("role").eq("id",user!.id).single(),
     supabase.from("articles")
-      .select("id,title,slug,excerpt,body,category,status,scheduled_for,featured,notify_on_publish,published_at,created_at,updated_at")
+      .select("*")
       .order("updated_at",{ascending:false}),
   ]);
   if(!can(profile?.role,"content_manage")) notFound();
@@ -50,14 +52,18 @@ export default async function ContentPage({
       <article><small>Archivés</small><strong>{counts.archived||0}</strong><span>retirés du flux</span></article>
     </div>
 
-    <form action={createEditorialArticle} className="panel editorial-workbench">
-      <div className="form-title"><div><span className="eyebrow">Nouvel article</span><h2>Rédiger une publication</h2></div><button className="button primary">Enregistrer</button></div>
+    <div className="header-actions" style={{margin:"0 0 16px"}}><Sheet label="Nouvel article" title="Rédiger une publication" description="Brouillon, programmation ou publication immédiate." wide>
+    <form action={createEditorialArticle} className="form-stack">
+      
       <div className="form-two"><label>Titre<input name="title" required maxLength={160}/></label><label>Catégorie<select name="category">{ARTICLE_CATEGORIES.map((category)=><option key={category}>{category}</option>)}</select></label></div>
       <label>Résumé<input name="excerpt" maxLength={320}/></label>
+      <div><p className="muted" style={{margin:"0 0 6px"}}>Image de couverture</p><ImagePicker name="cover_url" max={1} folder="articles" label="Ajouter une image"/></div>
       <label>Contenu<textarea name="body" rows={9} required/></label>
       <div className="form-two"><label>Statut<select name="status" defaultValue="draft"><option value="draft">Brouillon</option><option value="scheduled">Programmer</option><option value="published">Publier maintenant</option></select></label><label>Date de programmation<input type="datetime-local" name="scheduled_for"/></label></div>
       <div className="editorial-options"><label><input type="checkbox" name="featured"/> Mettre en avant</label><label><input type="checkbox" name="notify_on_publish" defaultChecked/> Notifier les membres à la publication</label></div>
+      <button className="button primary">Enregistrer</button>
     </form>
+    </Sheet></div>
 
     <form className="panel request-filter-bar" method="get">
       <label className="request-filter-search"><span className="sr-only">Rechercher</span><input name="q" defaultValue={filters.q||""} placeholder="Titre, catégorie, contenu…"/></label>
@@ -77,6 +83,7 @@ export default async function ContentPage({
           <input type="hidden" name="article_id" value={article.id}/>
           <div className="form-two"><label>Titre<input name="title" defaultValue={article.title} required maxLength={160}/></label><label>Catégorie<select name="category" defaultValue={article.category||"Vie associative"}>{ARTICLE_CATEGORIES.map((category)=><option key={category}>{category}</option>)}</select></label></div>
           <label>Résumé<input name="excerpt" defaultValue={article.excerpt||""} maxLength={320}/></label>
+          <div><p className="muted" style={{margin:"0 0 6px"}}>Image de couverture</p><ImagePicker name="cover_url" max={1} folder="articles" label="Ajouter une image" initial={article.cover_url?[article.cover_url]:[]}/></div>
           <label>Contenu<textarea name="body" rows={10} defaultValue={article.body} required/></label>
           <div className="form-two"><label>Statut<select name="status" defaultValue={article.status==="archived"?"draft":article.status}><option value="draft">Brouillon</option><option value="scheduled">Programmer</option><option value="published">Publié</option></select></label><label>Date de programmation<input type="datetime-local" name="scheduled_for" defaultValue={localInputValue(article.scheduled_for)}/></label></div>
           <div className="editorial-options"><label><input type="checkbox" name="featured" defaultChecked={article.featured}/> Mettre en avant</label><label><input type="checkbox" name="notify_on_publish" defaultChecked={article.notify_on_publish}/> Notification à la publication</label></div>

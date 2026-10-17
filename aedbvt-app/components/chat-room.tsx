@@ -54,6 +54,35 @@ export function ChatRoom({ viewerId, canModerate, initialMessages, initialHasMor
   const nearBottom = useRef(true);
   const historyAnchor = useRef<{ height: number; top: number } | null>(null);
 
+  // Mentions « J’aime » : chargées à part, pour ne pas alourdir la synchronisation des messages.
+  const [likes, setLikes] = useState<Record<string, { count: number; liked: boolean }>>({});
+  const likeIds = messages.filter(message => !message.deleted_at).map(message => message.id).join(",");
+  useEffect(() => {
+    const ids = likeIds ? likeIds.split(",") : [];
+    if (!ids.length) return;
+    let cancelled = false;
+    void client.from("chat_message_likes").select("message_id,user_id").in("message_id", ids.slice(-150)).then(({ data, error }) => {
+      if (cancelled || error || !data) return;
+      const next: Record<string, { count: number; liked: boolean }> = {};
+      for (const row of data as { message_id: string; user_id: string }[]) {
+        const entry = next[row.message_id] || { count: 0, liked: false };
+        entry.count += 1; if (row.user_id === viewerId) entry.liked = true;
+        next[row.message_id] = entry;
+      }
+      setLikes(next);
+    });
+    return () => { cancelled = true; };
+  }, [client, likeIds, viewerId]);
+  const toggleLike = useCallback(async (id: string) => {
+    const current = likes[id] || { count: 0, liked: false };
+    const liked = !current.liked;
+    setLikes(state => ({ ...state, [id]: { liked, count: Math.max(0, current.count + (liked ? 1 : -1)) } }));
+    const { error } = liked
+      ? await client.from("chat_message_likes").insert({ message_id: id })
+      : await client.from("chat_message_likes").delete().eq("message_id", id).eq("user_id", viewerId);
+    if (error && error.code !== "23505") setLikes(state => ({ ...state, [id]: current }));
+  }, [client, likes, viewerId]);
+
   const updateMessages = useCallback((update: (current: ChatMessage[]) => ChatMessage[]) => {
     if (!mounted.current || blockedRef.current) return;
     const next = update(messagesRef.current);
@@ -249,7 +278,8 @@ export function ChatRoom({ viewerId, canModerate, initialMessages, initialHasMor
                     {!own && <span className="chat-avatar" aria-hidden="true">{message.author_name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase()}</span>}
                     <div className="chat-message-content">
                       <div className="chat-message-meta"><b>{own ? "Vous" : message.author_name}</b><time dateTime={message.created_at} title={day}>{timeLabel(message.created_at)}</time></div>
-                      <div className={`chat-bubble ${message.deleted_at ? "is-removed" : ""}`}>{message.deleted_at ? <em>Message retiré</em> : message.body}</div>
+                      <div className={`chat-bubble ${message.deleted_at ? "is-removed" : ""}`} onDoubleClick={() => { if (!message.deleted_at) void toggleLike(message.id); }}>{message.deleted_at ? <em>Message retiré</em> : message.body}</div>
+                      {!message.deleted_at && <button type="button" className={`chat-like${likes[message.id]?.liked ? " is-liked" : ""}${likes[message.id]?.count ? " has-count" : ""}`} aria-pressed={Boolean(likes[message.id]?.liked)} aria-label={likes[message.id]?.liked ? "Je n’aime plus" : "J’aime"} onClick={() => void toggleLike(message.id)}><UiIcon name="heart"/>{likes[message.id]?.count ? <span>{likes[message.id].count}</span> : null}</button>}
                       {!message.deleted_at && (own || canModerate) && <div className="chat-message-actions">
                         {confirmId === message.id ? <div className="chat-remove-confirm" role="group" aria-label="Confirmer le retrait du message"><span>Retirer ce message pour tous ?</span><button type="button" onClick={() => setConfirmId(null)} disabled={removingId === message.id}>Annuler</button><button type="button" onClick={() => void remove(message.id)} disabled={Boolean(removingId)}>{removingId === message.id ? "Retrait…" : "Confirmer"}</button></div> : <button type="button" onClick={() => setConfirmId(message.id)} disabled={!online}>{own ? "Retirer" : "Modérer"}<span className="sr-only"> le message de {message.author_name} à {timeLabel(message.created_at)}</span></button>}
                       </div>}

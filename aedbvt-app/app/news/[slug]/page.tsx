@@ -24,6 +24,8 @@ export default async function ArticlePage({params}:{params:Promise<{slug:string}
         <p className="article-page-meta">{article.category||"Actualité"}{article.published_at?" · "+new Date(article.published_at).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric",timeZone:"Indian/Antananarivo"}):""}</p>
         <h1>{article.title}</h1>
         {article.excerpt&&<p className="article-page-lead">{article.excerpt}</p>}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        {article.cover_url&&<img className="article-page-cover" src={article.cover_url} alt=""/>}
         <div className="article-page-body">{article.body}</div>
       </article>
     </section>

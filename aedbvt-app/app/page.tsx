@@ -8,7 +8,7 @@ import { UiIcon } from "@/components/ui-icon";
 
 export const dynamic = "force-dynamic";
 
-type PublicArticle = { id: string; slug: string; title: string; featured: boolean; category: string; published_at: string | null; excerpt: string | null; body: string };
+type PublicArticle = { id: string; slug: string; title: string; featured: boolean; category: string; published_at: string | null; excerpt: string | null; body: string; cover_url?: string | null };
 type PublicEvent = { title: string; starts_at: string; ends_at: string | null; location: string | null };
 type PublicPosition = { slug: string; title: string; parent_slug: string | null; holder_name: string | null };
 
@@ -64,9 +64,11 @@ export default async function Home() {
 
       <section className="site-section" aria-labelledby="news-title">
         <header><h2 id="news-title">Actualités</h2><p>Communiqués et informations officielles.</p><Link href="/news">Toutes les actualités</Link></header>
-        {latest.length ? <div className="site-list">{latest.map(article => <Link href={"/news/" + article.slug} key={article.id}>
+        {latest.length ? <div className="site-list">{latest.map(article => <Link href={"/news/" + article.slug} key={article.id} className={article.cover_url ? "has-cover" : undefined}>
           <span className="meta">{article.published_at ? day(article.published_at) : article.category}</span>
           <div><h3>{article.title}</h3><p>{article.category}{article.excerpt ? " — " + article.excerpt : ""}</p></div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          {article.cover_url && <img className="site-list-cover" src={article.cover_url} alt="" loading="lazy"/>}
         </Link>)}</div> : <p className="site-empty">Aucune publication pour le moment.</p>}
       </section>
 

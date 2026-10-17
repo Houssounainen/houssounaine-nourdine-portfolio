@@ -3,6 +3,7 @@ import Link from "next/link";
 import QRCode from "qrcode";
 import { createClient } from "@/lib/supabase/server";
 import { MemberCardActions } from "@/components/member-card-actions";
+import { MemberPhoto } from "@/components/member-photo";
 import { createMyRequest, updateMyProfile } from "./actions";
 
 const requestLabels: Record<string,string> = {
@@ -18,7 +19,7 @@ export default async function MySpacePage() {
 
   const [{ data: profile }, { data: member }] = await Promise.all([
     supabase.from("profiles").select("full_name,role,active").eq("id", user!.id).single(),
-    supabase.from("members").select("id,member_number,full_name,village,program,study_level,phone,status,joined_at,verification_token").eq("profile_id", user!.id).maybeSingle(),
+    supabase.from("members").select("*").eq("profile_id", user!.id).maybeSingle(),
   ]);
 
   if (!member) {
@@ -54,6 +55,7 @@ export default async function MySpacePage() {
   const dueLabels:Record<string,string>={due:"À régler",partial:"Paiement partiel",paid:"À jour",overdue:"En retard",exempt:"Exonéré"};
   const appUrl=(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000").replace(/\/$/,"");
   const verificationUrl=appUrl+"/verify/member/"+member.verification_token;
+  const photoUrl=member.photo_path?(await supabase.storage.from("identity-photos").createSignedUrl(member.photo_path,3600)).data?.signedUrl||null:null;
   const qr=await QRCode.toDataURL(verificationUrl,{width:220,margin:1,errorCorrectionLevel:"M"});
 
   return (
@@ -64,7 +66,7 @@ export default async function MySpacePage() {
         <article className="member-card printable-card">
           <div className="member-card-top"><Image src="/aedbvt-logo.webp" alt="AEDBVT" width={64} height={64}/><div><span>CARTE DE MEMBRE</span><b>AEDBVT</b></div></div>
           <div className="member-card-body">
-            <div><small>Nom complet</small><h2>{member.full_name}</h2><small>Numéro</small><strong>{member.member_number}</strong><div className="card-meta"><span>{member.village || "Village non renseigné"}</span><span>{member.program || "Filière non renseignée"}</span><span>{member.study_level || "Niveau non renseigné"}</span></div></div>
+            <MemberPhoto url={photoUrl} name={member.full_name}/><div><small>Nom complet</small><h2>{member.full_name}</h2><small>Numéro</small><strong>{member.member_number}</strong><div className="card-meta"><span>{member.village || "Village non renseigné"}</span><span>{member.program || "Filière non renseignée"}</span><span>{member.study_level || "Niveau non renseigné"}</span></div></div>
             <div className="qr-wrap"><img src={qr} alt="QR code de vérification de la carte membre"/><small>Scanner pour vérifier</small></div>
           </div>
           <div className="member-card-foot"><span>Adhésion : {member.joined_at ? new Date(member.joined_at).toLocaleDateString("fr-FR") : "—"}</span><span>Statut : {member.status === "active" ? "ACTIF" : member.status.toUpperCase()}</span></div>
