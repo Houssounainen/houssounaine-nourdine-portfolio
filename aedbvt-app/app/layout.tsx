@@ -1,7 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { PwaBootstrap } from "@/components/pwa-bootstrap";
+import "@fontsource-variable/inter";
+import "@fontsource-variable/bricolage-grotesque";
 import "./globals.css";
 import "./modern.css";
+import "./refonte.css";
 
 export const metadata: Metadata = {
   applicationName:"AEDBVT",
@@ -23,7 +26,7 @@ export const viewport:Viewport={
   width:"device-width",
   initialScale:1,
   viewportFit:"cover",
-  themeColor:"#07162f",
+  themeColor:"#081631",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

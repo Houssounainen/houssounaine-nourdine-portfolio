@@ -5,6 +5,22 @@ import { ModuleExplorer } from "@/components/module-explorer";
 import { UiIcon } from "@/components/ui-icon";
 import { ROLE_LABELS, normalizeRole } from "@/lib/access";
 
+function daysUntil(date:string){
+  const day=(value:Date)=>new Date(value.toLocaleDateString("en-CA",{timeZone:"Indian/Antananarivo"})).getTime();
+  return String(Math.max(0,Math.round((day(new Date(date))-day(new Date()))/864e5)));
+}
+
+function capitalize(value:string){
+  return value.charAt(0).toUpperCase()+value.slice(1);
+}
+
+function relativeDay(date:string){
+  const days=Number(daysUntil(date));
+  if(days===0) return "aujourd’hui";
+  if(days===1) return "demain";
+  return "le "+new Date(date).toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",timeZone:"Indian/Antananarivo"});
+}
+
 export default async function DashboardPage() {
   await publishDueArticles();
   const supabase = await createClient();
@@ -61,6 +77,12 @@ export default async function DashboardPage() {
   const statsUnavailable=[members,payments,events,meetings,docs,openTaskCount,overdueTaskCount,blockedTaskCount].some(result=>result.error);
   const unreadOps=notificationResult.data?.length||0;
 
+  const hour=Number(new Intl.DateTimeFormat("fr-FR",{hour:"numeric",hour12:false,timeZone:"Indian/Antananarivo"}).format(new Date()));
+  const greeting=hour<5?"Bonne nuit":hour<12?"Bonjour":hour<18?"Bon après-midi":"Bonsoir";
+  const firstName=profile?.full_name?.split(" ")[0]||"bienvenue";
+  const todayLabel=capitalize(new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",timeZone:"Indian/Antananarivo"}));
+  const nextItem=agenda[0];
+
   const quickLinks=[
     ["/me","Mon espace","Carte & suivi","Profil, cotisations, reçus et demandes."],
     ["/agenda","Agenda","Vie associative","Événements, réunions et participations."],
@@ -74,9 +96,22 @@ export default async function DashboardPage() {
 
   return (
     <section className="page modern-dashboard">
-      <header className="page-header"><div><span className="eyebrow">Mon quotidien · AEDBVT</span><h1>Tableau de bord</h1><p className="dashboard-subtitle">Bonjour {profile?.full_name?.split(" ")[0]||"et bienvenue"}, voici l’essentiel de votre association.</p></div><span className="status-pill"><UiIcon name="shield" width={16} height={16}/>{ROLE_LABELS[normalizeRole(role)]}</span></header>
-
-      <div className="dashboard-welcome"><div><span className="eyebrow">Votre communauté, votre espace</span><h2>On avance ensemble.</h2><p>Vos rendez-vous, vos démarches et les dernières nouvelles, au même endroit.</p></div><Link className="button" href="/me">Mon espace personnel <UiIcon name="arrow"/></Link></div>
+      <header className="today-hero">
+        <div className="today-copy">
+          <span className="today-date"><i aria-hidden="true"/>{todayLabel}</span>
+          <h1>{greeting},<br/><em>{firstName}.</em></h1>
+          <p>{nextItem?<>Prochain rendez-vous : <b>{nextItem.title}</b> {relativeDay(nextItem.starts_at)}.</>:"Aucun rendez-vous à l’horizon : profitez-en pour faire le point sur votre espace."}</p>
+          <div className="today-actions">
+            <Link className="button today-primary" href="/me#carte"><UiIcon name="user"/> Ma carte de membre</Link>
+            <Link className="button today-ghost" href="/agenda"><UiIcon name="calendar"/> Agenda</Link>
+            <Link className="button today-ghost" href="/chat"><UiIcon name="chat"/> Discussion</Link>
+          </div>
+        </div>
+        <aside className="today-side" aria-label="Votre statut">
+          <span className="today-role"><UiIcon name="shield" width={16} height={16}/>{ROLE_LABELS[normalizeRole(role)]}</span>
+          {nextItem?<div className="today-countdown"><small>{nextItem.kind}</small><strong>{daysUntil(nextItem.starts_at)}</strong><span>{daysUntil(nextItem.starts_at)==="0"?"aujourd’hui":daysUntil(nextItem.starts_at)==="1"?"jour restant":"jours restants"}</span><p>{nextItem.location||"Lieu à confirmer"}</p></div>:<div className="today-countdown"><small>Agenda</small><strong>—</strong><span>rien de prévu</span></div>}
+        </aside>
+      </header>
       {statsUnavailable&&<p className="notice" role="status">Certains indicateurs n’ont pas pu être chargés. Actualisez la page pour réessayer.</p>}
 
       {pinned.length>0&&<div className="dashboard-alerts">{pinned.slice(0,2).map((item)=><Link href="/announcements" className={"dashboard-alert level-"+item.level} key={item.id}><b>{item.level==="urgent"?"Urgent":"Annonce"}</b><span>{item.title}</span><small>{item.message}</small></Link>)}</div>}

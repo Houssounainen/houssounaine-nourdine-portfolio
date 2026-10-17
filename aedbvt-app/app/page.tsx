@@ -40,29 +40,33 @@ export default async function Home() {
   return <main id="contenu" className="public-home community-home">
     <PublicNav/>
     <div className="community-container">
-      <section className="community-hero">
-        <div className="community-hero-copy">
-          <span className="community-location"><span aria-hidden="true"/> Darsalama · Bandrani-Vouani · {settings.association_city}</span>
-          <h1>Grandir ensemble.<br/><em>Réussir à {settings.association_city}.</em></h1>
-          <p className="community-full-name">{settings.association_name}</p>
-          <p className="community-description">{settings.homepage_message}</p>
-          <div className="community-actions"><Link className="button primary" href="/join">Rejoindre l’AEDBVT <UiIcon name="arrow"/></Link><Link className="button community-secondary" href="/association">Découvrir l’association</Link></div>
-          <Link className="community-tracking" href="/application-status">Déjà candidat ? Suivre mon dossier <UiIcon name="arrow"/></Link>
+      <section className="stage-hero" aria-labelledby="hero-title">
+        <div className="stage-aurora" aria-hidden="true"><i/><i/><i/></div>
+        <div className="stage-copy">
+          <span className="stage-location"><span aria-hidden="true"/> Darsalama · Bandrani-Vouani · {settings.association_city}</span>
+          <h1 id="hero-title">Grandir ensemble.<br/><em>Réussir à {settings.association_city}.</em></h1>
+          <p className="stage-name">{settings.association_name}</p>
+          <p className="stage-description">{settings.homepage_message}</p>
+          <div className="stage-actions"><Link className="button stage-primary" href="/join">Rejoindre l’AEDBVT <UiIcon name="arrow"/></Link><Link className="button stage-ghost" href="/association">Découvrir l’association</Link></div>
+          <Link className="stage-tracking" href="/application-status">Déjà candidat ? Suivre mon dossier <UiIcon name="arrow"/></Link>
         </div>
-        <aside className="community-identity" aria-label="Notre communauté">
-          <div className="identity-topline"><span>UNIS PAR NOS ORIGINES</span><UiIcon name="arrowUp"/></div>
-          <div className="identity-orbit">
-            <span className="orbit-ring orbit-ring-outer" aria-hidden="true"/><span className="orbit-ring orbit-ring-inner" aria-hidden="true"/>
-            <span className="identity-chip chip-one"><UiIcon name="users"/> Entraide</span>
-            <div className="identity-seal"><Image src="/aedbvt-logo.webp" alt={"Logo " + settings.association_short_name} width={160} height={160} priority/></div>
-            <span className="identity-chip chip-two"><UiIcon name="heart"/> Engagement</span>
-            <span className="orbit-dot" aria-hidden="true"/>
+        <div className="stage-visual">
+          <div className="stage-seal">
+            <svg className="seal-ring" viewBox="0 0 300 300" aria-hidden="true"><defs><path id="seal-path" d="M150 150m-128 0a128 128 0 1 1 256 0a128 128 0 1 1-256 0"/></defs><text><textPath href="#seal-path">UNIS PAR NOS ORIGINES · TOURNÉS VERS L’AVENIR · DARSALAMA · BANDRANI-VOUANI · </textPath></text></svg>
+            <Image src="/aedbvt-logo.webp" alt={"Logo " + settings.association_short_name} width={180} height={180} priority/>
           </div>
-          <div className="identity-caption"><span>TOURNÉS VERS L’AVENIR</span><h2>Des racines communes.<br/>Des projets à partager.</h2><p>{settings.association_city} · {settings.association_country}</p></div>
-        </aside>
+          {nextEvent ? <Link className="stage-next" href="/events"><small>Prochain rendez-vous</small><b>{nextEvent.title}</b><span><UiIcon name="calendar" width={16} height={16}/>{(date => date.charAt(0).toUpperCase()+date.slice(1))(new Date(nextEvent.starts_at).toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",timeZone:"Indian/Antananarivo"}))}</span></Link>
+            : <Link className="stage-next" href="/news"><small>Le fil de l’association</small><b>{featured?.title || "Suivez notre actualité"}</b><span><UiIcon name="document" width={16} height={16}/>Lire la suite</span></Link>}
+        </div>
+        <dl className="stage-stats">
+          <div><dt>Publications</dt><dd>{articles.length}</dd></div>
+          <div><dt>Rendez-vous à venir</dt><dd>{upcoming.length}</dd></div>
+          <div><dt>Fonctions du Bureau</dt><dd>{positionResult.data?.length || 0}</dd></div>
+          <div><dt>Partenaires</dt><dd>{partnerResult.data?.length || 0}</dd></div>
+        </dl>
       </section>
 
-      <div className="community-values" aria-label="Les valeurs de notre communauté"><span><UiIcon name="users"/> Se retrouver</span><span><UiIcon name="heart"/> S’entraider</span><span><UiIcon name="grid"/> Construire ensemble</span><Link href="/login">Mon espace membre <UiIcon name="arrow"/></Link></div>
+      <div className="values-marquee" aria-label="Les valeurs de notre communauté"><div className="values-track">{[0,1].map(copy => <div aria-hidden={copy === 1 || undefined} key={copy}><span><UiIcon name="users"/> Se retrouver</span><span><UiIcon name="heart"/> S’entraider</span><span><UiIcon name="grid"/> Construire ensemble</span><span><UiIcon name="shield"/> Transparence</span><span><UiIcon name="calendar"/> Participer</span><span><UiIcon name="check"/> Réussir ses études</span></div>)}</div></div>
 
       {results.some(result => result.error) && <p className="notice" role="status">Certaines informations sont momentanément indisponibles. Vous pouvez réessayer en actualisant la page.</p>}
 

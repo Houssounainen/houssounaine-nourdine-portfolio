@@ -3,6 +3,7 @@ import Link from "next/link";
 import { MobileNavigation } from "@/components/mobile-navigation";
 import { SignOutButton } from "@/components/sign-out-button";
 import { SideNavigation, WorkspaceTopbar } from "@/components/side-navigation";
+import { CommandPalette } from "@/components/command-palette";
 import { navigationForRole, normalizeRole, ROLE_LABELS } from "@/lib/access";
 
 export function AppShell({ children, profile, unreadNotifications=0 }: { children: React.ReactNode; profile: { full_name?: string | null; role?: string | null } | null; unreadNotifications?:number }) {
@@ -22,6 +23,7 @@ export function AppShell({ children, profile, unreadNotifications=0 }: { childre
         <SignOutButton/>
       </aside>
       <div className="workspace-main"><WorkspaceTopbar links={links} unreadCount={unreadNotifications}/><main id="contenu" className="app-main">{children}</main></div>
+      <CommandPalette links={links}/>
       <MobileNavigation links={links} profileName={profileName} role={ROLE_LABELS[role]} unreadCount={unreadNotifications}/>
     </div>
   );
