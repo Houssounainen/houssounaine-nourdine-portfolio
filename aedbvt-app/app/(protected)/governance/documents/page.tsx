@@ -13,7 +13,7 @@ export default async function GovernanceDocumentsPage(){
   const staff=isStaff(profile?.role);
 
   return <section className="page">
-    <header className="page-header"><div><Link className="back-link" href="/governance">← Gouvernance</Link><span className="eyebrow">Référentiel institutionnel</span><h1>Centre documentaire</h1></div><Link className="button secondary" href="/governance/decisions">Registre des décisions</Link></header>
+    <header className="page-header"><div><Link className="back-link" href="/governance">← Gouvernance</Link><h1>Documents officiels</h1></div><Link className="button secondary" href="/governance/decisions">Registre des décisions</Link></header>
 
     {staff&&<form action={createGovernanceDocument} className="panel editorial-form document-create">
       <div className="form-title"><div><span className="eyebrow">Nouveau texte</span><h2>Créer un document institutionnel</h2></div><button className="button primary">Créer le document</button></div>

@@ -16,7 +16,7 @@ export default async function AnnouncementsPage() {
 
   return (
     <section className="page">
-      <header className="page-header"><div><span className="eyebrow">Communication rapide</span><h1>Alertes & annonces</h1></div><span className="status-pill">{announcements.filter((x)=>x.pinned).length} épinglée(s)</span></header>
+      <header className="page-header"><div><h1>Annonces</h1></div><span className="status-pill">{announcements.filter((x)=>x.pinned).length} épinglée(s)</span></header>
 
       {isStaff(profile?.role) && (
         <form action={createAnnouncement} className="panel editorial-form">

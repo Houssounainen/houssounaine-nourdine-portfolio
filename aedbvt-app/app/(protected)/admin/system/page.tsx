@@ -28,7 +28,7 @@ export default async function SystemPage(){
   const androidFingerprints=(process.env.ANDROID_SHA256_FINGERPRINTS||"").split(",").map(x=>x.trim()).filter(Boolean);
 
   return <section className="page">
-    <header className="page-header"><div><span className="eyebrow">Administration · production</span><h1>État du système</h1></div><Link className="button secondary" href="/admin">← Administration</Link></header>
+    <header className="page-header"><div><h1>État du système</h1></div><Link className="button secondary" href="/admin">← Administration</Link></header>
 
     <div className="stat-grid system-summary">
       <article><small>Environnement</small><strong>{environment}</strong><span>Vercel / Node</span></article>

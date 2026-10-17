@@ -29,7 +29,7 @@ export default async function InvoiceDetailPage({params}:{params:Promise<{id:str
   const editable=invoice.status!=="paid"&&invoice.status!=="cancelled"&&paid===0;
 
   return <section className="page">
-    <header className="page-header"><div><Link className="back-link" href="/documents">← Documents</Link><span className="eyebrow">Facture</span><h1>{invoice.number}</h1></div><span className={"status-pill status-"+invoice.status}>{derived}</span></header>
+    <header className="page-header"><div><Link className="back-link" href="/documents">← Documents</Link><h1>{invoice.number}</h1></div><span className={"status-pill status-"+invoice.status}>{derived}</span></header>
 
     <div className="document-detail-grid">
       <article className="panel document-paper">

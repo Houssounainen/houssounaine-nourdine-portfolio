@@ -23,7 +23,7 @@ export default async function CommunicationPage(){
   if(!can(profile?.role,"communication_manage")) notFound();
 
   return <section className="page">
-    <header className="page-header"><div><span className="eyebrow">Communication interne</span><h1>Messages ciblés</h1></div><span className="status-pill">{broadcasts?.length||0} campagne(s)</span></header>
+    <header className="page-header"><div><h1>Communication</h1></div><span className="status-pill">{broadcasts?.length||0} campagne(s)</span></header>
 
     <div className="content-grid communication-grid">
       <form action={sendInternalBroadcast} className="panel form-stack">

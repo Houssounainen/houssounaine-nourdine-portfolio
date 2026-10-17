@@ -8,7 +8,7 @@ export default async function TermsPage(){
   return <main id="contenu" className="public-info-page">
     <article className="public-info-card">
       <Link href="/" className="public-back-link">← {settings.association_short_name}</Link>
-      <span className="eyebrow">Utilisation</span><h1>Conditions d’utilisation</h1>
+      <h1>Conditions d’utilisation</h1>
       <p className="public-info-lead">AEDBVT est un espace numérique associatif destiné aux membres, responsables et candidats autorisés.</p>
 
       <section><h2>Comptes et accès</h2><p>Les comptes sécurisés sont créés ou invités par l’administration. Chaque utilisateur doit protéger ses identifiants et utiliser uniquement les fonctions correspondant à ses responsabilités.</p></section>

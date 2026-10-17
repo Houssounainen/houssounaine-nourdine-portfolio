@@ -17,7 +17,7 @@ export default async function DecisionRegisterPage(){
   const taskMap=new Map(tasks.map(t=>[t.decision_id,t]));
 
   return <section className="page">
-    <header className="page-header"><div><Link className="back-link" href="/governance">← Gouvernance</Link><span className="eyebrow">Traçabilité institutionnelle</span><h1>Registre des décisions</h1></div><span className="status-pill">{decisions?.length||0} décision(s)</span></header>
+    <header className="page-header"><div><Link className="back-link" href="/governance">← Gouvernance</Link><h1>Registre des décisions</h1></div><span className="status-pill">{decisions?.length||0} décision(s)</span></header>
     <div className="decision-register">
       {(decisions||[]).map((d)=>{
         const task=taskMap.get(d.id);

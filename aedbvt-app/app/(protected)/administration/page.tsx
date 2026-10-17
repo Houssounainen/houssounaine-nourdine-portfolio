@@ -47,7 +47,7 @@ export default async function AdministrationPage(){
 
   return <section className="page">
     <header className="page-header">
-      <div><span className="eyebrow">Secrétariat & correspondances</span><h1>Centre administratif</h1></div>
+      <div><h1>Secrétariat</h1></div>
       <span className="status-pill">{pendingReview} élément(s) en revue</span>
     </header>
 

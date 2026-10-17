@@ -48,7 +48,7 @@ export default async function OrganizationPage() {
 
   return (
     <section className="page">
-      <header className="page-header"><div><span className="eyebrow">Structure & responsabilités</span><h1>Organigramme</h1></div><span className="status-pill">{rows.filter((x)=>x.member_id).length}/{rows.length} postes attribués</span></header>
+      <header className="page-header"><div><h1>Organigramme</h1></div><span className="status-pill">{rows.filter((x)=>x.member_id).length}/{rows.length} postes attribués</span></header>
       <div className="org-tree">{renderBranch("root")}</div>
     </section>
   );

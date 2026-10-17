@@ -37,7 +37,7 @@ export default async function PartnersPage({
   const received=(commitments||[]).filter((c)=>c.contribution_type!=="in_kind"&&c.status!=="cancelled").reduce((sum,c)=>sum+Number(c.received_amount||0),0);
 
   return <section className="page">
-    <header className="page-header"><div><span className="eyebrow">Relations extérieures</span><h1>Partenaires & soutiens</h1></div><span className="status-pill">{partners?.length||0} partenaire(s)</span></header>
+    <header className="page-header"><div><h1>Partenaires</h1></div><span className="status-pill">{partners?.length||0} partenaire(s)</span></header>
 
     <div className="stat-grid">
       <article><small>Partenaires actifs</small><strong>{active}</strong><span>relations en cours</span></article>

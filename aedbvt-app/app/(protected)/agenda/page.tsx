@@ -58,7 +58,7 @@ export default async function AgendaPage({ searchParams }: { searchParams: Promi
 
   return (
     <section className="page">
-      <header className="page-header"><div><span className="eyebrow">Calendrier associatif</span><h1>Agenda</h1></div><span className="status-pill">{upcomingEvents.length + upcomingMeetings.length} rendez-vous à venir</span></header>
+      <header className="page-header"><div><h1>Agenda</h1></div><span className="status-pill">{upcomingEvents.length + upcomingMeetings.length} rendez-vous à venir</span></header>
 
       {isStaff(profile?.role) && (
         <div className="content-grid">

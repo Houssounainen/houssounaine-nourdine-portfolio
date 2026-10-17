@@ -26,42 +26,25 @@ export default async function NewsPage({
     return categoryOk&&(!q||haystack.includes(q));
   });
 
-  const featured=articles.filter((article:any)=>article.featured);
-  const regular=articles.filter((article:any)=>!article.featured);
+  const day=(date:string)=>new Date(date).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric",timeZone:"Indian/Antananarivo"});
 
   return <main id="contenu">
     <PublicNav/>
     <section className="page">
-      <header className="page-header"><div><span className="eyebrow">Information officielle</span><h1>Actualités</h1><p className="lead">Les publications officielles de l’AEDBVT accessibles à tous.</p></div><span className="status-pill">{articles.length} publication(s)</span></header>
+      <header className="page-header"><div><h1>Actualités</h1><p>Communiqués et informations officielles de l’AEDBVT.</p></div><span className="status-pill">{articles.length} publication{articles.length>1?"s":""}</span></header>
 
       <form className="search-bar" method="get">
-        <input name="q" type="search" placeholder="Rechercher une actualité…" defaultValue={params.q||""}/>
-        <select name="cat" defaultValue={cat}>{categories.map((value)=><option key={value}>{value}</option>)}</select>
+        <input name="q" type="search" placeholder="Rechercher" defaultValue={params.q||""} aria-label="Rechercher une actualité"/>
+        <select name="cat" defaultValue={cat} aria-label="Catégorie">{categories.map((value)=><option key={value}>{value}</option>)}</select>
         <button className="button secondary">Filtrer</button>
       </form>
 
-      {featured.length>0&&<section className="featured-news">
-        <div className="section-heading"><span className="eyebrow">À la une</span><h2>Publications mises en avant</h2></div>
-        <div className="featured-news-grid">
-          {featured.map((article:any)=><Link className="featured-news-card" href={"/news/"+article.slug} key={article.id}>
-            <span className="badge featured">À la une</span>
-            <small>{article.category||"Actualité"} · {new Date(article.published_at).toLocaleDateString("fr-FR")}</small>
-            <h3>{article.title}</h3>
-            <p>{article.excerpt||article.body.slice(0,180)+(article.body.length>180?"…":"")}</p>
-            <b>Lire l’article →</b>
-          </Link>)}
-        </div>
-      </section>}
-
-      <div className="article-grid">
-        {regular.map((article:any)=><article className="panel article-card" key={article.id}>
-          <div className="article-meta"><span className="badge">{article.category||"Actualité"}</span><time>{new Date(article.published_at).toLocaleDateString("fr-FR")}</time></div>
-          <h2>{article.title}</h2>
-          {article.excerpt&&<p className="article-excerpt">{article.excerpt}</p>}
-          <Link className="article-read-link" href={"/news/"+article.slug}>Lire l’article →</Link>
-        </article>)}
-        {!articles.length&&<div className="panel empty-state">Aucune actualité publiée pour le moment.</div>}
-      </div>
+      {articles.length?<div className="site-list">
+        {articles.map((article:any)=><Link href={"/news/"+article.slug} key={article.id}>
+          <span className="meta">{article.published_at?day(article.published_at):""}</span>
+          <div><h3>{article.title}{article.featured&&<> <span className="badge featured">À la une</span></>}</h3><p>{article.category||"Actualité"}{article.excerpt?" — "+article.excerpt:""}</p></div>
+        </Link>)}
+      </div>:<p className="site-empty">{q||cat!=="Toutes"?"Aucune publication ne correspond à ces critères.":"Aucune publication pour le moment."}</p>}
     </section>
     <PublicFooter/>
   </main>;

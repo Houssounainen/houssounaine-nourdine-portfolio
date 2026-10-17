@@ -44,7 +44,7 @@ export default async function RequestsPage({
   });
 
   return <section className="page">
-    <header className="page-header"><div><span className="eyebrow">Secrétariat</span><h1>Demandes des membres</h1></div><span className="status-pill">{pending} reçue(s) · {inReview} en traitement</span></header>
+    <header className="page-header"><div><h1>Demandes</h1></div><span className="status-pill">{pending} reçue(s) · {inReview} en traitement</span></header>
 
     <form className="panel request-filter-bar" method="get">
       <label className="request-filter-search"><span className="sr-only">Rechercher</span><input name="q" defaultValue={filters.q||""} placeholder="Nom, numéro membre, objet…"/></label>

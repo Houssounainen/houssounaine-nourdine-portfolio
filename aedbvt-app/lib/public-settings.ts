@@ -24,7 +24,7 @@ const defaults:PublicSettings={
   official_address:"",
   support_email:"",
   privacy_email:"",
-  homepage_message:"Un espace pour se retrouver, s’entraider et faire vivre notre communauté étudiante. Suivez les actualités, participez aux rendez-vous et construisez la suite avec nous.",
+  homepage_message:"L’association rassemble les étudiants originaires de Darsalama et de Bandrani-Vouani inscrits à Tuléar. Elle publie ici ses actualités, son agenda, la composition de son Bureau et ses documents officiels.",
   legal_status_note:"Le statut juridique et les formalités réglementaires de l’association restent à valider avant toute présentation institutionnelle définitive.",
 };
 

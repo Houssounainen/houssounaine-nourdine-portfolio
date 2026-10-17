@@ -28,7 +28,7 @@ export default async function DocumentsPage() {
 
   return (
     <section className="page">
-      <header className="page-header"><div><span className="eyebrow">Devis, factures & reçus</span><h1>Documents</h1></div><span className="status-pill">Historique non destructif</span></header>
+      <header className="page-header"><div><h1>Documents</h1></div><span className="status-pill">Historique non destructif</span></header>
 
       <div className="stat-grid">
         <article><small>Devis</small><strong>{quotes?.length||0}</strong><span>Valeur {fmt(quoteTotal)}</span></article>

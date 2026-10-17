@@ -71,7 +71,7 @@ export default async function AssetsPage({
   const lowStock=(stockItems||[]).filter((i)=>Number(i.quantity_on_hand)<=Number(i.reorder_level)).length;
 
   return <section className="page">
-    <header className="page-header"><div><span className="eyebrow">Patrimoine & logistique</span><h1>Équipements & stock</h1></div><span className="status-pill">{assets?.length||0} bien(s) · {stockItems?.length||0} article(s)</span></header>
+    <header className="page-header"><div><h1>Patrimoine</h1></div><span className="status-pill">{assets?.length||0} bien(s) · {stockItems?.length||0} article(s)</span></header>
 
     <div className="stat-grid">
       <article><small>Patrimoine actif</small><strong>{(assets||[]).filter((a)=>!["retired","lost"].includes(a.status)).length}</strong><span>biens suivis</span></article>

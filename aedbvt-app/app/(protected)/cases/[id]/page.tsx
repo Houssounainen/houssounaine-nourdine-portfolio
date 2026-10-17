@@ -62,7 +62,7 @@ export default async function CaseDetailPage({params}:{params:Promise<{id:string
 
   return <section className="page">
     <header className="page-header">
-      <div><span className="eyebrow">Dossier confidentiel</span><h1>{item.case_number}</h1></div>
+      <div><h1>{item.case_number}</h1></div>
       <Link className="button secondary" href="/cases">← Signalements</Link>
     </header>
 

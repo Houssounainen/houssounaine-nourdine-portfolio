@@ -18,18 +18,13 @@ export default async function ArticlePage({params}:{params:Promise<{slug:string}
 
   return <main id="contenu">
     <PublicNav/>
-    <section className="page article-detail-page">
-      <Link className="article-back-link" href="/news">← Retour aux actualités</Link>
-      <article className="panel article-detail">
-        <div className="article-detail-meta">
-          <span className="badge">{article.category||"Actualité"}</span>
-          {article.featured&&<span className="badge featured">À la une</span>}
-          <time>{article.published_at?new Date(article.published_at).toLocaleString("fr-FR"):""}</time>
-        </div>
+    <section className="page article-page">
+      <Link className="back-link" href="/news">← Actualités</Link>
+      <article>
+        <p className="article-page-meta">{article.category||"Actualité"}{article.published_at?" · "+new Date(article.published_at).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric",timeZone:"Indian/Antananarivo"}):""}</p>
         <h1>{article.title}</h1>
-        {article.excerpt&&<p className="article-detail-excerpt">{article.excerpt}</p>}
-        <div className="article-detail-body">{article.body}</div>
-        <footer><span>Publié par</span><b>AEDBVT</b></footer>
+        {article.excerpt&&<p className="article-page-lead">{article.excerpt}</p>}
+        <div className="article-page-body">{article.body}</div>
       </article>
     </section>
     <PublicFooter/>

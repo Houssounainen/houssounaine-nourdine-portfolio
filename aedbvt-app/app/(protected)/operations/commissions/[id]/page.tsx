@@ -30,7 +30,7 @@ export default async function CommissionPage({params}:{params:Promise<{id:string
   const openTasks=(tasks||[]).filter(t=>!["done","cancelled"].includes(t.status));
 
   return <section className="page">
-    <header className="page-header"><div><Link className="back-link" href="/operations">← Centre opérationnel</Link><span className="eyebrow">Commission</span><h1>{commission.name}</h1></div><span className={"status-pill status-"+commission.status}>{commission.status}</span></header>
+    <header className="page-header"><div><Link className="back-link" href="/operations">← Centre opérationnel</Link><h1>{commission.name}</h1></div><span className={"status-pill status-"+commission.status}>{commission.status}</span></header>
 
     <div className="commission-summary-grid">
       <article className="panel"><small>Responsable</small><strong>{lead?.full_name||"À désigner"}</strong><span>{lead?.role||"—"}</span></article>

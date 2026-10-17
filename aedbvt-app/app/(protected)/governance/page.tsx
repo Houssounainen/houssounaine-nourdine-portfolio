@@ -16,7 +16,7 @@ export default async function GovernancePage() {
 
   return (
     <section className="page">
-      <header className="page-header"><div><span className="eyebrow">Institutions & transparence</span><h1>Gouvernance</h1></div><span className="status-pill">Décisions traçables · scrutins protégés</span></header>
+      <header className="page-header"><div><h1>Gouvernance</h1></div><span className="status-pill">Décisions traçables · scrutins protégés</span></header>
 
       <div className="governance-hero-grid">
         <article className="panel governance-hero-card"><span className="eyebrow">Assemblées générales</span><strong>{assemblies?.length||0}</strong><p>Convocations, quorum, procurations, motions et procès-verbaux.</p><a href="#assemblees">Voir les assemblées ↓</a></article>

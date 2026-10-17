@@ -54,7 +54,7 @@ export default async function OperationsPage(){
 
   return <section className="page">
     <header className="page-header">
-      <div><span className="eyebrow">Pilotage du Bureau</span><h1>Centre opérationnel</h1></div>
+      <div><h1>Pilotage</h1></div>
       <div className="header-actions"><span className="status-pill">{unread.length} notification(s) non lue(s)</span></div>
     </header>
 

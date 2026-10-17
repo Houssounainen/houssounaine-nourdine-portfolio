@@ -57,7 +57,7 @@ export default async function DuesPage({
   const paidCount=rows.filter((row)=>["paid","exempt"].includes(row.current_status)).length;
 
   return <section className="page">
-    <header className="page-header"><div><span className="eyebrow">Trésorerie · adhésions</span><h1>Cotisations annuelles</h1></div><Link className="button secondary" href="/finance">← Finances</Link></header>
+    <header className="page-header"><div><h1>Cotisations annuelles</h1></div><Link className="button secondary" href="/finance">← Finances</Link></header>
 
     <div className="stat-grid">
       <article><small>Membres concernés</small><strong>{rows.length}</strong><span>{selected?.label||"aucun exercice"}</span></article>

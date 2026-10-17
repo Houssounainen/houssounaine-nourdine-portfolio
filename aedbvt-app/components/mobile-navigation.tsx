@@ -31,7 +31,7 @@ export function MobileNavigation({ links, profileName, role, unreadCount = 0 }: 
     };
   }, [open]);
 
-  const primary: NavLink[] = [["/dashboard", "Accueil"], ["/chat", "Discussion"], ["/notifications", "Alertes"], ["/me", "Mon espace"]];
+  const primary: NavLink[] = [["/dashboard", "Accueil"], ["/agenda", "Agenda"], ["/chat", "Discussion"], ["/notifications", "Activité"]];
 
   return <>
     <nav className="mobile-bottom-nav" aria-label="Navigation mobile">
@@ -40,7 +40,7 @@ export function MobileNavigation({ links, profileName, role, unreadCount = 0 }: 
     </nav>
     <dialog ref={dialog} id="mobile-menu" className="workspace-menu-dialog" aria-labelledby="mobile-menu-title" onCancel={() => setOpen(false)} onClick={event => { if (event.target === event.currentTarget) setOpen(false); }}>
       <div className="workspace-menu-body">
-        <div className="workspace-menu-head"><div><h2 id="mobile-menu-title">Votre espace AEDBVT</h2><p>{profileName} · {role}</p></div><button type="button" className="icon-button" autoFocus aria-label="Fermer le menu" onClick={() => setOpen(false)}><UiIcon name="close"/></button></div>
+        <div className="workspace-menu-head"><div><h2 id="mobile-menu-title">Menu</h2><p>{profileName} · {role}</p></div><button type="button" className="icon-button" autoFocus aria-label="Fermer le menu" onClick={() => setOpen(false)}><UiIcon name="close"/></button></div>
         <SideNavigation links={links} unreadCount={unreadCount} onNavigate={() => setOpen(false)}/>
         <div className="mobile-menu-signout"><SignOutButton/></div>
       </div>

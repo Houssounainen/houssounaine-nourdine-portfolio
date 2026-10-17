@@ -9,7 +9,7 @@ export default async function PrivacyPage(){
   return <main id="contenu" className="public-info-page">
     <article className="public-info-card">
       <Link href="/" className="public-back-link">← {settings.association_short_name}</Link>
-      <span className="eyebrow">Données personnelles</span><h1>Politique de confidentialité</h1>
+      <h1>Politique de confidentialité</h1>
       <p className="public-info-lead">Cette page décrit la manière dont l’application AEDBVT utilise les informations nécessaires au fonctionnement de l’association.</p>
 
       <section><h2>Données concernées</h2><p>L’application peut traiter les informations de candidature et de membre, les coordonnées, les données d’études, les cotisations et reçus, les participations associatives, ainsi que les opérations administratives liées au rôle de l’utilisateur.</p></section>
