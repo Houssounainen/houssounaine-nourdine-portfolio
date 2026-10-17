@@ -4,6 +4,11 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import "./ui.css";
+import "./app.css";
+import "./s-social.css";
+import "./s-home.css";
+import "./s-shop.css";
+import "./s-admin.css";
 
 export const metadata: Metadata = {
   applicationName:"AEDBVT",

@@ -16,6 +16,7 @@ const KEYWORDS: Record<string, string> = {
   "/agenda": "événements réunions calendrier",
   "/chat": "messages discussion groupe",
   "/community": "fil photos publications fête social partage annonce j'aime",
+  "/people": "annuaire membres profils étudiants village filière",
   "/market": "vente acheter vendre annonces petites annonces boutique",
   "/library": "documents cours mémoires livres partage fichiers",
   "/games": "quiz jeux mot mémoire calcul classement",
