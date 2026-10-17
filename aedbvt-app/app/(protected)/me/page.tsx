@@ -60,7 +60,7 @@ export default async function MySpacePage() {
     <section className="page my-space">
       <header className="page-header no-print"><div><span className="eyebrow">Compte personnel</span><h1>Mon espace</h1></div><div className="page-header-actions"><Link className="button secondary" href="/update-password">Changer mon mot de passe</Link><span className="status-pill">{profile?.role || "membre"} · {member.status}</span></div></header>
 
-      <div className="member-hero">
+      <div className="member-hero" id="carte">
         <article className="member-card printable-card">
           <div className="member-card-top"><Image src="/aedbvt-logo.webp" alt="AEDBVT" width={64} height={64}/><div><span>CARTE DE MEMBRE</span><b>AEDBVT</b></div></div>
           <div className="member-card-body">
