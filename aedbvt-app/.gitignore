@@ -11,3 +11,7 @@ node_modules
 android-signing/
 *.tsbuildinfo
 supabase/.temp/
+
+# Fichiers générés par `next dev`
+AGENTS.md
+CLAUDE.md
