@@ -1,5 +1,7 @@
 "use server";
 
+import { safeImageUrls } from "@/lib/format";
+
 import { revalidatePath } from "next/cache";
 import { getAccessContext } from "@/lib/server-access";
 import { sendPushToAll } from "@/lib/push";
@@ -48,6 +50,17 @@ async function notifyPublished(title:string,excerpt:string|null,slug:string,noti
   },"announcements").catch(()=>undefined);
 }
 
+function coverUrl(formData:FormData){
+  return safeImageUrls(formData.getAll("cover_url"),1)[0]||null;
+}
+
+// Tant que la colonne cover_url n’est pas déployée, l’enregistrement se fait sans image.
+async function withCover<T extends {error:{code?:string}|null}>(cover:string|null,run:(extra:Record<string,unknown>)=>PromiseLike<T>):Promise<T>{
+  const result=await run({cover_url:cover});
+  if(result.error&&["PGRST204","42703"].includes(result.error.code||"")) return run({});
+  return result;
+}
+
 export async function createEditorialArticle(formData:FormData){
   const {allowed,supabase,user}=await getAccessContext("content_manage");
   if(!allowed||!user) return;
@@ -57,7 +70,9 @@ export async function createEditorialArticle(formData:FormData){
   if(fields.status==="scheduled"&&!fields.scheduledFor) return;
 
   const slug=slugifyArticle(fields.title)+"-"+Date.now().toString(36);
-  const {data,error}=await supabase.from("articles").insert({
+  const cover=coverUrl(formData);
+  const {data,error}=await withCover(cover,(extra)=>supabase.from("articles").insert({
+    ...extra,
     title:fields.title,
     slug,
     excerpt:fields.excerpt,
@@ -69,7 +84,7 @@ export async function createEditorialArticle(formData:FormData){
     notify_on_publish:fields.notify,
     author_id:user.id,
     published_by:fields.status==="published"?user.id:null,
-  }).select("id,slug,title,excerpt,status,notify_on_publish").maybeSingle();
+  }).select("id,slug,title,excerpt,status,notify_on_publish").maybeSingle());
 
   if(!error&&data?.status==="published"){
     await notifyPublished(data.title,data.excerpt,data.slug,data.notify_on_publish);
@@ -97,7 +112,9 @@ export async function updateEditorialArticle(formData:FormData){
   if(!fields.title||!fields.body) return;
   if(fields.status==="scheduled"&&!fields.scheduledFor) return;
 
-  const {data,error}=await supabase.from("articles").update({
+  const cover=coverUrl(formData);
+  const {data,error}=await withCover(cover,(extra)=>supabase.from("articles").update({
+    ...extra,
     title:fields.title,
     excerpt:fields.excerpt,
     body:fields.body,
@@ -107,7 +124,7 @@ export async function updateEditorialArticle(formData:FormData){
     featured:fields.featured,
     notify_on_publish:fields.notify,
     published_by:fields.status==="published"?user.id:null,
-  }).eq("id",id).select("slug,title,excerpt,status,notify_on_publish").maybeSingle();
+  }).eq("id",id).select("slug,title,excerpt,status,notify_on_publish").maybeSingle());
 
   if(!error&&data?.status==="published"&&before.status!=="published"){
     await notifyPublished(data.title,data.excerpt,data.slug,data.notify_on_publish);

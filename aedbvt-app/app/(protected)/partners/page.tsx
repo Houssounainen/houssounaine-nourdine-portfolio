@@ -1,11 +1,21 @@
+import { Fragment } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { can } from "@/lib/access";
+import { Sheet, Tabs } from "@/components/sheet";
+import { UiIcon } from "@/components/ui-icon";
+import { FilterList } from "@/components/manage/filter-list";
 import { createPartner } from "./actions";
+import "@/app/manage.css";
 
 const typeLabels:Record<string,string>={donor:"Donateur",sponsor:"Sponsor",institution:"Institution",business:"Entreprise",ngo:"ONG / association",other:"Autre"};
 const statusLabels:Record<string,string>={prospect:"Prospect",contacted:"Contacté",active:"Actif",inactive:"Inactif"};
+const commitmentStatus:Record<string,string>={pledged:"Promis",partial:"Partiel",received:"Reçu",cancelled:"Annulé"};
+const contributionLabel:Record<string,string>={donation:"Don",sponsorship:"Sponsoring",in_kind:"En nature"};
+const partnerClass:Record<string,string>={active:" ok",contacted:" featured",prospect:" pinned",inactive:""};
+const money=(value:number)=>value.toLocaleString("fr-FR")+" Ar";
+const initials=(name?:string)=>(name||"?").split(/\s+/).filter(Boolean).slice(0,2).map(part=>part[0]).join("").toUpperCase();
 
 export default async function PartnersPage({
   searchParams,
@@ -16,10 +26,11 @@ export default async function PartnersPage({
   const [{data:profile},{data:partners},{data:commitments}]=await Promise.all([
     supabase.from("profiles").select("role").eq("id",user!.id).single(),
     supabase.from("partners").select("id,name,partner_type,status,contact_name,email,phone,created_at").order("name"),
-    supabase.from("partner_commitments").select("id,partner_id,pledged_amount,received_amount,status,contribution_type"),
+    supabase.from("partner_commitments").select("id,partner_id,title,pledged_amount,received_amount,status,contribution_type,pledged_on,due_on").order("pledged_on",{ascending:false}),
   ]);
   if(!can(profile?.role,"partners_manage")) notFound();
 
+  // Filtres hérités de l’URL (liens existants) ; recherche et filtres rapides ensuite côté client.
   const query=(filters.q||"").trim().toLocaleLowerCase("fr");
   const status=filters.status||"all";
   const type=filters.type||"all";
@@ -31,64 +42,105 @@ export default async function PartnersPage({
       .filter(Boolean).join(" ").toLocaleLowerCase("fr").includes(query);
   });
 
+  const partnerMap=new Map((partners||[]).map((p)=>[p.id,p]));
   const active=(partners||[]).filter((p)=>p.status==="active").length;
-  const prospects=(partners||[]).filter((p)=>["prospect","contacted"].includes(p.status)).length;
+  const prospectRows=(partners||[]).filter((p)=>["prospect","contacted"].includes(p.status));
+  const prospects=prospectRows.length;
   const pledged=(commitments||[]).filter((c)=>c.contribution_type!=="in_kind"&&c.status!=="cancelled").reduce((sum,c)=>sum+Number(c.pledged_amount||0),0);
   const received=(commitments||[]).filter((c)=>c.contribution_type!=="in_kind"&&c.status!=="cancelled").reduce((sum,c)=>sum+Number(c.received_amount||0),0);
+  const openCommitments=(commitments||[]).filter((c)=>["pledged","partial"].includes(c.status));
 
-  return <section className="page">
-    <header className="page-header"><div><h1>Partenaires</h1></div><span className="status-pill">{partners?.length||0} partenaire(s)</span></header>
+  const partnerForm=<form action={createPartner} className="form-stack">
+    <p className="form-section">Organisation</p>
+    <label>Nom / organisation<input name="name" required/></label>
+    <div className="form-two"><label>Type<select name="partner_type" defaultValue="institution">{Object.entries(typeLabels).map(([value,label])=><option key={value} value={value}>{label}</option>)}</select></label><label>Statut<select name="status" defaultValue="prospect">{Object.entries(statusLabels).map(([value,label])=><option key={value} value={value}>{label}</option>)}</select></label></div>
+    <p className="form-section">Contact</p>
+    <label>Personne de contact<input name="contact_name"/></label>
+    <div className="form-two"><label>Email<input type="email" name="email"/></label><label>Téléphone<input name="phone"/></label></div>
+    <div className="form-two"><label>Adresse<input name="address"/></label><label>Site web<input name="website" placeholder="https://…"/></label></div>
+    <label>Notes<textarea name="notes" rows={3}/></label>
+    <p className="form-hint">Prospect : identifié · Contacté : échange en cours · Actif : soutien confirmé · Inactif : relation terminée.</p>
+    <button className="button primary">Ajouter</button>
+  </form>;
+  const partnerSheet=(variant:"primary"|"secondary"="primary")=><Sheet label="Nouveau partenaire" title="Ajouter un partenaire" description="Les engagements et encaissements se saisissent depuis le dossier." icon="users" variant={variant}>{partnerForm}</Sheet>;
 
-    <div className="stat-grid">
-      <article><small>Partenaires actifs</small><strong>{active}</strong><span>relations en cours</span></article>
-      <article><small>Prospects / contacts</small><strong>{prospects}</strong><span>à suivre</span></article>
-      <article><small>Engagements monétaires</small><strong>{pledged.toLocaleString("fr-FR")} Ar</strong><span>hors apports en nature</span></article>
-      <article><small>Reçu</small><strong>{received.toLocaleString("fr-FR")} Ar</strong><span>{pledged?Math.round(received/pledged*100):0}% des engagements</span></article>
+  const partnerRow=(partner:any)=>{
+    const list=(commitments||[]).filter((c)=>c.partner_id===partner.id&&c.status!=="cancelled");
+    const pPledged=list.reduce((sum,c)=>sum+Number(c.pledged_amount||0),0);
+    const pReceived=list.reduce((sum,c)=>sum+Number(c.received_amount||0),0);
+    const pct=pPledged>0?Math.min(100,Math.round(pReceived/pPledged*100)):0;
+    return <Link className="list-row stack-sm" href={"/partners/"+partner.id}>
+      <span className="row-icon">{initials(partner.name)}</span>
+      <div><b>{partner.name}</b><small>{typeLabels[partner.partner_type]||partner.partner_type} · {partner.contact_name||"aucun contact principal"}{partner.phone?" · "+partner.phone:""}</small></div>
+      <div className="row-end">
+        {pPledged>0&&<><span>{money(pReceived)} / {money(pPledged)}</span><span className="progress-mini"><i style={{width:pct+"%"}}/></span></>}
+        <span className={"badge"+(partnerClass[partner.status]||"")}>{statusLabels[partner.status]||partner.status}</span>
+      </div>
+    </Link>;
+  };
+
+  const partnerView=<FilterList
+    placeholder="Nom, contact, email, téléphone…"
+    filters={[
+      {key:"status",label:"Statut",options:Object.entries(statusLabels).map(([value,label])=>({value,label}))},
+      {key:"type",label:"Type",mode:"select",options:Object.entries(typeLabels).map(([value,label])=>({value,label}))},
+    ]}
+    empty={<div className="panel empty-state">{(partners||[]).length?<p>Aucun partenaire ne correspond aux filtres. <Link href="/partners">Réinitialiser</Link></p>:<><p>Aucun partenaire enregistré.</p>{partnerSheet()}</>}</div>}
+    items={rows.map((partner)=>({
+      id:partner.id,
+      text:[partner.name,partner.contact_name,partner.email,partner.phone].filter(Boolean).join(" "),
+      facets:{status:partner.status,type:partner.partner_type},
+      node:partnerRow(partner),
+    }))}
+  />;
+
+  const commitmentView=<FilterList
+    placeholder="Engagement, partenaire…"
+    filters={[
+      {key:"status",label:"Statut",options:Object.entries(commitmentStatus).map(([value,label])=>({value,label}))},
+      {key:"type",label:"Nature",mode:"select",options:Object.entries(contributionLabel).map(([value,label])=>({value,label}))},
+    ]}
+    empty={<div className="panel empty-state">Aucun engagement. Ils se saisissent depuis le dossier d’un partenaire.</div>}
+    items={(commitments||[]).map((c)=>{
+      const partner=partnerMap.get(c.partner_id);
+      const pct=Number(c.pledged_amount)>0?Math.min(100,Math.round(Number(c.received_amount)/Number(c.pledged_amount)*100)):0;
+      return {
+        id:c.id,
+        text:[c.title,partner?.name,contributionLabel[c.contribution_type]].filter(Boolean).join(" "),
+        facets:{status:c.status,type:c.contribution_type},
+        node:<Link className="list-row stack-sm" href={"/partners/"+c.partner_id}>
+          <span className="row-icon"><UiIcon name="heart"/></span>
+          <div><b>{c.title}</b><small>{partner?.name||"Partenaire"} · {contributionLabel[c.contribution_type]||c.contribution_type}{c.pledged_on?" · "+new Date(c.pledged_on+"T12:00:00").toLocaleDateString("fr-FR"):""}{c.due_on?" · échéance "+new Date(c.due_on+"T12:00:00").toLocaleDateString("fr-FR"):""}</small></div>
+          <div className="row-end">
+            {c.contribution_type!=="in_kind"&&<><span>{money(Number(c.received_amount||0))} / {money(Number(c.pledged_amount||0))}</span><span className="progress-mini"><i style={{width:pct+"%"}}/></span></>}
+            <span className={"badge"+(c.status==="received"?" ok":c.status==="partial"?" pinned":"")}>{commitmentStatus[c.status]||c.status}</span>
+          </div>
+        </Link>,
+      };
+    })}
+  />;
+
+  const prospectView=prospectRows.length
+    ? <div className="panel list-card">{prospectRows.map((partner)=><Fragment key={partner.id}>{partnerRow(partner)}</Fragment>)}</div>
+    : <div className="panel empty-state"><p>Aucun prospect à suivre.</p>{partnerSheet()}</div>;
+
+  return <section className="page manage-page">
+    <header className="page-header">
+      <div><h1>Partenaires</h1><p>{partners?.length||0} partenaire(s), {openCommitments.length} engagement(s) en attente d’encaissement.</p></div>
+      <div className="header-actions"><a className="button secondary" href="/api/exports/partners?format=csv"><UiIcon name="download"/>Exporter</a>{partnerSheet()}</div>
+    </header>
+
+    <div className="stat-grid manage-stats">
+      <article><a className="stat-link" href="#partenaires"><small>Partenaires actifs</small><strong>{active}</strong><span>relations en cours</span></a></article>
+      <article><a className="stat-link" href="#prospects"><small>Prospects / contacts</small><strong>{prospects}</strong><span>à suivre</span></a></article>
+      <article><a className="stat-link" href="#engagements"><small>Engagements monétaires</small><strong>{money(pledged)}</strong><span>hors apports en nature</span></a></article>
+      <article><a className="stat-link" href="#engagements"><small>Reçu</small><strong>{money(received)}</strong><span>{pledged?Math.round(received/pledged*100):0} % des engagements</span></a></article>
     </div>
 
-    <div className="content-grid partner-top-grid">
-      <form action={createPartner} className="panel form-stack">
-        <div><span className="eyebrow">Nouveau contact</span><h2>Ajouter un partenaire</h2></div>
-        <label>Nom / organisation<input name="name" required/></label>
-        <div className="form-two"><label>Type<select name="partner_type" defaultValue="institution">{Object.entries(typeLabels).map(([value,label])=><option key={value} value={value}>{label}</option>)}</select></label><label>Statut<select name="status" defaultValue="prospect">{Object.entries(statusLabels).map(([value,label])=><option key={value} value={value}>{label}</option>)}</select></label></div>
-        <label>Personne de contact<input name="contact_name"/></label>
-        <div className="form-two"><label>Email<input type="email" name="email"/></label><label>Téléphone<input name="phone"/></label></div>
-        <label>Adresse<input name="address"/></label>
-        <label>Site web<input name="website" placeholder="https://…"/></label>
-        <label>Notes<textarea name="notes" rows={3}/></label>
-        <button className="button primary">Ajouter</button>
-      </form>
-
-      <article className="panel partner-guidance">
-        <span className="eyebrow">Suivi</span><h2>Cycle relationnel</h2>
-        <div><b>1. Prospect</b><small>Organisation identifiée, pas encore contactée.</small></div>
-        <div><b>2. Contacté</b><small>Échange ou proposition en cours.</small></div>
-        <div><b>3. Actif</b><small>Partenariat, don, sponsoring ou soutien confirmé.</small></div>
-        <div><b>4. Inactif</b><small>Relation terminée, historique conservé.</small></div>
-      </article>
-    </div>
-
-    <form className="panel request-filter-bar" method="get">
-      <label className="request-filter-search"><span className="sr-only">Rechercher</span><input name="q" defaultValue={filters.q||""} placeholder="Nom, contact, email, téléphone…"/></label>
-      <label><span className="sr-only">Statut</span><select name="status" defaultValue={status}><option value="all">Tous les statuts</option>{Object.entries(statusLabels).map(([value,label])=><option value={value} key={value}>{label}</option>)}</select></label>
-      <label><span className="sr-only">Type</span><select name="type" defaultValue={type}><option value="all">Tous les types</option>{Object.entries(typeLabels).map(([value,label])=><option value={value} key={value}>{label}</option>)}</select></label>
-      <button className="button secondary">Filtrer</button>
-      <span className="directory-count">{rows.length} / {partners?.length||0}</span>
-    </form>
-
-    <div className="partner-grid">
-      {rows.map((partner)=>{
-        const partnerCommitments=(commitments||[]).filter((c)=>c.partner_id===partner.id&&c.status!=="cancelled");
-        const pPledged=partnerCommitments.reduce((sum,c)=>sum+Number(c.pledged_amount||0),0);
-        const pReceived=partnerCommitments.reduce((sum,c)=>sum+Number(c.received_amount||0),0);
-        return <Link className="panel partner-card" href={"/partners/"+partner.id} key={partner.id}>
-          <div className="partner-card-head"><span><b>{partner.name}</b><small>{typeLabels[partner.partner_type]||partner.partner_type}</small></span><span className={"badge partner-"+partner.status}>{statusLabels[partner.status]||partner.status}</span></div>
-          <p>{partner.contact_name||"Aucun contact principal"}{partner.phone?" · "+partner.phone:""}</p>
-          <div className="partner-card-money"><span><small>Engagé</small><b>{pPledged.toLocaleString("fr-FR")} Ar</b></span><span><small>Reçu</small><b>{pReceived.toLocaleString("fr-FR")} Ar</b></span></div>
-          <span className="partner-open">Ouvrir le dossier →</span>
-        </Link>;
-      })}
-      {!rows.length&&<div className="panel empty-state">Aucun partenaire ne correspond aux filtres.</div>}
-    </div>
+    <Tabs tabs={[
+      {id:"partenaires",label:"Partenaires",count:partners?.length||0,content:partnerView},
+      {id:"engagements",label:"Engagements",count:openCommitments.length,content:commitmentView},
+      {id:"prospects",label:"Prospects",count:prospects,content:prospectView},
+    ]}/>
   </section>;
 }

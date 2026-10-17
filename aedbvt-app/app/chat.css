@@ -102,3 +102,11 @@
 .chat-bubble { padding: 8px 12px; border-color: var(--line); border-radius: 4px 12px 12px 12px; color: var(--text); background: var(--bg-subtle); font-size: 14px; line-height: 1.55; }
 .chat-message.is-own .chat-bubble { border-color: var(--text); border-radius: 12px 4px 12px 12px; background: var(--text); color: #fff; }
 .chat-message-actions button, .chat-notice button, .chat-text-button { color: var(--muted); font-size: 12.5px; }
+.chat-message-content { position: relative; }
+.chat-like { display: inline-flex; align-items: center; gap: 4px; height: 22px; margin-top: 4px; padding: 0 7px; border: 1px solid var(--line); border-radius: 11px; background: var(--bg); color: var(--faint); font: 500 11.5px var(--font); cursor: pointer; opacity: 0; transition: opacity .15s, color .15s; }
+.chat-like svg { width: 12px; height: 12px; }
+.chat-message:hover .chat-like, .chat-like.has-count, .chat-like:focus-visible { opacity: 1; }
+.chat-like.is-liked { border-color: #f6c9cc; background: var(--danger-soft); color: var(--danger); }
+.chat-like.is-liked svg { fill: currentColor; animation: like-pop .35s ease; }
+.chat-message.is-own .chat-like { float: right; }
+@media (hover: none) { .chat-like { opacity: 1; } }

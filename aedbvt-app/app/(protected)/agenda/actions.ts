@@ -33,6 +33,7 @@ export async function createEvent(formData: FormData) {
     location,
     category: String(formData.get("category") || "Vie associative"),
     starts_at: toToliaraIso(starts),
+    ends_at: String(formData.get("ends_at") || "").trim() ? toToliaraIso(String(formData.get("ends_at"))) : null,
     published: true,
     created_by: user.id,
   });

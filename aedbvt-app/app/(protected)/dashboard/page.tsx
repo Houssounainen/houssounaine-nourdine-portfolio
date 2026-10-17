@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { publishDueArticles } from "@/lib/article-publishing";
 import { UiIcon } from "@/components/ui-icon";
+import { relativeTime } from "@/lib/format";
 import { ROLE_LABELS, normalizeRole } from "@/lib/access";
 
 const TZ="Indian/Antananarivo";
@@ -51,6 +52,19 @@ export default async function DashboardPage() {
     staff ? supabase.from("operational_tasks").select("id",{count:"exact",head:true}).eq("status","blocked") : Promise.resolve({count:0,error:null}),
   ]);
 
+  const [posts,listings,library]=await Promise.all([
+    supabase.from("community_posts").select("id,author_name,body,images,category,created_at").is("deleted_at",null).order("created_at",{ascending:false}).limit(4),
+    supabase.from("market_listings").select("id",{count:"exact",head:true}).is("deleted_at",null).eq("status","available"),
+    supabase.from("library_items").select("id",{count:"exact",head:true}).is("deleted_at",null),
+  ]);
+  const feed=(posts.data||[]) as {id:string;author_name:string;body:string;images:string[];category:string;created_at:string}[];
+  const tiles:[string,string,string,"image"|"tag"|"book"|"game"|"calendar"|"user"][]=[
+    ["/community","Communauté",posts.error?"Photos et nouvelles":feed.length?"Dernière publication "+relativeTime(feed[0].created_at):"Partager une nouvelle","image"],
+    ["/market","Marché",listings.error?"Acheter et vendre":(listings.count||0)+" annonce"+((listings.count||0)>1?"s":"")+" disponible"+((listings.count||0)>1?"s":""),"tag"],
+    ["/library","Bibliothèque",library.error?"Cours et documents":(library.count||0)+" ressource"+((library.count||0)>1?"s":""),"book"],
+    ["/games","Jeux","Quiz et mot du jour","game"],
+  ];
+
   const collected=(payments.data||[]).reduce((sum,p)=>sum+Number(p.amount||0),0);
 
   const pinned=(announcements.data||[]).filter((x)=>x.pinned).sort((a,b)=>(a.level==="urgent"?-1:0)-(b.level==="urgent"?-1:0));
@@ -91,6 +105,10 @@ export default async function DashboardPage() {
         {staff?<article className={overdue||blocked?"attention-stat":""}><small>Actions ouvertes</small><strong>{dash(openCount,openTaskCount.error)}</strong><span>{overdue} en retard · {blocked} bloquée{blocked>1?"s":""}</span></article>:<article><small>Documents publiés</small><strong>{dash(docs.count||0,docs.error)}</strong></article>}
       </div>
 
+      <nav className="home-tiles" aria-label="Accès rapides">
+        {tiles.map(([href,label,meta,icon])=><Link key={href} href={href} className="home-tile"><span className="home-tile-icon"><UiIcon name={icon}/></span><b>{label}</b><small>{meta}</small></Link>)}
+      </nav>
+
       <div className="home-grid">
         <article className="panel list-card">
           <header><h2>Agenda</h2><Link href="/agenda">Tout voir</Link></header>
@@ -102,6 +120,16 @@ export default async function DashboardPage() {
           {(articles.data||[]).map((item)=><Link className="list-row" href={"/news/"+item.slug} key={item.id} style={{gridTemplateColumns:"minmax(0,1fr) auto"}}><div><b>{item.title}</b><small>{item.category||"Actualité"}{item.excerpt?" · "+item.excerpt:""}</small></div>{item.published_at&&<time dateTime={item.published_at}>{shortDate(item.published_at)}</time>}</Link>)}
           {!articles.data?.length&&<p className="list-empty">Aucune actualité publiée.</p>}
         </article>
+        {feed.length>0&&<article className="panel list-card wide">
+          <header><h2>Communauté</h2><Link href="/community">Ouvrir le fil</Link></header>
+          <div className="home-feed">
+            {feed.map((post)=><Link key={post.id} href={"/community#post-"+post.id} className="home-feed-item">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              {post.images?.[0]?<img src={post.images[0]} alt="" loading="lazy"/>:<span className="home-feed-text">{post.body.slice(0,120)}</span>}
+              <span className="home-feed-meta"><b>{post.author_name}</b><small>{relativeTime(post.created_at)}</small></span>
+            </Link>)}
+          </div>
+        </article>}
         {staff&&<article className="panel list-card wide">
           <header><h2>Actions du Bureau</h2><Link href="/operations">Pilotage</Link></header>
           {activeTasks.slice(0,5).map((task:any)=><Link className="list-row" href={"/operations/tasks/"+task.id} key={task.id}><span className={"badge priority-"+task.priority}>{({urgent:"Urgent",critical:"Critique",high:"Haute",normal:"Normale",low:"Basse"} as Record<string,string>)[task.priority]||task.priority}</span><div><b>{task.title}</b><small>{task.due_on?"Échéance "+new Date(task.due_on+"T12:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"long"}):"Sans échéance"}</small></div><span className="meta" style={{display:"flex",alignItems:"center",gap:8}}><span className="progress-mini"><i style={{width:Math.min(100,Number(task.progress)||0)+"%"}}/></span>{task.progress}%</span></Link>)}
