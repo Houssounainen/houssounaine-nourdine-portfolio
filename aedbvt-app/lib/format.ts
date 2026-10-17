@@ -30,3 +30,11 @@ export function safeImageUrls(values: FormDataEntryValue[], max: number) {
   const prefix = publicMediaPrefix();
   return values.map(String).filter(url => url.startsWith(prefix) && !url.includes("..")).slice(0, max);
 }
+
+/** Ajoute l’image de couverture aux articles publics (fonction dédiée, sans altérer get_public_articles). */
+export async function withCovers<T extends { slug: string; cover_url?: string | null }>(supabase: { rpc: (fn: string) => PromiseLike<{ data: unknown }> }, articles: T[]): Promise<T[]> {
+  if (!articles.length) return articles;
+  const { data } = await supabase.rpc("get_public_article_covers");
+  const covers = new Map(((data || []) as { slug: string; cover_url: string }[]).map(row => [row.slug, row.cover_url]));
+  return articles.map(article => ({ ...article, cover_url: article.cover_url ?? covers.get(article.slug) ?? null }));
+}

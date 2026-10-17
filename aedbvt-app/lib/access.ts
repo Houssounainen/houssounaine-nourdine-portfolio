@@ -93,6 +93,7 @@ export function navigationForRole(role:string|null|undefined):[string,string][]{
   const links:[string,string][]=[
     ["/dashboard","Tableau de bord"],
     ["/me","Mon espace"],
+    ["/pay","Paiements"],
     ["/notifications","Notifications"],
     ["/news","Actualités"],
     ["/agenda","Agenda"],

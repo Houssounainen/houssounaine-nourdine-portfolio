@@ -16,6 +16,11 @@ const stringKeys=[
   "homepage_message",
   "legal_status_note",
   "administrator_display_name",
+  "mobile_money_mvola",
+  "mobile_money_orange",
+  "mobile_money_airtel",
+  "mobile_money_holder",
+  "mobile_money_instructions",
 ] as const;
 
 export async function updateInstitutionalSettings(formData:FormData){
@@ -42,6 +47,7 @@ export async function updateInstitutionalSettings(formData:FormData){
   }
 
   revalidatePath("/admin/settings");
+  revalidatePath("/pay");
   revalidatePath("/admin");
   revalidatePath("/");
   revalidatePath("/privacy");

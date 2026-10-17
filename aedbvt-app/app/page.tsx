@@ -5,6 +5,7 @@ import { getPublicSettings } from "@/lib/public-settings";
 import { PublicNav } from "@/components/public-nav";
 import { PublicFooter } from "@/components/public-footer";
 import { UiIcon } from "@/components/ui-icon";
+import { withCovers } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +29,7 @@ export default async function Home() {
     supabase.rpc("get_public_partners"),
   ]) : Array.from({ length: 5 }, () => ({ data: null, error: { message: "Service temporairement indisponible" } }));
   const [articleResult, eventResult, positionResult, documentResult, partnerResult] = results;
-  const articles = (articleResult.data || []) as PublicArticle[];
+  const articles = supabase ? await withCovers(supabase, (articleResult.data || []) as PublicArticle[]) : [];
   const upcoming = ((eventResult.data || []) as PublicEvent[])
     .filter(event => new Date(event.ends_at || event.starts_at).getTime() >= Date.now())
     .sort((a,b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime());

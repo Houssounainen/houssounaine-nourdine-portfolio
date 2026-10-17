@@ -64,7 +64,7 @@ export default async function ApplicationStatusPage({
           <div className={["approved","rejected"].includes(result.status)?"done":""}><i>3</i><span><b>Décision</b><small>{result.reviewed_at?new Date(result.reviewed_at).toLocaleString("fr-FR"):"En attente"}</small></span></div>
         </div>
         {result.decision_note&&<div className="notice"><b>Message de l’association</b><br/>{result.decision_note}</div>}
-        {result.status==="approved"&&<div className="application-approved"><b>Adhésion approuvée</b><p>Votre fiche membre a été créée{result.member_number?" sous le numéro "+result.member_number:""}. L’administration pourra ensuite vous envoyer votre invitation au compte sécurisé AEDBVT.</p></div>}
+        {result.status==="approved"&&<div className="application-approved"><b>Adhésion approuvée</b><p>Votre fiche membre a été créée{result.member_number?" sous le numéro "+result.member_number:""}. Connectez-vous à l’espace membre pour régler votre adhésion par MVola, Orange Money ou Airtel Money, rubrique Paiements.</p></div>}
       </article>}
     </section>
     <PublicFooter/>

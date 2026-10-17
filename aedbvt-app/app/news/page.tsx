@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { ARTICLE_CATEGORIES } from "@/lib/content";
+import { withCovers } from "@/lib/format";
 import { publishDueArticles } from "@/lib/article-publishing";
 import { PublicNav } from "@/components/public-nav";
 import { PublicFooter } from "@/components/public-footer";
@@ -17,10 +18,11 @@ export default async function NewsPage({
 
   const supabase=await createClient();
   const {data:rows}=await supabase.rpc("get_public_articles");
+  const withCover=await withCovers(supabase,(rows||[]) as any[]);
 
   const q=(params.q||"").trim().toLocaleLowerCase("fr");
   const cat=params.cat||"Toutes";
-  const articles=(rows||[]).filter((article:any)=>{
+  const articles=withCover.filter((article:any)=>{
     const categoryOk=cat==="Toutes"||article.category===cat;
     const haystack=[article.title,article.excerpt,article.body].filter(Boolean).join(" ").toLocaleLowerCase("fr");
     return categoryOk&&(!q||haystack.includes(q));

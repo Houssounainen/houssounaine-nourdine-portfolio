@@ -50,6 +50,6 @@ export function UiIcon({ name, ...props }: SVGProps<SVGSVGElement> & { name: Ico
 }
 
 export function routeIcon(href: string): IconName {
-  const icons: Record<string, IconName> = {dashboard:"home",me:"user",notifications:"bell",agenda:"calendar",events:"calendar",news:"document",announcements:"bell",members:"users",applications:"users",organization:"users",governance:"shield",cases:"shield",search:"search",finance:"wallet",analytics:"chart",partners:"heart",soutiens:"heart",association:"users",content:"document",documents:"document",administration:"document",exports:"document",communication:"bell",community:"image",communaute:"image",market:"tag",marche:"tag",library:"book",bibliotheque:"book",games:"game",jeux:"game"};
+  const icons: Record<string, IconName> = {dashboard:"home",me:"user",notifications:"bell",agenda:"calendar",events:"calendar",news:"document",announcements:"bell",members:"users",applications:"users",organization:"users",governance:"shield",cases:"shield",search:"search",finance:"wallet",analytics:"chart",partners:"heart",soutiens:"heart",association:"users",content:"document",documents:"document",administration:"document",exports:"document",communication:"bell",pay:"wallet",community:"image",communaute:"image",market:"tag",marche:"tag",library:"book",bibliotheque:"book",games:"game",jeux:"game"};
   return href === "/chat" ? "chat" : icons[href.split("/")[1]] || "grid";
 }
