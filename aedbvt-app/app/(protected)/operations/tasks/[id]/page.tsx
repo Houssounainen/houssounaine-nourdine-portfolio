@@ -41,7 +41,7 @@ export default async function OperationalTaskPage({params}:{params:Promise<{id:s
 
   return <section className="page">
     <header className="page-header">
-      <div><Link className="back-link" href="/operations">← Centre opérationnel</Link><span className="eyebrow">Action AEDBVT</span><h1>{task.title}</h1></div>
+      <div><Link className="back-link" href="/operations">← Centre opérationnel</Link><h1>{task.title}</h1></div>
       <div className="header-actions"><span className={"badge priority-"+task.priority}>{task.priority}</span>{late&&<span className="badge overdue">En retard</span>}<span className={"status-pill task-"+task.status}>{statusLabel[task.status]}</span></div>
     </header>
 

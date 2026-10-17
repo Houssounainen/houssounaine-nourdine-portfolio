@@ -46,7 +46,7 @@ export default async function AuditPage({
   const actorOptions=(actors||[]).sort((a,b)=>(a.full_name||"").localeCompare(b.full_name||"","fr"));
 
   return <section className="page">
-    <header className="page-header"><div><span className="eyebrow">Administration · traçabilité</span><h1>Journal d’audit</h1></div><Link className="button secondary" href="/admin">← Paramètres</Link></header>
+    <header className="page-header"><div><h1>Journal d’audit</h1></div><Link className="button secondary" href="/admin">← Paramètres</Link></header>
 
     <form className="panel audit-filter-bar" method="get">
       <label className="audit-search"><span className="sr-only">Recherche</span><input name="q" defaultValue={filters.q||""} placeholder="Table, action, identifiant, champ…"/></label>

@@ -71,7 +71,7 @@ export default async function FinancePage() {
 
   return (
     <section className="page">
-      <header className="page-header"><div><span className="eyebrow">Trésorerie & budget</span><h1>Finances</h1></div><span className="status-pill">Solde : {fmt(balance)}</span></header>
+      <header className="page-header"><div><h1>Finances</h1></div><span className="status-pill">Solde : {fmt(balance)}</span></header>
 
       <div className="stat-grid finance-stats">
         <article><small>Recettes enregistrées</small><strong>{fmt(totalIncome)}</strong><span>cotisations + factures</span></article>

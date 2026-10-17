@@ -219,14 +219,12 @@ export function ChatRoom({ viewerId, canModerate, initialMessages, initialHasMor
 
   return <section className="page chat-page">
     <header className="page-header chat-page-header">
-      <div><span className="eyebrow">Le lien entre nous</span><h1>Discussion</h1><p className="dashboard-subtitle">Une question, une idée, une bonne nouvelle : partagez-la avec le groupe.</p></div>
-      <span className="status-pill"><UiIcon name="shield"/> Espace membres</span>
+      <div><h1>Discussion</h1><p className="dashboard-subtitle">Visible par tous les membres actifs. Le Bureau peut retirer un message.</p></div>
     </header>
     <div className="chat-layout">
       <section className="chat-room" aria-labelledby="chat-room-title">
         <header className="chat-room-header">
-          <span className="chat-room-icon"><UiIcon name="chat" width={25} height={25}/></span>
-          <div><h2 id="chat-room-title">Le salon AEDBVT</h2><p>Tous les membres, une seule conversation.</p></div>
+          <div><h2 id="chat-room-title">Salon général</h2></div>
           <span className={`chat-connection ${live && online && !blocked ? "is-live" : ""}`} role="status"><i aria-hidden="true"/>{blocked ? "Accès fermé" : !online ? "Hors connexion" : syncing ? "Synchronisation…" : live ? "En direct" : "Actualisation auto"}</span>
         </header>
         {blocked ? <div className="chat-empty" role="alert"><UiIcon name="shield" width={36} height={36}/><h3>Votre accès au salon est fermé.</h3><p>Reconnectez-vous avec un compte membre actif pour retrouver la discussion.</p><Link className="button primary" href="/login">Se reconnecter</Link></div> : <>
@@ -239,7 +237,7 @@ export function ChatRoom({ viewerId, canModerate, initialMessages, initialHasMor
             if (nearBottom.current) setNewMessages(false);
           }}>
             {hasMore && <div className="chat-history-control"><button className="chat-text-button" type="button" disabled={loadingHistory || !online} onClick={() => void loadHistory()}>{loadingHistory ? "Chargement…" : "Voir les messages précédents"}</button></div>}
-            {!messages.length && !unavailable && <div className="chat-empty"><span className="chat-empty-icon"><UiIcon name="chat" width={32} height={32}/></span><span className="eyebrow">Bienvenue chez vous</span><h3>La conversation commence avec vous.</h3><p>Présentez-vous, posez une question ou partagez une idée avec les membres de l’association.</p><button className="chat-text-button" type="button" onClick={() => composer.current?.focus()}>Écrire le premier message <UiIcon name="arrow"/></button></div>}
+            {!messages.length && !unavailable && <div className="chat-empty"><span className="chat-empty-icon"><UiIcon name="chat" width={32} height={32}/></span><h3>Aucun message</h3><p>Les messages envoyés ici sont visibles par tous les membres actifs.</p><button className="chat-text-button" type="button" onClick={() => composer.current?.focus()}>Écrire le premier message <UiIcon name="arrow"/></button></div>}
             <ol className="chat-messages" aria-label="Messages">
               {messages.map((message, index) => {
                 const own = message.author_id === viewerId;
@@ -265,22 +263,14 @@ export function ChatRoom({ viewerId, canModerate, initialMessages, initialHasMor
           <div className="sr-only" role="status" aria-live="polite">{newMessages ? "De nouveaux messages sont disponibles." : ""}</div>
           <form ref={form} onSubmit={send} className="chat-composer">
             {error && <p className="chat-error" role="alert">{error}</p>}
-            <label htmlFor="chat-draft">Votre message au groupe</label>
-            <div className="chat-composer-input"><textarea ref={composer} id="chat-draft" name="message" value={draft} maxLength={CHAT_MAX_LENGTH} rows={2} placeholder="Écrivez quelque chose…" aria-describedby="chat-composer-hint" onChange={event => setDraft(event.target.value)} onKeyDown={event => {
+            <label htmlFor="chat-draft" className="sr-only">Message</label>
+            <div className="chat-composer-input"><textarea ref={composer} id="chat-draft" name="message" value={draft} maxLength={CHAT_MAX_LENGTH} rows={2} placeholder="Écrire un message" aria-describedby="chat-composer-hint" onChange={event => setDraft(event.target.value)} onKeyDown={event => {
               if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) { event.preventDefault(); form.current?.requestSubmit(); }
             }}/><button className="button primary chat-send" type="submit" disabled={sending || !online || !draft.trim()} aria-busy={sending}><UiIcon name="send"/><span>{sending ? "Envoi…" : "Envoyer"}</span></button></div>
             <div className="chat-composer-footer" id="chat-composer-hint"><span>Entrée pour envoyer · Maj + Entrée pour une nouvelle ligne</span><span>{draft.length.toLocaleString("fr-FR")} / 2 000</span></div>
           </form>
         </>}
       </section>
-      <aside className="chat-about">
-        <span className="chat-about-emblem"><UiIcon name="users" width={28} height={28}/></span>
-        <span className="eyebrow">Notre espace commun</span><h2>Plus proches,<br/>même à distance.</h2>
-        <p>Un lieu pour s’entraider, organiser un rendez-vous et garder le contact au quotidien.</p>
-        <div className="chat-about-note"><UiIcon name="shield"/><p>Les messages sont visibles par tous les membres actifs connectés. Le Bureau et l’administrateur peuvent retirer un message.</p></div>
-        <p className="chat-about-kindness">Un bon échange commence par le respect de chacun.</p>
-        <Link href="/agenda">Voir nos prochains rendez-vous <UiIcon name="arrow"/></Link>
-      </aside>
     </div>
   </section>;
 }

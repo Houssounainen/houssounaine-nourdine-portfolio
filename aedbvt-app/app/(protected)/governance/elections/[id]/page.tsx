@@ -45,7 +45,7 @@ export default async function ElectionDetailPage({params}:{params:Promise<{id:st
   const candidateMap=new Map((candidates||[]).map((c:any)=>[c.candidate_id,c]));
 
   return <section className="page">
-    <header className="page-header"><div><Link className="back-link" href="/governance">← Gouvernance</Link><span className="eyebrow">Élection AEDBVT</span><h1>{election.title}</h1></div><span className={"status-pill status-"+election.status}>{election.status}</span></header>
+    <header className="page-header"><div><Link className="back-link" href="/governance">← Gouvernance</Link><h1>{election.title}</h1></div><span className={"status-pill status-"+election.status}>{election.status}</span></header>
 
     <div className="election-summary panel">
       <div><small>Ouverture</small><strong>{new Date(election.starts_at).toLocaleString("fr-FR",{dateStyle:"long",timeStyle:"short"})}</strong></div>

@@ -9,7 +9,7 @@ export default async function SupportPage(){
   return <main id="contenu" className="public-info-page">
     <article className="public-info-card">
       <Link href="/" className="public-back-link">← {settings.association_short_name}</Link>
-      <span className="eyebrow">Aide</span><h1>Support AEDBVT</h1>
+      <h1>Support AEDBVT</h1>
       <p className="public-info-lead">Besoin d’aide pour votre compte, votre candidature ou un document ? Utilisez le canal correspondant ci-dessous.</p>
 
       <div className="support-grid">

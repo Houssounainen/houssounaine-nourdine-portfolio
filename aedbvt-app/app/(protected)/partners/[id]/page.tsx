@@ -39,7 +39,7 @@ export default async function PartnerDetailPage({params}:{params:Promise<{id:str
   const inKind=(commitments||[]).filter((c)=>c.contribution_type==="in_kind"&&c.status!=="cancelled").length;
 
   return <section className="page">
-    <header className="page-header"><div><span className="eyebrow">Partenaire</span><h1>{partner.name}</h1></div><Link className="button secondary" href="/partners">← Registre</Link></header>
+    <header className="page-header"><div><h1>{partner.name}</h1></div><Link className="button secondary" href="/partners">← Registre</Link></header>
 
     <div className="stat-grid">
       <article><small>Statut</small><strong>{statusLabels[partner.status]||partner.status}</strong><span>{typeLabels[partner.partner_type]||partner.partner_type}</span></article>

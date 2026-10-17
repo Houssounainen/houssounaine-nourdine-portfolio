@@ -7,24 +7,22 @@ export default function JoinPage(){
   return <main id="contenu" className="public-flow-page">
     <section className="public-flow-shell">
       <header className="public-flow-header">
-        <Link href="/" className="brand-mini"><Image src="/aedbvt-logo.webp" alt="" width={52} height={52}/><b>AEDBVT</b></Link>
-        <Link href="/application-status">Déjà candidat ? Suivre mon dossier →</Link>
+        <Link href="/" className="brand-mini"><Image src="/aedbvt-logo.webp" alt="" width={28} height={28}/><b>AEDBVT</b></Link>
+        <Link href="/application-status">Suivre une demande</Link>
       </header>
 
       <div className="public-flow-intro">
-        <span className="eyebrow">Adhésion</span>
-        <h1>Rejoindre l’AEDBVT</h1>
-        <p>Déposez votre candidature et choisissez dès maintenant le mot de passe de votre futur espace membre. Votre compte restera désactivé jusqu’à l’approbation de votre dossier par l’association.</p>
+        <h1>Demande d’adhésion</h1>
+        <p>Remplissez le formulaire et choisissez le mot de passe de votre futur compte. Le compte reste inactif jusqu’à l’approbation du Bureau.</p>
       </div>
 
       <div className="application-layout">
         <article className="panel application-info">
-          <span className="eyebrow">Parcours</span>
-          <h2>Comment ça fonctionne ?</h2>
-          <div><strong>1</strong><span><b>Vous déposez votre candidature</b><small>Identité, contact, études et mot de passe sécurisé.</small></span></div>
-          <div><strong>2</strong><span><b>Le Bureau examine le dossier</b><small>Votre compte existe mais reste bloqué pendant l’examen.</small></span></div>
-          <div><strong>3</strong><span><b>Après approbation, votre accès s’ouvre</b><small>Vous vous connectez avec l’email et le mot de passe choisis lors de la demande.</small></span></div>
-          <div className="notice">Aucun paiement n’est demandé dans ce formulaire public.</div>
+          <h2>Déroulement</h2>
+          <div><strong>1</strong><span><b>Envoi de la demande</b><small>Identité, coordonnées, études et mot de passe.</small></span></div>
+          <div><strong>2</strong><span><b>Examen par le Bureau</b><small>Le compte reste inactif pendant l’examen.</small></span></div>
+          <div><strong>3</strong><span><b>Ouverture de l’accès</b><small>Connexion avec l’email et le mot de passe choisis.</small></span></div>
+          <p className="muted" style={{margin:"12px 0 0"}}>Aucun paiement n’est demandé à cette étape.</p>
         </article>
 
         <article className="panel"><MembershipApplicationForm/></article>

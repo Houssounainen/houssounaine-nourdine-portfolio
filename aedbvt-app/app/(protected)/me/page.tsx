@@ -24,7 +24,7 @@ export default async function MySpacePage() {
   if (!member) {
     return (
       <section className="page">
-        <header className="page-header"><div><span className="eyebrow">Compte personnel</span><h1>Mon espace</h1></div></header>
+        <header className="page-header"><div><h1>Mon espace</h1></div></header>
         <article className="panel warning"><h2>Compte non lié à une fiche membre</h2><p>Ton compte existe, mais aucune fiche membre AEDBVT n’est encore liée. L’administration doit effectuer le rattachement avant d’activer la carte et l’historique personnel.</p></article>
       </section>
     );
@@ -58,7 +58,7 @@ export default async function MySpacePage() {
 
   return (
     <section className="page my-space">
-      <header className="page-header no-print"><div><span className="eyebrow">Compte personnel</span><h1>Mon espace</h1></div><div className="page-header-actions"><Link className="button secondary" href="/update-password">Changer mon mot de passe</Link><span className="status-pill">{profile?.role || "membre"} · {member.status}</span></div></header>
+      <header className="page-header no-print"><div><h1>Mon espace</h1></div><div className="page-header-actions"><Link className="button secondary" href="/update-password">Changer mon mot de passe</Link><span className="status-pill">{profile?.role || "membre"} · {member.status}</span></div></header>
 
       <div className="member-hero" id="carte">
         <article className="member-card printable-card">

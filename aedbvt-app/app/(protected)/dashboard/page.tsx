@@ -1,24 +1,18 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { publishDueArticles } from "@/lib/article-publishing";
-import { ModuleExplorer } from "@/components/module-explorer";
 import { UiIcon } from "@/components/ui-icon";
 import { ROLE_LABELS, normalizeRole } from "@/lib/access";
 
-function daysUntil(date:string){
-  const day=(value:Date)=>new Date(value.toLocaleDateString("en-CA",{timeZone:"Indian/Antananarivo"})).getTime();
-  return String(Math.max(0,Math.round((day(new Date(date))-day(new Date()))/864e5)));
+const TZ="Indian/Antananarivo";
+
+function dateChip(date:string){
+  const value=new Date(date);
+  return <span className="date-chip" aria-hidden="true"><b>{value.toLocaleDateString("fr-FR",{day:"numeric",timeZone:TZ})}</b><small>{value.toLocaleDateString("fr-FR",{month:"short",timeZone:TZ}).replace(".","")}</small></span>;
 }
 
-function capitalize(value:string){
-  return value.charAt(0).toUpperCase()+value.slice(1);
-}
-
-function relativeDay(date:string){
-  const days=Number(daysUntil(date));
-  if(days===0) return "aujourd’hui";
-  if(days===1) return "demain";
-  return "le "+new Date(date).toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",timeZone:"Indian/Antananarivo"});
+function shortDate(date:string){
+  return new Date(date).toLocaleDateString("fr-FR",{day:"numeric",month:"short",timeZone:TZ});
 }
 
 export default async function DashboardPage() {
@@ -39,7 +33,7 @@ export default async function DashboardPage() {
 
   const [
     members,payments,events,meetings,docs,articles,announcements,ownMember,
-    taskResult,openTaskCount,overdueTaskCount,blockedTaskCount,notificationResult
+    taskResult,openTaskCount,overdueTaskCount,blockedTaskCount
   ] = await Promise.all([
     memberQuery,
     supabase.from("payments").select("amount").eq("status","confirmed"),
@@ -55,9 +49,6 @@ export default async function DashboardPage() {
     staff ? supabase.from("operational_tasks").select("id",{count:"exact",head:true}).not("status","in","(done,cancelled)") : Promise.resolve({count:0,error:null}),
     staff ? supabase.from("operational_tasks").select("id",{count:"exact",head:true}).not("status","in","(done,cancelled)").lt("due_on",today) : Promise.resolve({count:0,error:null}),
     staff ? supabase.from("operational_tasks").select("id",{count:"exact",head:true}).eq("status","blocked") : Promise.resolve({count:0,error:null}),
-    staff
-      ? supabase.from("internal_notifications").select("id,read_at").eq("recipient_id",user!.id).is("read_at",null)
-      : Promise.resolve({data:[]}),
   ]);
 
   const collected=(payments.data||[]).reduce((sum,p)=>sum+Number(p.amount||0),0);
@@ -75,72 +66,48 @@ export default async function DashboardPage() {
   const openCount=openTaskCount.count||0;
   const agendaCount=(events.count||0)+(meetings.count||0);
   const statsUnavailable=[members,payments,events,meetings,docs,openTaskCount,overdueTaskCount,blockedTaskCount].some(result=>result.error);
-  const unreadOps=notificationResult.data?.length||0;
 
-  const hour=Number(new Intl.DateTimeFormat("fr-FR",{hour:"numeric",hour12:false,timeZone:"Indian/Antananarivo"}).format(new Date()));
-  const greeting=hour<5?"Bonne nuit":hour<12?"Bonjour":hour<18?"Bon après-midi":"Bonsoir";
-  const firstName=profile?.full_name?.split(" ")[0]||"bienvenue";
-  const todayLabel=capitalize(new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",timeZone:"Indian/Antananarivo"}));
-  const nextItem=agenda[0];
-
-  const quickLinks=[
-    ["/me","Mon espace","Carte & suivi","Profil, cotisations, reçus et demandes."],
-    ["/agenda","Agenda","Vie associative","Événements, réunions et participations."],
-    ...(staff?[["/operations","Pilotage","Centre opérationnel","Décisions, tâches, commissions et mandats."],["/administration","Secrétariat","Courriers & attestations","Registre, modèles, validations et documents officiels."],["/members","Membres","Registre & adhésions","Numéros, filières, rôles et accès."],["/applications","Candidatures","Nouvelles adhésions","Examiner, approuver ou refuser les demandes publiques."]]:[]),
-    ...(finance?[["/finance","Finances","Trésorerie & budget","Comptes, budget, grand livre et caisse."],["/finance/dues","Cotisations","Adhésions annuelles","Échéances, restes, retards et relances."]]:[]),
-    ...(staff?[["/analytics","Statistiques","Pilotage & données","Adhésions, activité et indicateurs agrégés."],["/communication","Communication","Messages ciblés","Informer tous les membres, le staff, un rôle ou un village."],["/exports","Exports","Données & archivage","CSV, Excel XML, PDF et sauvegardes selon vos droits."],["/assets","Patrimoine","Équipements & stock","Biens, affectations, maintenance et consommables."],["/partners","Partenaires","Dons & sponsoring","Prospects, engagements, soutiens et encaissements."]]:[]),
-    ...(contentManager?[["/content","Contenu","Édition officielle","Brouillons, programmation, publication et mise en avant."]]:[]),
-    ["/organization","Organisation","Bureau & missions","Organigramme et titulaires."],
-    ["/governance","Gouvernance","Textes & transparence","Statuts, décisions, assemblées et élections."],
-  ];
+  const hour=Number(new Intl.DateTimeFormat("fr-FR",{hour:"numeric",hour12:false,timeZone:TZ}).format(new Date()));
+  const greeting=hour<18&&hour>=5?"Bonjour":"Bonsoir";
+  const firstName=profile?.full_name?.split(" ")[0];
+  const todayLabel=new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",timeZone:TZ});
+  const announcement=pinned[0];
+  const dash=(value:unknown,error:unknown)=>error?"—":String(value);
 
   return (
-    <section className="page modern-dashboard">
-      <header className="today-hero">
-        <div className="today-copy">
-          <span className="today-date"><i aria-hidden="true"/>{todayLabel}</span>
-          <h1>{greeting},<br/><em>{firstName}.</em></h1>
-          <p>{nextItem?<>Prochain rendez-vous : <b>{nextItem.title}</b> {relativeDay(nextItem.starts_at)}.</>:"Aucun rendez-vous à l’horizon : profitez-en pour faire le point sur votre espace."}</p>
-          <div className="today-actions">
-            <Link className="button today-primary" href="/me#carte"><UiIcon name="user"/> Ma carte de membre</Link>
-            <Link className="button today-ghost" href="/agenda"><UiIcon name="calendar"/> Agenda</Link>
-            <Link className="button today-ghost" href="/chat"><UiIcon name="chat"/> Discussion</Link>
-          </div>
-        </div>
-        <aside className="today-side" aria-label="Votre statut">
-          <span className="today-role"><UiIcon name="shield" width={16} height={16}/>{ROLE_LABELS[normalizeRole(role)]}</span>
-          {nextItem?<div className="today-countdown"><small>{nextItem.kind}</small><strong>{daysUntil(nextItem.starts_at)}</strong><span>{daysUntil(nextItem.starts_at)==="0"?"aujourd’hui":daysUntil(nextItem.starts_at)==="1"?"jour restant":"jours restants"}</span><p>{nextItem.location||"Lieu à confirmer"}</p></div>:<div className="today-countdown"><small>Agenda</small><strong>—</strong><span>rien de prévu</span></div>}
-        </aside>
+    <section className="page">
+      <header className="home-head">
+        <div><h1>{greeting}{firstName?", "+firstName:""}</h1><p>{todayLabel.charAt(0).toUpperCase()+todayLabel.slice(1)} · {ROLE_LABELS[normalizeRole(role)]}</p></div>
+        <div className="header-actions"><Link className="button secondary" href="/me#carte"><UiIcon name="user"/>Ma carte</Link>{contentManager&&<Link className="button primary" href="/content">Publier</Link>}</div>
       </header>
-      {statsUnavailable&&<p className="notice" role="status">Certains indicateurs n’ont pas pu être chargés. Actualisez la page pour réessayer.</p>}
 
-      {pinned.length>0&&<div className="dashboard-alerts">{pinned.slice(0,2).map((item)=><Link href="/announcements" className={"dashboard-alert level-"+item.level} key={item.id}><b>{item.level==="urgent"?"Urgent":"Annonce"}</b><span>{item.title}</span><small>{item.message}</small></Link>)}</div>}
+      {announcement&&<Link href="/announcements" className={"home-announcement level-"+announcement.level}><UiIcon name="info"/><p style={{margin:0}}><b>{announcement.title}</b> <span>— {announcement.message}</span></p></Link>}
+      {statsUnavailable&&<p className="notice" role="status">Certains chiffres n’ont pas pu être chargés. Actualisez la page.</p>}
 
       <div className="stat-grid">
-        {staff?<article><small>Membres actifs</small><strong>{members.error?"—":members.count||0}</strong><span>registre central</span></article>:<article><small>Mon adhésion</small><strong>{ownMember.data?.status==="active"?"Active":"À vérifier"}</strong><span>{ownMember.data?.member_number||"compte non lié"}</span></article>}
-        <article><small>{finance?"Cotisations encaissées":"Mes paiements"}</small><strong>{payments.error?"—":collected.toLocaleString("fr-FR")+" Ar"}</strong><span>paiements confirmés</span></article>
-        <article><small>Agenda à venir</small><strong>{events.error||meetings.error?"—":agendaCount}</strong><span>événements & réunions</span></article>
-        <article><small>Documents publiés</small><strong>{docs.error?"—":docs.count||0}</strong><span>gouvernance</span></article>
-        {staff&&<article className={overdue||blocked?"attention-stat":""}><small>Actions ouvertes</small><strong>{openTaskCount.error?"—":openCount}</strong><span>{overdueTaskCount.error?"—":overdue} retard · {blockedTaskCount.error?"—":blocked} bloquée(s)</span></article>}
+        {staff?<article><small>Membres actifs</small><strong>{dash(members.count||0,members.error)}</strong></article>:<article><small>Adhésion</small><strong>{ownMember.data?.status==="active"?"Active":"À vérifier"}</strong><span>{ownMember.data?.member_number||"Compte non lié"}</span></article>}
+        <article><small>{finance?"Cotisations encaissées":"Mes paiements"}</small><strong>{payments.error?"—":collected.toLocaleString("fr-FR")+" Ar"}</strong></article>
+        <article><small>Rendez-vous à venir</small><strong>{events.error||meetings.error?"—":agendaCount}</strong></article>
+        {staff?<article className={overdue||blocked?"attention-stat":""}><small>Actions ouvertes</small><strong>{dash(openCount,openTaskCount.error)}</strong><span>{overdue} en retard · {blocked} bloquée{blocked>1?"s":""}</span></article>:<article><small>Documents publiés</small><strong>{dash(docs.count||0,docs.error)}</strong></article>}
       </div>
 
-      {staff&&<article className="panel dashboard-operations">
-        <div className="panel-head"><div><span className="eyebrow">Pilotage</span><h2>Actions du Bureau</h2></div><Link href="/operations">Centre opérationnel →</Link></div>
-        <div className="dashboard-operations-grid">
-          <div><small>Ouvertes</small><strong>{openTaskCount.error?"—":openCount}</strong></div>
-          <div><small>En retard</small><strong>{overdueTaskCount.error?"—":overdue}</strong></div>
-          <div><small>Bloquées</small><strong>{blockedTaskCount.error?"—":blocked}</strong></div>
-          <div><small>Notifications</small><strong>{unreadOps}</strong></div>
-        </div>
-        <div className="mini-feed operations-mini-feed">{activeTasks.slice(0,4).map((task:any)=><Link href={"/operations/tasks/"+task.id} key={task.id}><span className={"badge priority-"+task.priority}>{task.priority}</span><div><b>{task.title}</b><small>{task.progress}%{task.due_on?" · échéance "+new Date(task.due_on+"T12:00:00").toLocaleDateString("fr-FR"):""}</small></div></Link>)}{!activeTasks.length&&<p>Aucune action ouverte.</p>}</div>
-      </article>}
-
-      <div className="content-grid dashboard-grid">
-        <article className="panel"><div className="panel-head"><div><span className="eyebrow">Agenda</span><h2>Prochains rendez-vous</h2></div><Link href="/agenda">Voir tout →</Link></div><div className="mini-feed">{agenda.map((item)=><div key={item.kind+"-"+item.id}><span className="mini-date">{new Date(item.starts_at).toLocaleDateString("fr-FR",{day:"2-digit",month:"short"})}</span><div><b>{item.title}</b><small>{item.kind} · {item.location||"Lieu à confirmer"}</small></div></div>)}{!agenda.length&&<p>Aucun rendez-vous planifié.</p>}</div></article>
-        <article className="panel"><div className="panel-head"><div><span className="eyebrow">À la une</span><h2>Dernières actualités</h2></div><Link href="/news">Voir tout →</Link></div><div className="mini-feed">{(articles.data||[]).map((item)=><Link href={"/news/"+item.slug} key={item.id} className="dashboard-news-link"><span className="badge">{item.category||"Actualité"}</span><div><b>{item.title}</b><small>{item.excerpt||"Publication AEDBVT"}</small></div><UiIcon name="arrow"/></Link>)}{!articles.data?.length&&<p>Aucune actualité publiée.</p>}</div></article>
+      <div className="home-grid">
+        <article className="panel list-card">
+          <header><h2>Agenda</h2><Link href="/agenda">Tout voir</Link></header>
+          {agenda.map((item)=><Link className="list-row" href="/agenda" key={item.kind+"-"+item.id}>{dateChip(item.starts_at)}<div><b>{item.title}</b><small>{item.kind} · {item.location||"Lieu à confirmer"}</small></div><time dateTime={item.starts_at}>{new Date(item.starts_at).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit",timeZone:TZ})}</time></Link>)}
+          {!agenda.length&&<p className="list-empty">Aucun rendez-vous programmé.</p>}
+        </article>
+        <article className="panel list-card">
+          <header><h2>Actualités</h2><Link href="/news">Tout voir</Link></header>
+          {(articles.data||[]).map((item)=><Link className="list-row" href={"/news/"+item.slug} key={item.id} style={{gridTemplateColumns:"minmax(0,1fr) auto"}}><div><b>{item.title}</b><small>{item.category||"Actualité"}{item.excerpt?" · "+item.excerpt:""}</small></div>{item.published_at&&<time dateTime={item.published_at}>{shortDate(item.published_at)}</time>}</Link>)}
+          {!articles.data?.length&&<p className="list-empty">Aucune actualité publiée.</p>}
+        </article>
+        {staff&&<article className="panel list-card wide">
+          <header><h2>Actions du Bureau</h2><Link href="/operations">Pilotage</Link></header>
+          {activeTasks.slice(0,5).map((task:any)=><Link className="list-row" href={"/operations/tasks/"+task.id} key={task.id}><span className={"badge priority-"+task.priority}>{({urgent:"Urgent",critical:"Critique",high:"Haute",normal:"Normale",low:"Basse"} as Record<string,string>)[task.priority]||task.priority}</span><div><b>{task.title}</b><small>{task.due_on?"Échéance "+new Date(task.due_on+"T12:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"long"}):"Sans échéance"}</small></div><span className="meta" style={{display:"flex",alignItems:"center",gap:8}}><span className="progress-mini"><i style={{width:Math.min(100,Number(task.progress)||0)+"%"}}/></span>{task.progress}%</span></Link>)}
+          {!activeTasks.length&&<p className="list-empty">Aucune action en cours.</p>}
+        </article>}
       </div>
-
-      <ModuleExplorer links={quickLinks}/>
     </section>
   );
 }

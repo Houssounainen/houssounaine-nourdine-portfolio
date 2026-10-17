@@ -10,17 +10,18 @@ export function AppShell({ children, profile, unreadNotifications=0 }: { childre
   const role=normalizeRole(profile?.role);
   const profileName=profile?.full_name||"Membre";
   const links=navigationForRole(role);
+  const initials=profileName.split(" ").filter(Boolean).map(x => x[0]).slice(0,2).join("").toUpperCase();
 
   return (
     <div className="app-frame">
       <aside className="sidebar">
-        <Link href="/dashboard" className="side-brand"><Image src="/aedbvt-logo.webp" alt="AEDBVT" width={56} height={56} /><span><b>AEDBVT</b><small>Gestion associative</small></span></Link>
+        <Link href="/dashboard" className="side-brand"><Image src="/aedbvt-logo.webp" alt="" width={26} height={26} /><span><b>AEDBVT</b><small>Tuléar</small></span></Link>
         <SideNavigation links={links} unreadCount={unreadNotifications}/>
         <div className="side-user">
-          <span className="avatar">{profileName.split(" ").map(x => x[0]).slice(0,2).join("").toUpperCase()}</span>
+          <span className="avatar" aria-hidden="true">{initials}</span>
           <div><b>{profileName}</b><small>{ROLE_LABELS[role]}</small></div>
+          <SignOutButton compact/>
         </div>
-        <SignOutButton/>
       </aside>
       <div className="workspace-main"><WorkspaceTopbar links={links} unreadCount={unreadNotifications}/><main id="contenu" className="app-main">{children}</main></div>
       <CommandPalette links={links}/>

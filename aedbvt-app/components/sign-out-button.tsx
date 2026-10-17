@@ -1,6 +1,8 @@
 "use client";
 
-export function SignOutButton(){
+import { UiIcon } from "@/components/ui-icon";
+
+export function SignOutButton({ compact = false }: { compact?: boolean }){
   async function signOut(){
     try{
       if("serviceWorker" in navigator){
@@ -26,5 +28,6 @@ export function SignOutButton(){
     form.submit();
   }
 
-  return <button className="ghost-button" type="button" onClick={signOut}>Se déconnecter</button>;
+  if(compact) return <button className="signout-icon" type="button" onClick={signOut} aria-label="Se déconnecter" title="Se déconnecter"><UiIcon name="logout"/></button>;
+  return <button className="ghost-button" type="button" onClick={signOut}><UiIcon name="logout"/>Se déconnecter</button>;
 }

@@ -85,7 +85,7 @@ export default async function AnalyticsPage(){
   const totalExpense=financeRows.reduce((sum,row)=>sum+Number(row.expense||0),0);
 
   return <section className="page">
-    <header className="page-header"><div><span className="eyebrow">Pilotage & données</span><h1>Statistiques</h1></div><Link className="button secondary" href="/exports">Exporter →</Link></header>
+    <header className="page-header"><div><h1>Statistiques</h1></div><Link className="button secondary" href="/exports">Exporter →</Link></header>
 
     <div className="stat-grid analytics-kpis">
       <article><small>Membres actifs</small><strong>{activeMembers.length}</strong><span>{activated} compte(s) activé(s)</span></article>

@@ -12,7 +12,7 @@ export default async function ExportsPage(){
   const admin=can(profile?.role,"admin_manage");
 
   return <section className="page">
-    <header className="page-header"><div><span className="eyebrow">Données & archivage</span><h1>Centre d’exports</h1></div><span className="status-pill">Accès contrôlé</span></header>
+    <header className="page-header"><div><h1>Exports</h1></div><span className="status-pill">Accès contrôlé</span></header>
 
     <div className="export-grid">
       <article className="panel export-card">

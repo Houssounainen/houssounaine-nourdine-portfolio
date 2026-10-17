@@ -1,10 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { PwaBootstrap } from "@/components/pwa-bootstrap";
-import "@fontsource-variable/inter";
-import "@fontsource-variable/bricolage-grotesque";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import "./globals.css";
-import "./modern.css";
-import "./refonte.css";
+import "./ui.css";
 
 export const metadata: Metadata = {
   applicationName:"AEDBVT",
@@ -26,12 +25,12 @@ export const viewport:Viewport={
   width:"device-width",
   initialScale:1,
   viewportFit:"cover",
-  themeColor:"#081631",
+  themeColor:"#ffffff",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr">
+    <html lang="fr" className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <body>
         <a className="skip-link" href="#contenu">Aller au contenu</a>
         <PwaBootstrap/>

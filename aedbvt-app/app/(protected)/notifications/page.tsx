@@ -25,7 +25,7 @@ export default async function NotificationsPage(){
   const publicKey=process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY||"";
 
   return <section className="page">
-    <header className="page-header"><div><span className="eyebrow">Alertes & appareils</span><h1>Notifications</h1></div><span className="status-pill">{unread.length} non lue(s)</span></header>
+    <header className="page-header"><div><h1>Notifications</h1></div><span className="status-pill">{unread.length} non lue(s)</span></header>
 
     <div className="content-grid notification-settings-grid">
       <PushControls publicKey={publicKey} configured={isPushConfigured()} deviceCount={subscriptions?.length||0}/>

@@ -43,7 +43,7 @@ export default async function ApplicationStatusPage({
       </header>
 
       <div className="public-flow-intro">
-        <span className="eyebrow">Suivi privé</span><h1>Ma candidature</h1>
+        <h1>Ma candidature</h1>
         <p>Utilisez la référence et le code de suivi reçus lors du dépôt. Ces deux éléments sont nécessaires pour afficher l’état du dossier.</p>
       </div>
 

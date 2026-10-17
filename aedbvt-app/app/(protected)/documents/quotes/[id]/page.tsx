@@ -24,7 +24,7 @@ export default async function QuoteDetailPage({params}:{params:Promise<{id:strin
   const canConvert=finance&&quote.status!=="cancelled"&&Number(quote.total)>0;
 
   return <section className="page">
-    <header className="page-header"><div><Link className="back-link" href="/documents">← Documents</Link><span className="eyebrow">Devis</span><h1>{quote.number}</h1></div><span className={"status-pill status-"+quote.status}>{quote.status}</span></header>
+    <header className="page-header"><div><Link className="back-link" href="/documents">← Documents</Link><h1>{quote.number}</h1></div><span className={"status-pill status-"+quote.status}>{quote.status}</span></header>
 
     <div className="document-detail-grid">
       <article className="panel document-paper">

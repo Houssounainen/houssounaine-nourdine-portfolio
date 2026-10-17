@@ -23,7 +23,7 @@ export default async function InstitutionalSettingsPage(){
   const value=(key:string,fallback="")=>map.get(key)||fallback;
 
   return <section className="page">
-    <header className="page-header"><div><span className="eyebrow">Administration · identité</span><h1>Paramètres institutionnels</h1></div><Link className="button secondary" href="/admin">← Administration</Link></header>
+    <header className="page-header"><div><h1>Paramètres</h1></div><Link className="button secondary" href="/admin">← Administration</Link></header>
 
     <form action={updateInstitutionalSettings} className="settings-form">
       <article className="panel form-stack">

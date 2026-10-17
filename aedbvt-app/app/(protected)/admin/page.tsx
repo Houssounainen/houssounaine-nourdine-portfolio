@@ -26,7 +26,7 @@ export default async function AdminPage() {
 
   return (
     <section className="page">
-      <header className="page-header"><div><span className="eyebrow">Accès & traçabilité</span><h1>Administration</h1></div><span className="status-pill">{me?.full_name||"Administrateur"} · administrateur</span></header>
+      <header className="page-header"><div><h1>Administration</h1></div><span className="status-pill">{me?.full_name||"Administrateur"} · administrateur</span></header>
 
       <div className="admin-tools-grid">
         <Link href="/admin/settings" className="panel admin-tool-card"><span className="eyebrow">Institutionnel</span><h2>Paramètres</h2><p>Nom, contacts, support, textes publics et cotisation par défaut.</p><b>Configurer →</b></Link>

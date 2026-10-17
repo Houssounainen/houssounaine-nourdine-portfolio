@@ -45,7 +45,7 @@ export default async function CasesPage(){
 
   return <section className="page">
     <header className="page-header">
-      <div><span className="eyebrow">Confidentiel</span><h1>Signalements & plaintes</h1></div>
+      <div><h1>Signalements</h1></div>
       <span className="status-pill">{manager?"Gestion Admin/Bureau":"Mes dossiers"}</span>
     </header>
 

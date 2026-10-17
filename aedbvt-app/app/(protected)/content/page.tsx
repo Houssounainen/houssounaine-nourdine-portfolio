@@ -41,7 +41,7 @@ export default async function ContentPage({
   },{});
 
   return <section className="page">
-    <header className="page-header"><div><span className="eyebrow">Édition officielle</span><h1>Centre de contenu</h1></div><Link className="button secondary" href="/news">Voir les actualités →</Link></header>
+    <header className="page-header"><div><h1>Contenu</h1></div><Link className="button secondary" href="/news">Voir les actualités →</Link></header>
 
     <div className="stat-grid">
       <article><small>Brouillons</small><strong>{counts.draft||0}</strong><span>à préparer</span></article>

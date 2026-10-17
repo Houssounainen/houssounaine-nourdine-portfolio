@@ -19,7 +19,7 @@ export default async function MembersPage({
 
   return (
     <section className="page">
-      <header className="page-header"><div><span className="eyebrow">Registre</span><h1>Membres</h1></div><div className="page-header-actions"><span className="status-pill">{members?.length || 0} enregistrements</span>{can(profile?.role,"member_import")&&<Link className="button secondary" href="/members/import">Importer un CSV</Link>}</div></header>
+      <header className="page-header"><div><h1>Membres</h1></div><div className="page-header-actions"><span className="status-pill">{members?.length || 0} enregistrements</span>{can(profile?.role,"member_import")&&<Link className="button secondary" href="/members/import">Importer un CSV</Link>}</div></header>
 
       {params.created==="1"&&<article className="panel"><span className="badge ok">Membre ajouté</span><p>{params.invite==="invited"?"Le registre est à jour et une invitation de connexion a été envoyée par email.":params.invite==="linked"?"Le registre est à jour et le membre est relié à son compte existant.":params.invite==="error"?"Le registre est à jour, mais l’invitation n’a pas pu être envoyée. Utilise « Envoyer l’accès » dans la liste.":"Le registre a été mis à jour immédiatement."}</p></article>}
       {params.created!=="1"&&params.invite==="invited"&&<article className="panel"><span className="badge ok">Invitation envoyée</span><p>Le membre peut maintenant ouvrir l’email AEDBVT et créer son mot de passe.</p></article>}
