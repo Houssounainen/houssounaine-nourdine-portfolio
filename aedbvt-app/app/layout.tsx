@@ -9,6 +9,7 @@ import "./s-social.css";
 import "./s-home.css";
 import "./s-shop.css";
 import "./s-admin.css";
+import "./s-member.css";
 
 export const metadata: Metadata = {
   applicationName:"AEDBVT",
@@ -31,6 +32,7 @@ export const viewport:Viewport={
   initialScale:1,
   viewportFit:"cover",
   themeColor:"#ffffff",
+  colorScheme:"only light",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

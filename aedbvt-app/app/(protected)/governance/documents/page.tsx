@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { isStaff } from "@/lib/auth";
+import { UiIcon } from "@/components/ui-icon";
+import { DetailHero, EmptyCard, Pill } from "@/components/gov-ui";
+import { dateOnly, plural } from "@/lib/governance-labels";
 import { createGovernanceDocument } from "./actions";
 
 export default async function GovernanceDocumentsPage(){
@@ -11,27 +14,41 @@ export default async function GovernanceDocumentsPage(){
     supabase.from("governance_documents").select("id,title,category,version,published,updated_at,current_version_id").order("category").order("title")
   ]);
   const staff=isStaff(profile?.role);
+  const count=docs?.length||0;
+  const published=(docs||[]).filter(d=>d.published).length;
 
-  return <section className="page">
-    <header className="page-header"><div><Link className="back-link" href="/governance">← Gouvernance</Link><h1>Documents officiels</h1></div><Link className="button secondary" href="/governance/decisions">Registre des décisions</Link></header>
+  return <section className="page gv-page">
+    <DetailHero
+      back={{href:"/governance#textes",label:"Gouvernance"}}
+      kicker="Centre documentaire"
+      title="Textes officiels"
+      icon="book"
+      color="#344054"
+      meta={<><span><UiIcon name="document"/>{plural(count,"texte")}</span><span><UiIcon name="check"/>{plural(published,"publié")}</span></>}
+      actions={<Link className="button secondary" href="/governance/decisions"><UiIcon name="list"/>Registre des décisions</Link>}
+    />
 
-    {staff&&<form action={createGovernanceDocument} className="panel editorial-form document-create">
-      <div className="form-title"><div><span className="eyebrow">Nouveau texte</span><h2>Créer un document institutionnel</h2></div><button className="button primary">Créer le document</button></div>
-      <label>Titre<input name="title" required placeholder="Règlement intérieur"/></label>
-      <label>Catégorie<select name="category"><option>Textes fondateurs</option><option>Organisation</option><option>Éthique</option><option>Finances</option><option>Transparence</option><option>Procédures</option><option>Autre</option></select></label>
-      <label>Version initiale<input name="version_label" defaultValue="1.0" required/></label>
-      <label className="wide">Contenu<textarea name="body" rows={12} required placeholder="Rédigez ici le texte complet…"/></label>
-    </form>}
+    {staff&&<details className="gv-card gv-disclosure">
+      <summary><span className="icon-tile" style={{"--tile":"#2453d6"} as React.CSSProperties}><UiIcon name="plus"/></span>Créer un document institutionnel</summary>
+      <form action={createGovernanceDocument} className="form-stack">
+        <label>Titre<input name="title" required placeholder="Règlement intérieur"/></label>
+        <div className="form-two">
+          <label>Catégorie<select name="category"><option>Textes fondateurs</option><option>Organisation</option><option>Éthique</option><option>Finances</option><option>Transparence</option><option>Procédures</option><option>Autre</option></select></label>
+          <label>Version initiale<input name="version_label" defaultValue="1.0" required/></label>
+        </div>
+        <label>Contenu<textarea name="body" rows={10} required placeholder="Rédigez ici le texte complet…"/></label>
+        <button className="button primary">Créer le document</button>
+      </form>
+    </details>}
 
-    <div className="document-library-grid">
-      {(docs||[]).map((doc)=><Link className="panel institutional-doc-card" href={"/governance/documents/"+doc.id} key={doc.id}>
-        <div className="article-meta"><span className="badge">{doc.category}</span><span className={"badge "+(doc.published?"ok":"")}>{doc.published?"Publié":"Brouillon"}</span></div>
-        <h2>{doc.title}</h2>
-        <p>Version courante : {doc.version||"—"}</p>
-        <small>Mis à jour le {new Date(doc.updated_at).toLocaleDateString("fr-FR")}</small>
-        <b>Ouvrir →</b>
+    {count>0?<div className="gv-docs">
+      {(docs||[]).map((doc)=><Link className="gv-doc" href={"/governance/documents/"+doc.id} key={doc.id}>
+        <div className="gv-doc-top"><span className="gv-doc-file" aria-hidden="true"><UiIcon name="document"/></span><Pill tone={doc.published?"ok":"warn"}>{doc.published?"En vigueur":"Brouillon"}</Pill></div>
+        <small>{doc.category}</small>
+        <h3>{doc.title}</h3>
+        <small>Version {doc.version||"—"} · mise à jour le {dateOnly(doc.updated_at)}</small>
+        <span className="gv-doc-foot">Lire le texte<UiIcon name="arrow"/></span>
       </Link>)}
-      {!docs?.length&&<div className="panel empty-state">Aucun document institutionnel.</div>}
-    </div>
+    </div>:<EmptyCard icon="book" color="#344054" title="Aucun texte officiel" text="Statuts, règlement intérieur et politiques de l’association apparaîtront ici."/>}
   </section>
 }

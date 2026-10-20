@@ -6,10 +6,10 @@ import { UiIcon } from "@/components/ui-icon";
 import { FilterList } from "@/components/manage/filter-list";
 import { createAssembly, createElection } from "./actions";
 import "@/app/manage.css";
+import { DECISION_OUTCOME, DECISION_TYPE, plural } from "@/lib/governance-labels";
 
 const statusLabel:Record<string,string>={draft:"Brouillon",published:"Convoquée",open:"Ouverte",closed:"Clôturée",archived:"Archivée",cancelled:"Annulée"};
 const electionStatus:Record<string,string>={draft:"Brouillon",published:"Publiée",open:"Scrutin ouvert",closed:"Clôturée",cancelled:"Annulée"};
-const outcomeLabel:Record<string,string>={adopted:"Adoptée",rejected:"Rejetée",elected:"Élu",published:"Publiée",recorded:"Consignée",withdrawn:"Retirée"};
 const statusClass=(status:string)=>status==="open"?" ok":status==="published"?" featured":status==="draft"?" pinned":"";
 
 function DateChip({value}:{value?:string|null}){
@@ -79,7 +79,7 @@ export default async function GovernancePage() {
       facets:{type:assembly.assembly_type,status:assembly.status},
       node:<Link className="list-row stack-sm" href={"/governance/assemblies/"+assembly.id}>
         <DateChip value={assembly.starts_at}/>
-        <div><b>{assembly.title}</b><small>{new Date(assembly.starts_at).toLocaleString("fr-FR",{dateStyle:"long",timeStyle:"short"})} · {assembly.location||assembly.mode} · quorum {Number(assembly.quorum_percent)} %</small></div>
+        <div><b>{assembly.title}</b><small>{new Date(assembly.starts_at).toLocaleString("fr-FR",{dateStyle:"long",timeStyle:"short",timeZone:"Indian/Antananarivo"})} · {assembly.location||assembly.mode} · quorum {Number(assembly.quorum_percent)} %</small></div>
         <div className="row-end">
           {assembly.assembly_type==="extraordinary"&&<span className="badge badge-muted">Extraordinaire</span>}
           <span className={"badge"+statusClass(assembly.status)}>{statusLabel[assembly.status]||assembly.status}</span>
@@ -91,7 +91,7 @@ export default async function GovernancePage() {
   const electionView=(elections||[]).length
     ? <div className="panel list-card">{(elections||[]).map(election=><Link className="list-row stack-sm" href={"/governance/elections/"+election.id} key={election.id}>
       <DateChip value={election.starts_at}/>
-      <div><b>{election.title}</b><small>Du {new Date(election.starts_at).toLocaleString("fr-FR",{dateStyle:"medium",timeStyle:"short"})} au {new Date(election.ends_at).toLocaleString("fr-FR",{dateStyle:"medium",timeStyle:"short"})}</small></div>
+      <div><b>{election.title}</b><small>Du {new Date(election.starts_at).toLocaleString("fr-FR",{dateStyle:"medium",timeStyle:"short",timeZone:"Indian/Antananarivo"})} au {new Date(election.ends_at).toLocaleString("fr-FR",{dateStyle:"medium",timeStyle:"short",timeZone:"Indian/Antananarivo"})}</small></div>
       <div className="row-end"><span className={"badge"+statusClass(election.status)}>{electionStatus[election.status]||election.status}</span></div>
     </Link>)}</div>
     : <div className="hm-empty is-column"><span className="icon-tile solid lg" style={{"--tile":"#7a5af8"} as React.CSSProperties}><UiIcon name="check"/></span><div><b>Aucune élection</b><small>Les scrutins de l’association apparaîtront ici.</small></div>{staff&&electionSheet("primary")}</div>;
@@ -121,8 +121,8 @@ export default async function GovernancePage() {
     {(decisions||[]).length
       ? <div className="panel list-card">{(decisions||[]).map(d=><Link className="list-row stack-sm" href="/governance/decisions" key={d.id}>
         <span className="row-icon"><UiIcon name="check"/></span>
-        <div><b>{d.title}</b><small>{d.number}{d.decision_date?" · "+new Date(d.decision_date).toLocaleDateString("fr-FR"):""}{d.decision_type?" · "+d.decision_type:""}</small></div>
-        <div className="row-end"><span className={"badge"+(["adopted","elected"].includes(d.outcome)?" ok":"")}>{outcomeLabel[d.outcome]||d.outcome}</span></div>
+        <div><b>{d.title}</b><small>{d.number}{d.decision_date?" · "+new Date(d.decision_date).toLocaleDateString("fr-FR"):""}{d.decision_type?" · "+(DECISION_TYPE[d.decision_type]||d.decision_type):""}</small></div>
+        <div className="row-end"><span className={"badge"+(["adopted","elected"].includes(d.outcome)?" ok":"")}>{DECISION_OUTCOME[d.outcome]?.[0]||d.outcome}</span></div>
       </Link>)}</div>
       : <div className="hm-empty is-column"><span className="icon-tile solid lg" style={{"--tile":"#12b76a"} as React.CSSProperties}><UiIcon name="list"/></span><div><b>Aucune décision consignée</b><small>Le registre des décisions est vide.</small></div></div>}
   </>;
@@ -131,14 +131,14 @@ export default async function GovernancePage() {
     <section className="page manage-page hm-gov">
       <header className="page-header hm-page-head">
         <span className="icon-tile solid lg" style={{"--tile":"#344054"} as React.CSSProperties}><UiIcon name="shield"/></span>
-        <div><h1>Gouvernance</h1><p>{upcoming.length} assemblée(s) à venir, {openElections.length} scrutin(s) ouvert(s), {docs?.length||0} texte(s) de référence.</p></div>
+        <div><h1>Gouvernance</h1><p>{plural(upcoming.length,"assemblée à venir","assemblées à venir")} · {plural(openElections.length,"scrutin ouvert","scrutins ouverts")} · {plural(docs?.length||0,"texte de référence","textes de référence")}</p></div>
         {staff&&<div className="header-actions">{electionSheet()}{assemblySheet()}</div>}
       </header>
 
       <div className="stat-grid manage-stats hm-stat-tiles">
         <article><a className="stat-link" href="#assemblees"><span className="icon-tile" style={{"--tile":"#0ba5ec"} as React.CSSProperties}><UiIcon name="users"/></span><small>Assemblées</small><strong>{assemblies?.length||0}</strong><span>{upcoming.length} à venir</span></a></article>
-        <article><a className="stat-link" href="#elections"><span className="icon-tile" style={{"--tile":"#7a5af8"} as React.CSSProperties}><UiIcon name="check"/></span><small>Élections</small><strong>{elections?.length||0}</strong><span>{openElections.length} scrutin(s) ouvert(s)</span></a></article>
-        <article><a className="stat-link" href="#textes"><span className="icon-tile" style={{"--tile":"#344054"} as React.CSSProperties}><UiIcon name="book"/></span><small>Textes officiels</small><strong>{docs?.length||0}</strong><span>{(docs||[]).filter(d=>d.published).length} publié(s)</span></a></article>
+        <article><a className="stat-link" href="#elections"><span className="icon-tile" style={{"--tile":"#7a5af8"} as React.CSSProperties}><UiIcon name="check"/></span><small>Élections</small><strong>{elections?.length||0}</strong><span>{plural(openElections.length,"scrutin ouvert","scrutins ouverts")}</span></a></article>
+        <article><a className="stat-link" href="#textes"><span className="icon-tile" style={{"--tile":"#344054"} as React.CSSProperties}><UiIcon name="book"/></span><small>Textes officiels</small><strong>{docs?.length||0}</strong><span>{plural((docs||[]).filter(d=>d.published).length,"publié")}</span></a></article>
         <article><a className="stat-link" href="#decisions"><span className="icon-tile" style={{"--tile":"#12b76a"} as React.CSSProperties}><UiIcon name="list"/></span><small>Décisions récentes</small><strong>{decisions?.length||0}</strong><span>registre durable</span></a></article>
       </div>
 

@@ -115,10 +115,10 @@ export function PushControls({
 
   return <article className="panel push-control-card">
     <div className="panel-head"><div><span className="eyebrow">Cet appareil</span><h2>Notifications push</h2></div><span className={"badge "+(subscribed?"ok":"")}>{subscribed?"Activées":"Désactivées"}</span></div>
-    {!configured&&<p className="push-warning">Les clés VAPID ne sont pas encore configurées sur le serveur de production. L’interface est prête, mais aucun push ne sera envoyé tant que cette configuration n’est pas ajoutée.</p>}
+    {!configured&&<p className="push-warning">Les notifications sur téléphone ne sont pas encore activées par l’association. Vous continuez à recevoir toutes vos alertes ici, dans l’application.</p>}
     {!supported&&<p>Ce navigateur ne prend pas en charge Web Push dans ce contexte. Sur iPhone/iPad, installez d’abord AEDBVT sur l’écran d’accueil puis ouvrez l’application installée.</p>}
     {supported&&<p>Recevez les annonces, changements d’agenda et alertes qui vous concernent, même lorsque l’application n’est pas ouverte.</p>}
-    <div className="push-status-grid"><div><small>Permission navigateur</small><b>{permission}</b></div><div><small>Appareils enregistrés</small><b>{deviceCount}</b></div></div>
+    <div className="push-status-grid"><div><small>Permission navigateur</small><b>{({granted:"Autorisée",denied:"Refusée",default:"Non demandée"} as Record<string,string>)[permission]||permission}</b></div><div><small>Appareils enregistrés</small><b>{deviceCount}</b></div></div>
     <div className="push-actions">
       {!subscribed?<button className="button primary" disabled={busy||!configured} onClick={subscribe}>{busy?"Activation…":"Activer sur cet appareil"}</button>:<button className="button secondary" disabled={busy} onClick={unsubscribe}>Désactiver</button>}
       {subscribed&&<button className="button secondary" disabled={busy||!configured} onClick={test}>Envoyer un test</button>}

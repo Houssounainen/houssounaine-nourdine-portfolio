@@ -38,3 +38,10 @@ export async function withCovers<T extends { slug: string; cover_url?: string | 
   const covers = new Map(((data || []) as { slug: string; cover_url: string }[]).map(row => [row.slug, row.cover_url]));
   return articles.map(article => ({ ...article, cover_url: article.cover_url ?? covers.get(article.slug) ?? null }));
 }
+
+/** Mode d’une réunion en français (les anciennes valeurs anglaises sont traduites). */
+export function meetingMode(mode?: string | null) {
+  const value = (mode || "").trim();
+  const map: Record<string, string> = { online: "En ligne", remote: "En ligne", visio: "Visio", hybrid: "Hybride", onsite: "Présentiel", in_person: "Présentiel", presentiel: "Présentiel" };
+  return map[value.toLowerCase()] || value || "Présentiel";
+}

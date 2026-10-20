@@ -54,6 +54,10 @@ const paths = {
   mapPin: <><path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12Z"/><circle cx="12" cy="9" r="2.5"/></>,
   pencil: <path d="m4 20 4-1 11-11a2.1 2.1 0 0 0-3-3L5 16Z M14 6l3 3"/>,
   share: <><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-4M8.6 13.5l6.8 4"/></>,
+  copy: <><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15H4.5A1.5 1.5 0 0 1 3 13.5v-9A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5V5"/></>,
+  pushpin: <path d="M9 4h6l-1 5 3 3v2H7v-2l3-3Zm3 10v7"/>,
+  vote: <><path d="M4 21h16M6 17h12l-1-4H7Z"/><path d="m9 9 2 2 4-5"/></>,
+  gavel: <><path d="m14 4 6 6M11 7l6 6M12.5 5.5l-6 6 6 6 6-6M3 21l6-6"/></>,
 } as const;
 
 export type IconName = keyof typeof paths;

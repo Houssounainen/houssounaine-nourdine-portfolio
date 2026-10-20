@@ -7,6 +7,7 @@ import { MemberPhoto } from "@/components/member-photo";
 import { AvatarEditor } from "@/components/avatar-editor";
 import { UiIcon } from "@/components/ui-icon";
 import { normalizeRole, ROLE_LABELS } from "@/lib/access";
+import { ariary } from "@/lib/mobile-money";
 import { createMyRequest, updateMyBio, updateMyProfile } from "./actions";
 
 const requestLabels: Record<string,string> = {
@@ -102,7 +103,7 @@ export default async function MySpacePage() {
         <article className="member-card printable-card">
           <div className="member-card-top"><Image src="/aedbvt-logo.webp" alt="AEDBVT" width={64} height={64}/><div><span>CARTE DE MEMBRE</span><b>AEDBVT</b></div></div>
           <div className="member-card-body">
-            <MemberPhoto url={photoUrl} name={member.full_name}/><div><small>Nom complet</small><h2>{member.full_name}</h2><small>Numéro</small><strong>{member.member_number}</strong><div className="card-meta"><span>{member.village || "Village non renseigné"}</span><span>{member.program || "Filière non renseignée"}</span><span>{member.study_level || "Niveau non renseigné"}</span></div></div>
+            <MemberPhoto url={photoUrl||social?.avatar_url||null} name={member.full_name}/><div><small>Nom complet</small><h2>{member.full_name}</h2><small>Numéro</small><strong>{member.member_number}</strong><div className="card-meta"><span>{member.village || "Village non renseigné"}</span><span>{member.program || "Filière non renseignée"}</span><span>{member.study_level || "Niveau non renseigné"}</span></div></div>
             <div className="qr-wrap"><img src={qr} alt="QR code de vérification de la carte membre"/><small>Scanner pour vérifier</small></div>
           </div>
           <div className="member-card-foot"><span>Adhésion : {member.joined_at ? new Date(member.joined_at).toLocaleDateString("fr-FR") : "—"}</span><span>Statut : {member.status === "active" ? "ACTIF" : member.status.toUpperCase()}</span></div>
@@ -112,9 +113,9 @@ export default async function MySpacePage() {
           <div className="dues-card panel">
             <span className="eyebrow">Cotisation annuelle</span>
             {currentDue?<><div className="dues-card-title"><strong>{currentDue.cycle_label}</strong><span className={"badge dues-"+currentDue.current_status}>{dueLabels[currentDue.current_status]||currentDue.current_status}</span></div>
-            <strong>{paid.toLocaleString("fr-FR")} / {effectiveDue.toLocaleString("fr-FR")} Ar</strong>
+            <strong>{paid.toLocaleString("fr-FR")} / {ariary(effectiveDue)}</strong>
             <div className="progress-track"><i style={{width:dueProgress+"%"}} /></div>
-            <p>{due===0?"Cotisation à jour.":"Reste à régler : "+due.toLocaleString("fr-FR")+" Ar · échéance "+new Date(currentDue.due_on+"T12:00:00").toLocaleDateString("fr-FR")}</p>{due>0&&<Link className="button primary" href="/pay" style={{width:"100%",marginTop:8}}>Payer par mobile money</Link>}</>:<p>Aucun exercice de cotisation ne vous est actuellement attribué.</p>}
+            <p>{due===0?"Cotisation à jour.":"Reste à régler : "+ariary(due)+" · échéance "+new Date(currentDue.due_on+"T12:00:00").toLocaleDateString("fr-FR")}</p>{due>0&&<Link className="button primary" href="/pay" style={{width:"100%",marginTop:8}}>Payer par mobile money</Link>}</>:<p>Aucun exercice de cotisation ne vous est actuellement attribué.</p>}
           </div>
         </div>
       </div>
@@ -141,7 +142,7 @@ export default async function MySpacePage() {
         <article className="panel" id="recus">
           <div className="panel-head"><div><span className="eyebrow">Finances personnelles</span><h2>Mes reçus</h2></div><span>{payments?.length||0}</span></div>
           <div className="receipt-list">
-            {(payments||[]).map((p)=><div key={p.id}><span><b>{p.receipt_number||"Reçu"}</b><small>{new Date(p.paid_at||Date.now()).toLocaleDateString("fr-FR")} · {p.method}</small></span><strong>{Number(p.amount).toLocaleString("fr-FR")} Ar</strong><a className="button secondary" href={"/api/receipts/"+p.id}>PDF</a></div>)}
+            {(payments||[]).map((p)=><div key={p.id}><span><b>{p.receipt_number||"Reçu"}</b><small>{[p.paid_at?new Date(p.paid_at).toLocaleDateString("fr-FR"):"",p.method].filter(Boolean).join(" · ")}</small></span><strong>{ariary(Number(p.amount))}</strong><a className="button secondary" href={"/api/receipts/"+p.id}>PDF</a></div>)}
             {!payments?.length&&<p>Aucun paiement confirmé pour le moment.</p>}
           </div>
         </article>
@@ -158,7 +159,7 @@ export default async function MySpacePage() {
       <article className="panel no-print">
         <div className="panel-head"><div><span className="eyebrow">Adhésion</span><h2>Historique des cotisations</h2></div><span>{duesOverview?.length||0}</span></div>
         <div className="dues-history-list">
-          {(duesOverview||[]).map((row:any)=><div key={row.id}><span><b>{row.cycle_label}</b><small>Échéance {new Date(row.due_on+"T12:00:00").toLocaleDateString("fr-FR")}</small></span><span><strong>{Number(row.paid_amount).toLocaleString("fr-FR")} / {Math.max(0,Number(row.amount_due)-Number(row.waived_amount)).toLocaleString("fr-FR")} Ar</strong><em className={"badge dues-"+row.current_status}>{dueLabels[row.current_status]||row.current_status}</em></span></div>)}
+          {(duesOverview||[]).map((row:any)=><div key={row.id||row.cycle_id}><span><b>{row.cycle_label}</b><small>Échéance {new Date(row.due_on+"T12:00:00").toLocaleDateString("fr-FR")}</small></span><span><strong>{Number(row.paid_amount).toLocaleString("fr-FR")} / {Math.max(0,Number(row.amount_due)-Number(row.waived_amount)).toLocaleString("fr-FR")} Ar</strong><em className={"badge dues-"+row.current_status}>{dueLabels[row.current_status]||row.current_status}</em></span></div>)}
           {!duesOverview?.length&&<p>Aucun historique de cotisation disponible.</p>}
         </div>
       </article>
@@ -174,8 +175,8 @@ export default async function MySpacePage() {
       <article className="panel no-print" id="participations">
         <span className="eyebrow">Vie associative</span><h2>Mes participations</h2>
         <div className="participation-grid">
-          {(events||[]).map((event:any)=><div key={"e-"+event.id}><span className="badge">Événement</span><b>{event.title}</b><small>{new Date(event.starts_at).toLocaleString("fr-FR",{dateStyle:"medium",timeStyle:"short"})} · {event.location||"Lieu à confirmer"}</small></div>)}
-          {(meetings||[]).map((meeting:any)=><div key={"m-"+meeting.id}><span className="badge pinned">Réunion</span><b>{meeting.title}</b><small>{new Date(meeting.starts_at).toLocaleString("fr-FR",{dateStyle:"medium",timeStyle:"short"})} · {meeting.location||"Lieu à confirmer"}</small></div>)}
+          {(events||[]).map((event:any)=><div key={"e-"+event.id}><span className="badge">Événement</span><b>{event.title}</b><small>{new Date(event.starts_at).toLocaleString("fr-FR",{dateStyle:"medium",timeStyle:"short",timeZone:"Indian/Antananarivo"})} · {event.location||"Lieu à confirmer"}</small></div>)}
+          {(meetings||[]).map((meeting:any)=><div key={"m-"+meeting.id}><span className="badge pinned">Réunion</span><b>{meeting.title}</b><small>{new Date(meeting.starts_at).toLocaleString("fr-FR",{dateStyle:"medium",timeStyle:"short",timeZone:"Indian/Antananarivo"})} · {meeting.location||"Lieu à confirmer"}</small></div>)}
           {!events?.length&&!meetings?.length&&<p>Aucune participation enregistrée.</p>}
         </div>
       </article>

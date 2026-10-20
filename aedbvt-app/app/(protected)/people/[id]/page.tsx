@@ -8,6 +8,7 @@ import { Avatar } from "@/components/avatar";
 import { AvatarEditor } from "@/components/avatar-editor";
 import { Tabs } from "@/components/sheet";
 import { UiIcon } from "@/components/ui-icon";
+import { formatPrice } from "@/components/market-labels";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Profil" };
@@ -63,7 +64,7 @@ export default async function PersonPage({ params }: { params: Promise<{ id: str
         {/* eslint-disable-next-line @next/next/no-img-element */}
         {item.images[0] ? <img src={item.images[0]} alt="" loading="lazy"/> : <UiIcon name="tag"/>}
       </span>
-      <strong>{item.price === null ? "Prix à discuter" : `${Number(item.price).toLocaleString("fr-FR")} Ar`}</strong>
+      <strong>{formatPrice(item.price)}</strong>
       <span>{item.title}</span>
     </Link>)}
   </div> : <EmptyTab icon="tag" color="#15b79e" text={isMe ? "Aucune annonce en vente." : `${firstName} n’a pas d’annonce en cours.`} action={isMe ? <Link className="button primary" href="/market?new=1"><UiIcon name="plus"/>Vendre un objet</Link> : null}/>;
@@ -99,7 +100,7 @@ export default async function PersonPage({ params }: { params: Promise<{ id: str
           {sinceLabel && <li><UiIcon name="calendar"/>Membre depuis {sinceLabel}</li>}
           {isMe && person.member_number && <li><UiIcon name="shield"/>{person.member_number}</li>}
         </ul>
-        {isMe && <p className="soc-profile-hint"><UiIcon name="camera"/>Touchez votre photo pour la changer.</p>}
+        {isMe && <p className="soc-profile-hint"><UiIcon name="camera"/>Cliquez sur votre photo pour la changer.</p>}
       </div>
       <div className="soc-profile-stats">
         <a href="#posts"><b>{posts.length}</b><small>Publication{posts.length > 1 ? "s" : ""}</small></a>

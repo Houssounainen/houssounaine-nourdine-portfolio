@@ -13,13 +13,13 @@ function Submit({ children, pending }: { children: React.ReactNode; pending: str
   return <button className="button primary pay-submit" disabled={status.pending}>{status.pending ? pending : children}</button>;
 }
 
-export function CopyValue({ label, value, mono = true }: { label: string; value: string; mono?: boolean }) {
+export function CopyValue({ label, value, display, mono = true }: { label: string; value: string; display?: string; mono?: boolean }) {
   const [copied, setCopied] = useState(false);
   return <div className="pay-copy">
     <span>{label}</span>
-    <b className={mono ? "mono" : undefined}>{value}</b>
+    <b className={mono ? "mono" : undefined}>{display || value}</b>
     <button type="button" className="icon-button" aria-label={`Copier ${label.toLowerCase()}`} onClick={async () => { try { await navigator.clipboard.writeText(value.replace(/\s/g, "")); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch {} }}>
-      <UiIcon name={copied ? "check" : "document"}/>
+      <UiIcon name={copied ? "check" : "copy"}/>
     </button>
   </div>;
 }
@@ -82,7 +82,7 @@ export function PayInstructions({ payment, merchantNumber, holder, extra }: { pa
         <p>Composez <a className="mono" href={ussdHref(op.ussd)}>{op.ussd}</a>, choisissez « Transfert d’argent » ou « Paiement marchand » et utilisez ces informations :</p>
         <div className="pay-copy-grid">
           <CopyValue label="Numéro" value={formatPhone(merchantNumber)}/>
-          <CopyValue label="Montant" value={String(Math.round(payment.amount))}/>
+          <CopyValue label="Montant" value={String(Math.round(payment.amount))} display={ariary(payment.amount)}/>
           <CopyValue label="Motif / référence" value={payment.reference}/>
         </div>
         {holder && <p className="muted" style={{ margin: "8px 0 0" }}>Bénéficiaire : {holder}</p>}

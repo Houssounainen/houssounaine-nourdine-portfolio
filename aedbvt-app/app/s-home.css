@@ -269,7 +269,7 @@
 .hm-org-scroll { margin-top: 12px; padding: 22px 0 28px; border-radius: var(--radius); background: #fff radial-gradient(#e3e8f0 1px, transparent 1.2px) 0 0 / 20px 20px; box-shadow: var(--shadow-sm); }
 .hm-org-chart li::before, .hm-org-chart li::after, .hm-org-chart ul ul::before { border-color: #c9d1de !important; border-width: 2px !important; }
 .hm-org-chart li:only-child::after, .hm-org-chart li::after { border-left-width: 2px; }
-button.org-chip.hm-org-chip { width: 212px; padding: 0; border: 0; border-radius: 16px; background: #fff; box-shadow: var(--shadow-sm), 0 0 0 1px #1018280a; overflow: hidden; text-align: left; cursor: pointer; transition: transform .18s, box-shadow .18s; }
+button.org-chip.hm-org-chip { width: 194px; padding: 0; border: 0; border-radius: 16px; background: #fff; box-shadow: var(--shadow-sm), 0 0 0 1px #1018280a; overflow: hidden; text-align: left; cursor: pointer; transition: transform .18s, box-shadow .18s; }
 button.org-chip.hm-org-chip:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 button.org-chip.hm-org-chip:focus-visible { box-shadow: var(--ring); outline: 0; }
 .hm-org-chip-in { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px 10px 14px; box-shadow: inset 4px 0 0 var(--pole); }

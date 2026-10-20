@@ -21,7 +21,7 @@
 .button.shop-hero-cta:hover { background: #fff; transform: translateY(-1px); box-shadow: 0 14px 28px -10px #0007; }
 .button.shop-hero-cta svg { width: 18px; height: 18px; color: var(--accent); stroke-width: 2.4; }
 .shop-hero-stats { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
-.shop-hero-stats span { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 999px; background: #ffffff24; font-size: 13px; font-weight: 600; }
+.shop-hero-stats > span { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 999px; background: #ffffff24; font-size: 13px; font-weight: 600; }
 .shop-hero-stats svg { width: 15px; height: 15px; }
 
 /* Barre de recherche intégrée au hero */

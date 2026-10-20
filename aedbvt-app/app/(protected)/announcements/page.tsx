@@ -63,12 +63,12 @@ export default async function AnnouncementsPage({ searchParams }: { searchParams
           return <article className={"hm-ann level-"+item.level+(item.pinned?" is-pinned":"")} key={item.id} style={{ "--lvl": level.color } as React.CSSProperties}>
             <span className="icon-tile solid lg" style={{ "--tile": level.color } as React.CSSProperties}><UiIcon name={level.icon}/></span>
             <div className="hm-ann-copy">
-              <p className="hm-ann-meta"><span className="hm-ann-level">{level.label}</span>{item.pinned&&<span className="hm-ann-pin"><UiIcon name="pin"/>Épinglée</span>}<time dateTime={date}>{relativeTime(date)}</time></p>
+              <p className="hm-ann-meta"><span className="hm-ann-level">{level.label}</span>{item.pinned&&<span className="hm-ann-pin"><UiIcon name="pushpin"/>Épinglée</span>}<time dateTime={date}>{relativeTime(date)}</time></p>
               <h2>{item.title}</h2>
               <p className="hm-ann-msg">{item.message}</p>
               <p className="hm-ann-author"><Avatar name={author?.full_name || "Bureau AEDBVT"} url={author?.avatar_url || null} size={24}/><span>{author?.full_name || "Bureau AEDBVT"}</span></p>
             </div>
-            {staff && <form action={toggleAnnouncementPin} className="hm-ann-action"><input type="hidden" name="id" value={item.id}/><input type="hidden" name="next" value={String(!item.pinned)}/><button className="button secondary"><UiIcon name="pin"/>{item.pinned?"Désépingler":"Épingler"}</button></form>}
+            {staff && <form action={toggleAnnouncementPin} className="hm-ann-action"><input type="hidden" name="id" value={item.id}/><input type="hidden" name="next" value={String(!item.pinned)}/><button className="button secondary"><UiIcon name="pushpin"/>{item.pinned?"Désépingler":"Épingler"}</button></form>}
           </article>;
         })}
         {!announcements.length && <div className="hm-empty is-column"><span className="icon-tile solid lg" style={{ "--tile": "#f79009" } as React.CSSProperties}><UiIcon name="bell"/></span><div><b>Aucune annonce publiée</b><small>Les communications officielles du Bureau apparaîtront ici.</small></div></div>}

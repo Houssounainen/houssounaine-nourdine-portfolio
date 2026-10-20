@@ -4,7 +4,7 @@ import { publishDueArticles } from "@/lib/article-publishing";
 import { UiIcon, type IconName } from "@/components/ui-icon";
 import { Avatar } from "@/components/avatar";
 import { EventTicket } from "@/components/agenda/event-ticket";
-import { relativeTime, isMissingTable } from "@/lib/format";
+import { relativeTime, isMissingTable, meetingMode } from "@/lib/format";
 import { getPeople } from "@/lib/people";
 import { routeColor } from "@/lib/navigation";
 import { ROLE_LABELS, normalizeRole } from "@/lib/access";
@@ -18,7 +18,7 @@ type Due={cycle_label:string;cycle_status:string;balance:number;due_on:string|nu
 function shortDate(date:string){
   return new Date(date).toLocaleDateString("fr-FR",{day:"numeric",month:"short",timeZone:TZ});
 }
-const ariary=(value:number)=>value.toLocaleString("fr-FR")+" Ar";
+const ariary=(value:number)=>Math.round(value).toLocaleString("fr-FR").replace(/[\u202f\u00a0]/g,"\u00a0")+"\u00a0Ar";
 const POST_CATEGORIES:Record<string,string>={annonce:"Annonce",fete:"Fête",social:"Vie sociale",partage:"Partage",photo:"Photo"};
 
 export default async function DashboardPage() {
@@ -88,7 +88,7 @@ export default async function DashboardPage() {
   const pinned=(announcements.data||[]).filter((x)=>x.pinned).sort((a,b)=>(a.level==="urgent"?-1:0)-(b.level==="urgent"?-1:0));
   const agenda=[
     ...(events.data||[]).map((item)=>({...item,ends_at:(item as {ends_at?:string|null}).ends_at||null,label:item.category||"Événement",kind:"event"})),
-    ...(meetings.data||[]).map((item)=>({...item,ends_at:null,label:"Réunion · "+(item.mode||"Présentiel"),kind:"meeting"})),
+    ...(meetings.data||[]).map((item)=>({...item,ends_at:null,label:"Réunion · "+meetingMode(item.mode),kind:"meeting"})),
   ].sort((a,b)=>new Date(a.starts_at).getTime()-new Date(b.starts_at).getTime()).slice(0,3);
 
   const tasks=taskResult.data||[];
@@ -127,7 +127,7 @@ export default async function DashboardPage() {
           <div className="hm-hero-hello">
             <small>{todayLabel.charAt(0).toUpperCase()+todayLabel.slice(1)}</small>
             <h1>{greeting}{firstName?", "+firstName:""}</h1>
-            <p>{ROLE_LABELS[normalizeRole(role)]}{memberNumber?" · N° "+memberNumber:""}</p>
+            <p>{ROLE_LABELS[normalizeRole(role)]}{memberNumber&&<> · <span className="gv-nowrap">N° {memberNumber}</span></>}</p>
           </div>
           <div className="hm-hero-actions">
             <Link className="hm-glass-btn" href="/me#carte"><UiIcon name="user"/>Ma carte</Link>
@@ -167,7 +167,7 @@ export default async function DashboardPage() {
 
       <div className="stat-grid hm-stats">
         {staff?<article><small>Membres actifs</small><strong>{dash(members.count||0,members.error)}</strong></article>:<article><small>Adhésion</small><strong>{memberActive?"Active":"À vérifier"}</strong><span>{memberNumber||"Compte non lié"}</span></article>}
-        <article><small>{finance?"Cotisations encaissées":"Mes paiements"}</small><strong>{payments.error?"—":collected.toLocaleString("fr-FR")+" Ar"}</strong></article>
+        <article><small>{finance?"Cotisations encaissées":"Mes paiements"}</small><strong>{payments.error?"—":ariary(collected)}</strong></article>
         <article><small>Rendez-vous à venir</small><strong>{events.error||meetings.error?"—":agendaCount}</strong></article>
         {staff?<article className={overdue||blocked?"attention-stat":""}><small>Actions ouvertes</small><strong>{dash(openCount,openTaskCount.error)}</strong><span>{overdue} en retard · {blocked} bloquée{blocked>1?"s":""}</span></article>:<article><small>Documents publiés</small><strong>{dash(docs.count||0,docs.error)}</strong></article>}
       </div>

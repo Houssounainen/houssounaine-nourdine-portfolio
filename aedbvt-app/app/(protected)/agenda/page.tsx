@@ -4,6 +4,7 @@ import { saveMeetingMinutes } from "./actions";
 import { AgendaCreateActions, CalendarBoard, type AgendaItem } from "@/components/agenda/calendar-board";
 import { UiIcon } from "@/components/ui-icon";
 import { getPeople } from "@/lib/people";
+import { meetingMode } from "@/lib/format";
 
 export default async function AgendaPage({ searchParams }: { searchParams: Promise<{ month?: string; new?: string }> }) {
   const params = await searchParams;
@@ -30,7 +31,7 @@ export default async function AgendaPage({ searchParams }: { searchParams: Promi
 
   const items: AgendaItem[] = [
     ...(events || []).map((item) => ({ id: item.id, kind: "event" as const, title: item.title, starts_at: item.starts_at, ends_at: item.ends_at, location: item.location, label: item.category || "Événement", description: item.description, mine: myEvents.has(item.id), count: eventCount.get(item.id) || 0 })),
-    ...(meetings || []).map((item) => ({ id: item.id, kind: "meeting" as const, title: item.title, starts_at: item.starts_at, location: item.location, label: "Réunion · " + (item.mode || "Présentiel"), agenda: Array.isArray(item.agenda) ? item.agenda : [], mine: myMeetings.has(item.id), count: meetingCount.get(item.id) || 0 })),
+    ...(meetings || []).map((item) => ({ id: item.id, kind: "meeting" as const, title: item.title, starts_at: item.starts_at, location: item.location, label: "Réunion · " + meetingMode(item.mode), agenda: Array.isArray(item.agenda) ? item.agenda : [], mine: myMeetings.has(item.id), count: meetingCount.get(item.id) || 0 })),
   ];
   const people = await getPeople(supabase, [
     ...(eventRegs || []).filter((x) => x.status === "going").map((x) => x.user_id),

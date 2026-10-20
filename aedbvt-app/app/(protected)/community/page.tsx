@@ -114,7 +114,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
             </div>;
           };
           return <article className={`soc-post panel reveal${post.pinned ? " is-pinned" : ""}`} key={post.id} id={`post-${post.id}`}>
-            {post.pinned && <p className="soc-pinned"><UiIcon name="pin"/>Publication épinglée</p>}
+            {post.pinned && <p className="soc-pinned"><UiIcon name="pushpin"/>Publication épinglée</p>}
             <header className="soc-post-head">
               <Avatar name={authorName} url={author?.avatar_url || null} size={44} href={`/people/${post.author_id}`} ring/>
               <div className="soc-post-who">
@@ -125,7 +125,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
               {(mine || staff) && <details className="post-menu">
                 <summary aria-label="Options de la publication"><UiIcon name="grid"/></summary>
                 <div>
-                  {staff && <form action={togglePin}><input type="hidden" name="id" value={post.id}/><input type="hidden" name="pinned" value={String(!post.pinned)}/><button type="submit"><UiIcon name="pin"/>{post.pinned ? "Désépingler" : "Épingler en haut"}</button></form>}
+                  {staff && <form action={togglePin}><input type="hidden" name="id" value={post.id}/><input type="hidden" name="pinned" value={String(!post.pinned)}/><button type="submit"><UiIcon name="pushpin"/>{post.pinned ? "Désépingler" : "Épingler en haut"}</button></form>}
                   <form action={deletePost}><input type="hidden" name="id" value={post.id}/><button type="submit" className="danger"><UiIcon name="trash"/>Supprimer</button></form>
                 </div>
               </details>}
