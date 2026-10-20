@@ -1,14 +1,20 @@
 // Libellés et formats partagés du Marché (utilisables côté serveur et client).
 
-export const MARKET_CATEGORIES = [
-  { id: "livres", label: "Livres" },
-  { id: "electronique", label: "Électronique" },
-  { id: "vetements", label: "Vêtements" },
-  { id: "maison", label: "Maison" },
-  { id: "services", label: "Services" },
-  { id: "alimentation", label: "Alimentation" },
-  { id: "autre", label: "Autre" },
-] as const;
+import type { IconName } from "@/components/ui-icon";
+
+export const MARKET_CATEGORIES: readonly { id: string; label: string; icon: IconName; color: string }[] = [
+  { id: "livres", label: "Livres", icon: "book", color: "#7a5af8" },
+  { id: "electronique", label: "Électronique", icon: "bolt", color: "#0ba5ec" },
+  { id: "vetements", label: "Vêtements", icon: "shirt", color: "#ee46bc" },
+  { id: "maison", label: "Maison", icon: "home", color: "#f79009" },
+  { id: "services", label: "Services", icon: "users", color: "#15b79e" },
+  { id: "alimentation", label: "Alimentation", icon: "cup", color: "#f2545b" },
+  { id: "autre", label: "Autre", icon: "grid", color: "#667085" },
+];
+
+export function marketCategory(id?: string | null) {
+  return MARKET_CATEGORIES.find(item => item.id === id) || MARKET_CATEGORIES[MARKET_CATEGORIES.length - 1];
+}
 
 export const MARKET_CONDITIONS = [
   { id: "neuf", label: "Neuf" },
@@ -56,7 +62,7 @@ export function formatPrice(price: number | string | null | undefined) {
   if (price === null || price === undefined || price === "") return "Prix à discuter";
   const value = Number(price);
   if (!Number.isFinite(value)) return "Prix à discuter";
-  return `${value.toLocaleString("fr-FR")} Ar`;
+  return `${value.toLocaleString("fr-FR").replace(/[\u202f\u00a0]/g, "\u00a0")}\u00a0Ar`;
 }
 
 /** Lien tel: — conserve uniquement le « + » initial et les chiffres. */

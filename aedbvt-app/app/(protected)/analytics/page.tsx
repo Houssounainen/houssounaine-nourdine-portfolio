@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { can } from "@/lib/access";
+import { PageIcon } from "@/components/manage/page-icon";
+import { UiIcon } from "@/components/ui-icon";
 
 function groupCount<T>(rows:T[],selector:(row:T)=>string|null|undefined){
   const map=new Map<string,number>();
@@ -85,16 +87,16 @@ export default async function AnalyticsPage(){
   const totalExpense=financeRows.reduce((sum,row)=>sum+Number(row.expense||0),0);
 
   return <section className="page">
-    <header className="page-header"><div><h1>Statistiques</h1></div><Link className="button secondary" href="/exports">Exporter →</Link></header>
+    <header className="page-header"><div><PageIcon href="/analytics"/><h1>Statistiques</h1></div><Link className="button secondary" href="/exports">Exporter →</Link></header>
 
-    <div className="stat-grid analytics-kpis">
-      <article><small>Membres actifs</small><strong>{activeMembers.length}</strong><span>{activated} compte(s) activé(s)</span></article>
-      <article><small>Activation numérique</small><strong>{pct(activated,activeMembers.length)}%</strong><span>{invited} invité(s) · {toInvite} à inviter</span></article>
-      <article><small>Actions ouvertes</small><strong>{open}</strong><span>{overdue} retard · {blocked} bloquée(s)</span></article>
-      <article><small>Actions terminées</small><strong>{done}</strong><span>{pct(done,Math.max(1,allTasks.length))}% du registre</span></article>
-      <article><small>Participations</small><strong>{participationCount}</strong><span>{publishedActivities} activités publiées</span></article>
-      <article><small>Partenaires actifs</small><strong>{activePartners}</strong><span>{partnerProspects} prospect(s) · {openPartnerCommitments} engagement(s) ouvert(s)</span></article>
-      {finance&&<article><small>Taux de cotisation</small><strong>{pct(collected,expected)}%</strong><span>{duesUpToDate} à jour · {duesOverdue} retard</span></article>}
+    <div className="mg-stats stat-grid analytics-kpis">
+      <article><span className="icon-tile" style={{"--tile":"var(--accent)"} as React.CSSProperties}><UiIcon name="users"/></span><small>Membres actifs</small><strong>{activeMembers.length}</strong><span>{activated} compte(s) activé(s)</span></article>
+      <article><span className="icon-tile" style={{"--tile":"var(--sky)"} as React.CSSProperties}><UiIcon name="phone"/></span><small>Activation numérique</small><strong>{pct(activated,activeMembers.length)}%</strong><span>{invited} invité(s) · {toInvite} à inviter</span></article>
+      <article><span className="icon-tile" style={{"--tile":"var(--accent)"} as React.CSSProperties}><UiIcon name="list"/></span><small>Actions ouvertes</small><strong>{open}</strong><span>{overdue} retard · {blocked} bloquée(s)</span></article>
+      <article><span className="icon-tile" style={{"--tile":"var(--ok)"} as React.CSSProperties}><UiIcon name="check"/></span><small>Actions terminées</small><strong>{done}</strong><span>{pct(done,Math.max(1,allTasks.length))}% du registre</span></article>
+      <article><span className="icon-tile" style={{"--tile":"var(--orange)"} as React.CSSProperties}><UiIcon name="calendar"/></span><small>Participations</small><strong>{participationCount}</strong><span>{publishedActivities} activités publiées</span></article>
+      <article><span className="icon-tile" style={{"--tile":"var(--pink)"} as React.CSSProperties}><UiIcon name="heart"/></span><small>Partenaires actifs</small><strong>{activePartners}</strong><span>{partnerProspects} prospect(s) · {openPartnerCommitments} engagement(s) ouvert(s)</span></article>
+      {finance&&<article><span className="icon-tile" style={{"--tile":"var(--teal)"} as React.CSSProperties}><UiIcon name="chart"/></span><small>Taux de cotisation</small><strong>{pct(collected,expected)}%</strong><span>{duesUpToDate} à jour · {duesOverdue} retard</span></article>}
     </div>
 
     <div className="analytics-grid">

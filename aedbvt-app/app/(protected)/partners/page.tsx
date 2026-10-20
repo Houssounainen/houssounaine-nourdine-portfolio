@@ -8,6 +8,7 @@ import { UiIcon } from "@/components/ui-icon";
 import { FilterList } from "@/components/manage/filter-list";
 import { createPartner } from "./actions";
 import "@/app/manage.css";
+import { PageIcon } from "@/components/manage/page-icon";
 
 const typeLabels:Record<string,string>={donor:"Donateur",sponsor:"Sponsor",institution:"Institution",business:"Entreprise",ngo:"ONG / association",other:"Autre"};
 const statusLabels:Record<string,string>={prospect:"Prospect",contacted:"Contacté",active:"Actif",inactive:"Inactif"};
@@ -85,7 +86,7 @@ export default async function PartnersPage({
       {key:"status",label:"Statut",options:Object.entries(statusLabels).map(([value,label])=>({value,label}))},
       {key:"type",label:"Type",mode:"select",options:Object.entries(typeLabels).map(([value,label])=>({value,label}))},
     ]}
-    empty={<div className="panel empty-state">{(partners||[]).length?<p>Aucun partenaire ne correspond aux filtres. <Link href="/partners">Réinitialiser</Link></p>:<><p>Aucun partenaire enregistré.</p>{partnerSheet()}</>}</div>}
+    empty={<div className="panel empty-state mg-empty-auto">{(partners||[]).length?<p>Aucun partenaire ne correspond aux filtres. <Link href="/partners">Réinitialiser</Link></p>:<><p>Aucun partenaire enregistré.</p>{partnerSheet()}</>}</div>}
     items={rows.map((partner)=>({
       id:partner.id,
       text:[partner.name,partner.contact_name,partner.email,partner.phone].filter(Boolean).join(" "),
@@ -100,7 +101,7 @@ export default async function PartnersPage({
       {key:"status",label:"Statut",options:Object.entries(commitmentStatus).map(([value,label])=>({value,label}))},
       {key:"type",label:"Nature",mode:"select",options:Object.entries(contributionLabel).map(([value,label])=>({value,label}))},
     ]}
-    empty={<div className="panel empty-state">Aucun engagement. Ils se saisissent depuis le dossier d’un partenaire.</div>}
+    empty={<div className="panel empty-state mg-empty-auto">Aucun engagement. Ils se saisissent depuis le dossier d’un partenaire.</div>}
     items={(commitments||[]).map((c)=>{
       const partner=partnerMap.get(c.partner_id);
       const pct=Number(c.pledged_amount)>0?Math.min(100,Math.round(Number(c.received_amount)/Number(c.pledged_amount)*100)):0;
@@ -122,19 +123,19 @@ export default async function PartnersPage({
 
   const prospectView=prospectRows.length
     ? <div className="panel list-card">{prospectRows.map((partner)=><Fragment key={partner.id}>{partnerRow(partner)}</Fragment>)}</div>
-    : <div className="panel empty-state"><p>Aucun prospect à suivre.</p>{partnerSheet()}</div>;
+    : <div className="panel empty-state mg-empty-auto"><p>Aucun prospect à suivre.</p>{partnerSheet()}</div>;
 
   return <section className="page manage-page">
     <header className="page-header">
-      <div><h1>Partenaires</h1><p>{partners?.length||0} partenaire(s), {openCommitments.length} engagement(s) en attente d’encaissement.</p></div>
+      <div><PageIcon href="/partners"/><h1>Partenaires</h1><p>{partners?.length||0} partenaire(s), {openCommitments.length} engagement(s) en attente d’encaissement.</p></div>
       <div className="header-actions"><a className="button secondary" href="/api/exports/partners?format=csv"><UiIcon name="download"/>Exporter</a>{partnerSheet()}</div>
     </header>
 
-    <div className="stat-grid manage-stats">
-      <article><a className="stat-link" href="#partenaires"><small>Partenaires actifs</small><strong>{active}</strong><span>relations en cours</span></a></article>
-      <article><a className="stat-link" href="#prospects"><small>Prospects / contacts</small><strong>{prospects}</strong><span>à suivre</span></a></article>
-      <article><a className="stat-link" href="#engagements"><small>Engagements monétaires</small><strong>{money(pledged)}</strong><span>hors apports en nature</span></a></article>
-      <article><a className="stat-link" href="#engagements"><small>Reçu</small><strong>{money(received)}</strong><span>{pledged?Math.round(received/pledged*100):0} % des engagements</span></a></article>
+    <div className="mg-stats stat-grid manage-stats">
+      <article><a className="stat-link" href="#partenaires"><span className="icon-tile" style={{"--tile":"var(--pink)"} as React.CSSProperties}><UiIcon name="heart"/></span><small>Partenaires actifs</small><strong>{active}</strong><span>relations en cours</span></a></article>
+      <article><a className="stat-link" href="#prospects"><span className="icon-tile" style={{"--tile":"var(--sky)"} as React.CSSProperties}><UiIcon name="users"/></span><small>Prospects / contacts</small><strong>{prospects}</strong><span>à suivre</span></a></article>
+      <article><a className="stat-link" href="#engagements"><span className="icon-tile" style={{"--tile":"var(--violet)"} as React.CSSProperties}><UiIcon name="receipt"/></span><small>Engagements monétaires</small><strong>{money(pledged)}</strong><span>hors apports en nature</span></a></article>
+      <article><a className="stat-link" href="#engagements"><span className="icon-tile" style={{"--tile":"var(--ok)"} as React.CSSProperties}><UiIcon name="check"/></span><small>Reçu</small><strong>{money(received)}</strong><span>{pledged?Math.round(received/pledged*100):0} % des engagements</span></a></article>
     </div>
 
     <Tabs tabs={[

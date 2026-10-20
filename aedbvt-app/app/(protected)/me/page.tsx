@@ -4,7 +4,10 @@ import QRCode from "qrcode";
 import { createClient } from "@/lib/supabase/server";
 import { MemberCardActions } from "@/components/member-card-actions";
 import { MemberPhoto } from "@/components/member-photo";
-import { createMyRequest, updateMyProfile } from "./actions";
+import { AvatarEditor } from "@/components/avatar-editor";
+import { UiIcon } from "@/components/ui-icon";
+import { normalizeRole, ROLE_LABELS } from "@/lib/access";
+import { createMyRequest, updateMyBio, updateMyProfile } from "./actions";
 
 const requestLabels: Record<string,string> = {
   attestation:"Attestation", information:"Information", correction:"Correction", aide:"Demande d’aide", document:"Document", autre:"Autre"
@@ -22,10 +25,38 @@ export default async function MySpacePage() {
     supabase.from("members").select("*").eq("profile_id", user!.id).maybeSingle(),
   ]);
 
+  // Profil social (photo, bio) et compteurs d’activité : requêtes séparées pour dégrader proprement.
+  const [{ data: social }, { count: postCount }] = await Promise.all([
+    supabase.from("profiles").select("avatar_url,bio").eq("id", user!.id).maybeSingle(),
+    supabase.from("community_posts").select("id", { count: "exact", head: true }).eq("author_id", user!.id).is("deleted_at", null),
+  ]);
+  const displayName = member?.full_name || profile?.full_name || "Membre";
+  const hero = (stats: { label: string; value: number; href: string }[]) => <article className="soc-me-hero panel no-print" id="profil">
+    <div className="soc-me-cover" aria-hidden="true"/>
+    <div className="soc-me-main">
+      <div className="soc-me-avatar"><AvatarEditor name={displayName} url={social?.avatar_url || null} size={112}/></div>
+      <div className="soc-me-id">
+        <h1>{displayName}</h1>
+        <p><span className="soc-role-badge">{ROLE_LABELS[normalizeRole(profile?.role)]}</span>{member?.member_number && <span className="soc-me-number">{member.member_number}</span>}</p>
+      </div>
+      <div className="soc-me-links">
+        <Link className="button secondary" href={`/people/${user!.id}`}><UiIcon name="eye"/>Voir mon profil public</Link>
+        <Link className="button secondary" href="/update-password"><UiIcon name="lock"/>Mot de passe</Link>
+      </div>
+    </div>
+    <div className="soc-me-stats">
+      {stats.map(stat => <Link key={stat.label} href={stat.href}><b>{stat.value}</b><small>{stat.label}</small></Link>)}
+    </div>
+    <form action={updateMyBio} className="soc-me-bio">
+      <label htmlFor="me-bio"><UiIcon name="pencil"/>Ma bio <small>visible par les membres dans l’annuaire</small></label>
+      <div><textarea id="me-bio" name="bio" maxLength={280} rows={2} defaultValue={social?.bio || ""} placeholder="Présentez-vous en quelques mots : études, passions, ce que vous pouvez apporter…"/><button className="button primary" type="submit">Enregistrer</button></div>
+    </form>
+  </article>;
+
   if (!member) {
     return (
       <section className="page">
-        <header className="page-header"><div><h1>Mon espace</h1></div></header>
+        {hero([{ label: "Publications", value: postCount || 0, href: `/people/${user!.id}` }])}
         <article className="panel warning"><h2>Compte non lié à une fiche membre</h2><p>Ton compte existe, mais aucune fiche membre AEDBVT n’est encore liée. L’administration doit effectuer le rattachement avant d’activer la carte et l’historique personnel.</p></article>
       </section>
     );
@@ -60,7 +91,12 @@ export default async function MySpacePage() {
 
   return (
     <section className="page my-space">
-      <header className="page-header no-print"><div><h1>Mon espace</h1></div><div className="page-header-actions"><Link className="button secondary" href="/update-password">Changer mon mot de passe</Link><span className="status-pill">{profile?.role || "membre"} · {member.status}</span></div></header>
+      {hero([
+        { label: "Publications", value: postCount || 0, href: `/people/${user!.id}` },
+        { label: "Reçus", value: payments?.length || 0, href: "#recus" },
+        { label: "Participations", value: (eventRegs?.length || 0) + (meetingRegs?.length || 0), href: "#participations" },
+      ])}
+      <h2 className="soc-me-section no-print"><UiIcon name="shield"/>Ma carte de membre</h2>
 
       <div className="member-hero" id="carte">
         <article className="member-card printable-card">
@@ -102,7 +138,7 @@ export default async function MySpacePage() {
       </div>
 
       <div className="content-grid no-print">
-        <article className="panel">
+        <article className="panel" id="recus">
           <div className="panel-head"><div><span className="eyebrow">Finances personnelles</span><h2>Mes reçus</h2></div><span>{payments?.length||0}</span></div>
           <div className="receipt-list">
             {(payments||[]).map((p)=><div key={p.id}><span><b>{p.receipt_number||"Reçu"}</b><small>{new Date(p.paid_at||Date.now()).toLocaleDateString("fr-FR")} · {p.method}</small></span><strong>{Number(p.amount).toLocaleString("fr-FR")} Ar</strong><a className="button secondary" href={"/api/receipts/"+p.id}>PDF</a></div>)}
@@ -135,7 +171,7 @@ export default async function MySpacePage() {
         </div>
       </article>
 
-      <article className="panel no-print">
+      <article className="panel no-print" id="participations">
         <span className="eyebrow">Vie associative</span><h2>Mes participations</h2>
         <div className="participation-grid">
           {(events||[]).map((event:any)=><div key={"e-"+event.id}><span className="badge">Événement</span><b>{event.title}</b><small>{new Date(event.starts_at).toLocaleString("fr-FR",{dateStyle:"medium",timeStyle:"short"})} · {event.location||"Lieu à confirmer"}</small></div>)}

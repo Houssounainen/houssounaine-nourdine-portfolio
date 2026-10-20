@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { can } from "@/lib/access";
+import { PageIcon } from "@/components/manage/page-icon";
 
 type Result={kind:string;title:string;meta:string;href:string};
 
@@ -49,16 +50,16 @@ export default async function GlobalSearchPage({
   results.slice(0,100).forEach((result)=>grouped.set(result.kind,[...(grouped.get(result.kind)||[]),result]));
 
   return <section className="page">
-    <header className="page-header"><div><h1>Recherche</h1></div><span className="status-pill">{query?results.length+" résultat(s)":"Staff"}</span></header>
+    <header className="page-header"><div><PageIcon href="/search"/><h1>Recherche</h1></div><span className="status-pill">{query?results.length+" résultat(s)":"Staff"}</span></header>
 
     <form className="panel global-search-form" method="get">
       <label><span className="sr-only">Rechercher dans AEDBVT</span><input name="q" defaultValue={query} minLength={2} placeholder="Nom, numéro membre, tâche, document, bien, partenaire…" autoFocus/></label>
       <button className="button primary">Rechercher</button>
     </form>
 
-    {!query&&<div className="panel empty-state">Saisissez au moins deux caractères pour rechercher dans les principaux registres AEDBVT.</div>}
+    {!query&&<div className="panel empty-state mg-empty-auto">Saisissez au moins deux caractères pour rechercher dans les principaux registres AEDBVT.</div>}
     {query&&needle.length<2&&<div className="error-box">Saisissez au moins deux caractères.</div>}
-    {query&&needle.length>=2&&!results.length&&<div className="panel empty-state">Aucun résultat trouvé pour « {query} ».</div>}
+    {query&&needle.length>=2&&!results.length&&<div className="panel empty-state mg-empty-auto">Aucun résultat trouvé pour « {query} ».</div>}
 
     <div className="global-search-results">
       {[...grouped.entries()].map(([kind,items])=><article className="panel" key={kind}>

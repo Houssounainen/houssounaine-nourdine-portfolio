@@ -70,6 +70,6 @@ export default async function DirectoryPage({ searchParams }: { searchParams: Pr
         })}
       </div>
     </section>)}
-    {!members.length && <p className="panel empty-state">Aucun membre pour ces critères.</p>}
+    {!members.length && <p className="panel empty-state mg-empty-auto">Aucun membre pour ces critères.</p>}
   </section>;
 }

@@ -8,6 +8,7 @@ import { FilterList } from "@/components/manage/filter-list";
 import { addExpense, addPayment, approveBudget, createBudget, saveBudgetLine } from "./actions";
 import { uploadFinancialAttachment } from "@/lib/financial-files";
 import "@/app/manage.css";
+import { PageIcon } from "@/components/manage/page-icon";
 
 const fmt = (value: number) => value.toLocaleString("fr-FR") + " Ar";
 const budgetStatus: Record<string,string> = { draft: "Brouillon", approved: "Approuvé", closed: "Clôturé" };
@@ -133,7 +134,7 @@ export default async function FinancePage() {
       {key:"category",label:"Catégorie",mode:"select",options:(categories||[]).map(c=>({value:c.id,label:c.code+" · "+c.name}))},
     ]}
     table={<tr><th>Date</th><th>Libellé</th><th>Catégorie</th><th>Compte</th><th className="num">Entrée</th><th className="num">Sortie</th></tr>}
-    empty={<div className="panel empty-state"><p>Aucune écriture.</p>{paymentSheet()}</div>}
+    empty={<div className="panel empty-state mg-empty-auto"><p>Aucune écriture.</p>{paymentSheet()}</div>}
     items={allLedger.map(row=>({
       id:row.source_type+"-"+row.id,
       text:[row.label,row.reference,categoryMap.get(row.category_id)?.name,accountMap.get(row.account_id)?.name].filter(Boolean).join(" "),
@@ -153,7 +154,7 @@ export default async function FinancePage() {
     <div className="tab-head"><p>Dernières cotisations encaissées. Le suivi par exercice (retards, exonérations, relances) se fait dans Cotisations.</p><Link className="button secondary" href="/finance/dues"><UiIcon name="users"/>Suivi des cotisations</Link></div>
     <FilterList
       placeholder="Membre, reçu…"
-      empty={<div className="panel empty-state"><p>Aucune cotisation enregistrée.</p>{paymentSheet()}</div>}
+      empty={<div className="panel empty-state mg-empty-auto"><p>Aucune cotisation enregistrée.</p>{paymentSheet()}</div>}
       items={(payments||[]).map((p:any)=>({
         id:p.id,
         text:[memberName(p),p.receipt_number,p.method].filter(Boolean).join(" "),
@@ -169,7 +170,7 @@ export default async function FinancePage() {
   const expenseView=<FilterList
     placeholder="Libellé, référence…"
     filters={[{key:"category",label:"Catégorie",mode:"select",options:expenseCategories.map(c=>({value:c.id,label:c.code+" · "+c.name}))}]}
-    empty={<div className="panel empty-state"><p>Aucune dépense enregistrée.</p>{expenseSheet("primary")}</div>}
+    empty={<div className="panel empty-state mg-empty-auto"><p>Aucune dépense enregistrée.</p>{expenseSheet("primary")}</div>}
     items={(expenses||[]).map(e=>{
       const files=expenseFiles.get(e.id)||[];
       return {
@@ -228,15 +229,15 @@ export default async function FinancePage() {
   return (
     <section className="page manage-page">
       <header className="page-header">
-        <div><h1>Finances</h1><p>Solde {fmt(balance)} sur {allLedger.length} écriture(s) récente(s), {accountBalances.length} compte(s) actif(s).</p></div>
+        <div><PageIcon href="/finance"/><h1>Finances</h1><p>Solde {fmt(balance)} sur {allLedger.length} écriture(s) récente(s), {accountBalances.length} compte(s) actif(s).</p></div>
         <div className="header-actions"><Link className="button secondary" href="/finance/mobile"><UiIcon name="phone"/>Paiements mobiles</Link><Link className="button secondary" href="/finance/dues"><UiIcon name="users"/>Cotisations</Link>{expenseSheet()}{paymentSheet()}</div>
       </header>
 
-      <div className="stat-grid manage-stats">
-        <article><a className="stat-link" href="#journal"><small>Recettes enregistrées</small><strong>{fmt(totalIncome)}</strong><span>cotisations et factures</span></a></article>
-        <article><a className="stat-link" href="#depenses"><small>Dépenses enregistrées</small><strong>{fmt(totalExpense)}</strong><span>sorties de trésorerie</span></a></article>
-        <article><a className="stat-link" href="#journal"><small>Solde global</small><strong>{fmt(balance)}</strong><span>tous comptes confondus</span></a></article>
-        <article><a className="stat-link" href="#budget"><small>Budget courant</small><strong>{activeBudget?.label || "—"}</strong><span>{activeBudget?(budgetStatus[activeBudget.status]||activeBudget.status):"à créer"}</span></a></article>
+      <div className="mg-stats stat-grid manage-stats">
+        <article><a className="stat-link" href="#journal"><span className="icon-tile" style={{"--tile":"var(--ok)"} as React.CSSProperties}><UiIcon name="arrowUp"/></span><small>Recettes enregistrées</small><strong>{fmt(totalIncome)}</strong><span>cotisations et factures</span></a></article>
+        <article><a className="stat-link" href="#depenses"><span className="icon-tile" style={{"--tile":"var(--coral)"} as React.CSSProperties}><UiIcon name="arrow"/></span><small>Dépenses enregistrées</small><strong>{fmt(totalExpense)}</strong><span>sorties de trésorerie</span></a></article>
+        <article><a className="stat-link" href="#journal"><span className="icon-tile" style={{"--tile":"var(--accent)"} as React.CSSProperties}><UiIcon name="wallet"/></span><small>Solde global</small><strong>{fmt(balance)}</strong><span>tous comptes confondus</span></a></article>
+        <article><a className="stat-link" href="#budget"><span className="icon-tile" style={{"--tile":"var(--violet)"} as React.CSSProperties}><UiIcon name="chart"/></span><small>Budget courant</small><strong>{activeBudget?.label || "—"}</strong><span>{activeBudget?(budgetStatus[activeBudget.status]||activeBudget.status):"à créer"}</span></a></article>
       </div>
 
       {accountBalances.length>0&&<div className="account-strip">

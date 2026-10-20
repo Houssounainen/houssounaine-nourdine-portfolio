@@ -7,6 +7,9 @@ import { UiIcon } from "@/components/ui-icon";
 import { FilterList } from "@/components/manage/filter-list";
 import { closeMandate, createCommission, createMandate, createTask, markAllNotificationsRead, markNotificationRead } from "./actions";
 import "@/app/manage.css";
+import { PageIcon } from "@/components/manage/page-icon";
+import { Avatar } from "@/components/avatar";
+import { getPeople } from "@/lib/people";
 
 const statusLabel:Record<string,string>={
   backlog:"À planifier",in_progress:"En cours",blocked:"Bloquée",done:"Terminée",cancelled:"Annulée"
@@ -46,6 +49,8 @@ export default async function OperationsPage(){
   if(!isStaff(profile?.role)) notFound();
 
   const profileMap=new Map((profiles||[]).map(p=>[p.id,p]));
+  const people=await getPeople(supabase,(profiles||[]).map(p=>p.id));
+  const face=(id:string|null|undefined,size=22)=>{const person=id?profileMap.get(id):null;return person?<Avatar name={person.full_name} url={people.get(person.id)?.avatar_url} size={size}/>:null;};
   const decisionMap=new Map((decisions||[]).map(d=>[d.id,d]));
   const assemblyMap=new Map((assemblies||[]).map(a=>[a.id,a]));
   const commissionMap=new Map((commissions||[]).map(c=>[c.id,c]));
@@ -129,7 +134,7 @@ export default async function OperationsPage(){
           <h3>{t.title}</h3>
           {(t.description||decision?.title)&&<p>{t.description||decision?.title}</p>}
           {status!=="backlog"&&<div className="task-progress"><i style={{width:t.progress+"%"}}/></div>}
-          <div className="card-foot"><span>{assignee?.full_name||"Non attribuée"}{commission?" · "+commission.name:""}</span>{t.due_on&&<time>{shortDay(t.due_on)}</time>}</div>
+          <div className="card-foot"><span className="mg-person">{face(t.assignee_id)}{assignee?.full_name||"Non attribuée"}{commission?" · "+commission.name:""}</span>{t.due_on&&<time>{shortDay(t.due_on)}</time>}</div>
         </Link>;
       })}{!byStatus(status).length&&<div className="empty-column">Aucune action</div>}</div>
     </div>)}
@@ -142,7 +147,7 @@ export default async function OperationsPage(){
       {key:"status",label:"Statut",mode:"select",options:Object.entries(statusLabel).map(([value,label])=>({value,label}))},
     ]}
     table={<tr><th>Tâche</th><th>Priorité</th><th>Statut</th><th>Responsable</th><th>Échéance</th><th>Avancement</th></tr>}
-    empty={<div className="panel empty-state"><p>Aucune tâche pour le moment.</p>{taskSheet()}</div>}
+    empty={<div className="panel empty-state mg-empty-auto"><p>Aucune tâche pour le moment.</p>{taskSheet()}</div>}
     items={listRows.map(t=>{
       const assignee=profileMap.get(t.assignee_id||"");
       const commission=commissionMap.get(t.commission_id||"");
@@ -158,7 +163,7 @@ export default async function OperationsPage(){
           <td><Link href={"/operations/tasks/"+t.id}>{t.title}</Link>{context&&<small>{context}</small>}</td>
           <td><span className={"badge priority-"+t.priority}>{priorityLabel[t.priority]}</span></td>
           <td>{statusLabel[t.status]||t.status}</td>
-          <td>{assignee?.full_name||<span className="muted">Non attribuée</span>}</td>
+          <td>{assignee?<span className="mg-person">{face(t.assignee_id,28)}<b>{assignee.full_name}</b></span>:<span className="muted">Non attribuée</span>}</td>
           <td>{t.due_on?<>{day(t.due_on)}{late&&<> <span className="badge overdue">Retard</span></>}</>:<span className="muted">—</span>}</td>
           <td><span className="progress-mini"><i style={{width:t.progress+"%"}}/></span><span className="muted">{t.progress}%</span></td>
         </tr>,
@@ -177,13 +182,13 @@ export default async function OperationsPage(){
         <small>{lead?.full_name?"Responsable : "+lead.full_name:"Responsable à désigner"} · {count} membre(s) · {open} action(s) ouverte(s)</small>
       </Link>;
     })}</div>
-    : <div className="panel empty-state"><p>Aucune commission.</p>{commissionSheet("primary")}</div>;
+    : <div className="panel empty-state mg-empty-auto"><p>Aucune commission.</p>{commissionSheet("primary")}</div>;
 
   const mandateView=(mandates||[]).length
     ? <div className="panel list-card">{(mandates||[]).map(m=>{
       const holder=profileMap.get(m.profile_id);
       return <div className="list-row is-static stack-sm" key={m.id}>
-        <span className="row-icon"><UiIcon name="shield"/></span>
+        {face(m.profile_id,40)||<span className="row-icon"><UiIcon name="shield"/></span>}
         <div><b>{m.title} · {holder?.full_name||"Titulaire"}</b><small>Depuis le {day(m.starts_on)}{m.ends_on?" · jusqu’au "+day(m.ends_on):""}{m.scope||m.appointment_basis?" · "+(m.scope||m.appointment_basis):""}</small></div>
         <div className="row-end">
           <span className={"badge"+(m.status==="active"?" ok":"")}>{mandateStatus[m.status]||m.status}</span>
@@ -191,7 +196,7 @@ export default async function OperationsPage(){
         </div>
       </div>;
     })}</div>
-    : <div className="panel empty-state"><p>Aucun mandat enregistré.</p>{mandateSheet("primary")}</div>;
+    : <div className="panel empty-state mg-empty-auto"><p>Aucun mandat enregistré.</p>{mandateSheet("primary")}</div>;
 
   const followUpView=followUps.length
     ? <div className="panel list-card">{followUps.map(t=>{
@@ -200,10 +205,10 @@ export default async function OperationsPage(){
       return <Link className="list-row stack-sm" href={"/operations/tasks/"+t.id} key={t.id}>
         <span className="row-icon"><UiIcon name="check"/></span>
         <div><b>{t.title}</b><small>{d?.number||"Décision"}{d?.title?" · "+d.title:""}</small></div>
-        <div className="row-end"><span>{assignee?.full_name||"Non attribuée"}</span><span className="badge">{statusLabel[t.status]||t.status}</span></div>
+        <div className="row-end"><span className="mg-person">{face(t.assignee_id)}{assignee?.full_name||"Non attribuée"}</span><span className="badge">{statusLabel[t.status]||t.status}</span></div>
       </Link>;
     })}</div>
-    : <div className="panel empty-state">Aucune décision nécessitant un suivi. Les décisions adoptées génèrent ici leurs actions.</div>;
+    : <div className="panel empty-state mg-empty-auto">Aucune décision nécessitant un suivi. Les décisions adoptées génèrent ici leurs actions.</div>;
 
   const notificationView=<>
     {unread.length>0&&<div className="tab-head"><p>{unread.length} non lue(s)</p><form action={markAllNotificationsRead}><button className="button secondary">Tout marquer lu</button></form></div>}
@@ -216,25 +221,25 @@ export default async function OperationsPage(){
           {!n.read_at&&<form action={markNotificationRead}><input type="hidden" name="notification_id" value={n.id}/><button className="button secondary">Lu</button></form>}
         </div>
       </div>)}</div>
-      : <div className="panel empty-state">Aucune notification interne.</div>}
+      : <div className="panel empty-state mg-empty-auto">Aucune notification interne.</div>}
   </>;
 
   return <section className="page manage-page">
     <header className="page-header">
-      <div><h1>Pilotage</h1><p>{activeTasks.length} action(s) ouverte(s), {activeCommissions.length} commission(s) active(s), {activeMandates.length} mandat(s) en cours.</p></div>
+      <div><PageIcon href="/operations"/><h1>Pilotage</h1><p>{activeTasks.length} action(s) ouverte(s), {activeCommissions.length} commission(s) active(s), {activeMandates.length} mandat(s) en cours.</p></div>
       <div className="header-actions">{commissionSheet()}{mandateSheet()}{taskSheet()}</div>
     </header>
 
-    <div className="stat-grid manage-stats">
-      <article><a className="stat-link" href="#liste"><small>Actions ouvertes</small><strong>{activeTasks.length}</strong><span>{completed.length} terminée(s)</span></a></article>
-      <article className={overdue.length?"attention-stat":""}><a className="stat-link" href="#liste"><small>En retard</small><strong>{overdue.length}</strong><span>échéance dépassée</span></a></article>
-      <article className={blocked.length?"attention-stat":""}><a className="stat-link" href="#tableau"><small>Bloquées</small><strong>{blocked.length}</strong><span>à débloquer</span></a></article>
-      <article><a className="stat-link" href="#liste"><small>Non attribuées</small><strong>{unassigned.length}</strong><span>à affecter</span></a></article>
-      <article><a className="stat-link" href="#notifications"><small>Notifications</small><strong>{unread.length}</strong><span>non lue(s)</span></a></article>
+    <div className="mg-stats stat-grid manage-stats">
+      <article><a className="stat-link" href="#liste"><span className="icon-tile" style={{"--tile":"var(--accent)"} as React.CSSProperties}><UiIcon name="list"/></span><small>Actions ouvertes</small><strong>{activeTasks.length}</strong><span>{completed.length} terminée(s)</span></a></article>
+      <article className={overdue.length?"attention-stat":""}><a className="stat-link" href="#liste"><span className="icon-tile" style={{"--tile":"var(--coral)"} as React.CSSProperties}><UiIcon name="clock"/></span><small>En retard</small><strong>{overdue.length}</strong><span>échéance dépassée</span></a></article>
+      <article className={blocked.length?"attention-stat":""}><a className="stat-link" href="#tableau"><span className="icon-tile" style={{"--tile":"var(--orange)"} as React.CSSProperties}><UiIcon name="lock"/></span><small>Bloquées</small><strong>{blocked.length}</strong><span>à débloquer</span></a></article>
+      <article><a className="stat-link" href="#liste"><span className="icon-tile" style={{"--tile":"var(--violet)"} as React.CSSProperties}><UiIcon name="user"/></span><small>Non attribuées</small><strong>{unassigned.length}</strong><span>à affecter</span></a></article>
+      <article><a className="stat-link" href="#notifications"><span className="icon-tile" style={{"--tile":"var(--pink)"} as React.CSSProperties}><UiIcon name="bell"/></span><small>Notifications</small><strong>{unread.length}</strong><span>non lue(s)</span></a></article>
     </div>
 
     <Tabs tabs={[
-      {id:"tableau",label:"Tableau",count:activeTasks.length,content:rows.length?board:<div className="panel empty-state"><p>Aucune tâche pour le moment.</p>{taskSheet()}</div>},
+      {id:"tableau",label:"Tableau",count:activeTasks.length,content:rows.length?board:<div className="panel empty-state mg-empty-auto"><p>Aucune tâche pour le moment.</p>{taskSheet()}</div>},
       {id:"liste",label:"Liste",count:rows.length,content:list},
       {id:"commissions",label:"Commissions",count:(commissions||[]).length,content:commissionView},
       {id:"mandats",label:"Mandats",count:activeMandates.length,content:mandateView},

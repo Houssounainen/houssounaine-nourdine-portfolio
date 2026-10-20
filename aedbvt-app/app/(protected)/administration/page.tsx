@@ -8,6 +8,7 @@ import { UiIcon } from "@/components/ui-icon";
 import { FilterList } from "@/components/manage/filter-list";
 import { createCorrespondence, createIssuance, createTemplate } from "./actions";
 import "@/app/manage.css";
+import { PageIcon } from "@/components/manage/page-icon";
 
 const correspondenceStatus:Record<string,string>={
   draft:"Brouillon",registered:"Enregistré",review:"En traitement / validation",approved:"Approuvé",
@@ -146,7 +147,7 @@ export default async function AdministrationPage(){
       {key:"direction",label:"Sens",options:[{value:"incoming",label:"Entrants"},{value:"outgoing",label:"Sortants"}]},
       {key:"status",label:"Statut",mode:"select",options:Object.entries(correspondenceStatus).map(([value,label])=>({value,label}))},
     ]}
-    empty={<div className="panel empty-state"><p>Aucun courrier enregistré.</p>{correspondenceSheet()}</div>}
+    empty={<div className="panel empty-state mg-empty-auto"><p>Aucun courrier enregistré.</p>{correspondenceSheet()}</div>}
     items={rows.map((row:any)=>({
       id:row.id,
       text:[row.number,row.subject,row.correspondent_name,row.category].filter(Boolean).join(" "),
@@ -158,7 +159,7 @@ export default async function AdministrationPage(){
   const issuanceView=<FilterList
     placeholder="Objet, numéro, membre…"
     filters={[{key:"status",label:"Statut",mode:"select",options:Object.entries(issuanceStatus).map(([value,label])=>({value,label}))}]}
-    empty={<div className="panel empty-state"><p>Aucun document administratif.</p>{issuanceSheet("primary")}</div>}
+    empty={<div className="panel empty-state mg-empty-auto"><p>Aucun document administratif.</p>{issuanceSheet("primary")}</div>}
     items={docs.map((doc:any)=>{const member=memberOf(doc);return {
       id:doc.id,
       text:[doc.number,doc.subject,doc.document_type,member?.full_name,member?.member_number].filter(Boolean).join(" "),
@@ -173,26 +174,26 @@ export default async function AdministrationPage(){
       <p>{documentTypeLabel[t.document_type]||t.document_type}{t.subject_template?" · "+t.subject_template:""}</p>
       {Array.isArray(t.variables)&&t.variables.length>0&&<small>{t.variables.join(" · ")}</small>}
     </article>)}</div>
-    : <div className="panel empty-state"><p>Aucun modèle actif.</p>{templateSheet("primary")}</div>;
+    : <div className="panel empty-state mg-empty-auto"><p>Aucun modèle actif.</p>{templateSheet("primary")}</div>;
 
   const reviewView=pendingReview
     ? <div className="panel list-card">
       {reviewRows.map((row:any)=><Fragment key={row.id}>{correspondenceRow(row)}</Fragment>)}
       {reviewDocs.map((doc:any)=><Fragment key={doc.id}>{issuanceRow(doc)}</Fragment>)}
     </div>
-    : <div className="panel empty-state">Rien à valider pour le moment.</div>;
+    : <div className="panel empty-state mg-empty-auto">Rien à valider pour le moment.</div>;
 
   return <section className="page manage-page">
     <header className="page-header">
-      <div><h1>Secrétariat</h1><p>{rows.length} courrier(s) au registre, {docs.length} document(s) administratif(s), {pendingReview} en validation.</p></div>
+      <div><PageIcon href="/administration"/><h1>Secrétariat</h1><p>{rows.length} courrier(s) au registre, {docs.length} document(s) administratif(s), {pendingReview} en validation.</p></div>
       <div className="header-actions">{templateSheet()}{issuanceSheet()}{correspondenceSheet()}</div>
     </header>
 
-    <div className="stat-grid manage-stats">
-      <article><a className="stat-link" href="#courriers"><small>Courriers entrants</small><strong>{incoming}</strong><span>registre administratif</span></a></article>
-      <article><a className="stat-link" href="#courriers"><small>Courriers sortants</small><strong>{outgoing}</strong><span>brouillons et envoyés</span></a></article>
-      <article><a className="stat-link" href="#documents"><small>Documents délivrés</small><strong>{issued}</strong><span>attestations et lettres</span></a></article>
-      <article className={pendingReview?"attention-stat":""}><a className="stat-link" href="#a-valider"><small>En validation</small><strong>{pendingReview}</strong><span>secrétariat / présidence</span></a></article>
+    <div className="mg-stats stat-grid manage-stats">
+      <article><a className="stat-link" href="#courriers"><span className="icon-tile" style={{"--tile":"var(--sky)"} as React.CSSProperties}><UiIcon name="send"/></span><small>Courriers entrants</small><strong>{incoming}</strong><span>registre administratif</span></a></article>
+      <article><a className="stat-link" href="#courriers"><span className="icon-tile" style={{"--tile":"var(--accent)"} as React.CSSProperties}><UiIcon name="send"/></span><small>Courriers sortants</small><strong>{outgoing}</strong><span>brouillons et envoyés</span></a></article>
+      <article><a className="stat-link" href="#documents"><span className="icon-tile" style={{"--tile":"var(--violet)"} as React.CSSProperties}><UiIcon name="document"/></span><small>Documents délivrés</small><strong>{issued}</strong><span>attestations et lettres</span></a></article>
+      <article className={pendingReview?"attention-stat":""}><a className="stat-link" href="#a-valider"><span className="icon-tile" style={{"--tile":"var(--orange)"} as React.CSSProperties}><UiIcon name="clock"/></span><small>En validation</small><strong>{pendingReview}</strong><span>secrétariat / présidence</span></a></article>
     </div>
 
     <Tabs tabs={[

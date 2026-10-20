@@ -2,6 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { can } from "@/lib/access";
+import { PageIcon } from "@/components/manage/page-icon";
+import { Avatar } from "@/components/avatar";
+import { getPeople } from "@/lib/people";
 
 function compactJson(value:unknown){
   if(!value) return "—";
@@ -42,11 +45,12 @@ export default async function AuditPage({
     ? await supabase.from("profiles").select("id,full_name,role").in("id",actorIds)
     : {data:[] as any[]};
   const actorMap=new Map((actors||[]).map((actor)=>[actor.id,actor]));
+  const people=await getPeople(supabase,actorIds);
   const tables=[...new Set((rawLogs||[]).map((log)=>log.table_name))].sort();
   const actorOptions=(actors||[]).sort((a,b)=>(a.full_name||"").localeCompare(b.full_name||"","fr"));
 
   return <section className="page">
-    <header className="page-header"><div><h1>Journal d’audit</h1></div><Link className="button secondary" href="/admin">← Paramètres</Link></header>
+    <header className="page-header"><div><PageIcon href="/admin"/><h1>Journal d’audit</h1></div><Link className="button secondary" href="/admin">← Paramètres</Link></header>
 
     <form className="panel audit-filter-bar" method="get">
       <label className="audit-search"><span className="sr-only">Recherche</span><input name="q" defaultValue={filters.q||""} placeholder="Table, action, identifiant, champ…"/></label>
@@ -67,7 +71,7 @@ export default async function AuditPage({
           <div className="audit-event-head">
             <span className={"badge audit-"+log.action.toLowerCase()}>{log.action}</span>
             <div><b>{log.table_name}</b><small>{log.record_id||"sans identifiant"}</small></div>
-            <div className="audit-event-meta"><b>{actor?.full_name||"Système / inconnu"}</b><time>{new Date(log.created_at).toLocaleString("fr-FR")}</time></div>
+            <div className="audit-event-meta mg-person"><Avatar name={actor?.full_name||"Système"} url={log.actor_id?people.get(log.actor_id)?.avatar_url:null} size={32}/><span><b>{actor?.full_name||"Système / inconnu"}</b><time>{new Date(log.created_at).toLocaleString("fr-FR")}</time></span></div>
           </div>
           <div className="audit-fields">
             {((log.changed_fields||[]) as string[]).map((field:string)=><span key={field}>{field}</span>)}
@@ -82,7 +86,7 @@ export default async function AuditPage({
           </details>
         </article>;
       })}
-      {!logs.length&&<div className="panel empty-state">Aucune opération ne correspond aux filtres.</div>}
+      {!logs.length&&<div className="panel empty-state mg-empty-auto">Aucune opération ne correspond aux filtres.</div>}
     </div>
   </section>;
 }

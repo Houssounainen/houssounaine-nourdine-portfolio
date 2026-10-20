@@ -6,6 +6,7 @@ import { isMissingTable, relativeTime } from "@/lib/format";
 import { Sheet, Tabs } from "@/components/sheet";
 import { UiIcon } from "@/components/ui-icon";
 import { recheckProviderPayment, reviewMobilePayment } from "./actions";
+import { PageIcon } from "@/components/manage/page-icon";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Paiements mobiles" };
@@ -22,7 +23,7 @@ export default async function MobilePaymentsReviewPage({ searchParams }: { searc
     .select("id,reference,amount,operator,channel,status,payer_phone,transaction_id,proof_path,rejection_reason,created_at,submitted_at,reviewed_at,payment_id,members(full_name,member_number),membership_dues_cycles(label)")
     .neq("status", "cancelled").order("created_at", { ascending: false }).limit(200);
 
-  const header = <header className="page-header"><div><h1>Paiements mobiles</h1><p>Vérifiez chaque transaction dans votre application MVola, Orange Money ou Airtel Money avant de valider.</p></div><div className="header-actions"><Link className="button secondary" href="/admin/settings#paiement">Numéros marchands</Link><Link className="button secondary" href="/finance">Finances</Link></div></header>;
+  const header = <header className="page-header"><div><PageIcon href="/finance"/><h1>Paiements mobiles</h1><p>Vérifiez chaque transaction dans votre application MVola, Orange Money ou Airtel Money avant de valider.</p></div><div className="header-actions"><Link className="button secondary" href="/admin/settings#paiement">Numéros marchands</Link><Link className="button secondary" href="/finance">Finances</Link></div></header>;
   if (error) return <section className="page">{header}<p className="notice">{isMissingTable(error) ? "Le module sera disponible après l’activation de la base de données." : "Chargement impossible."}</p></section>;
 
   const rows = (data || []) as Row[];
@@ -75,8 +76,8 @@ export default async function MobilePaymentsReviewPage({ searchParams }: { searc
       <article><small>Validés au total</small><strong>{rows.filter(row => row.status === "confirmed").length}</strong><span>{ariary(rows.filter(row => row.status === "confirmed").reduce((sum, row) => sum + Number(row.amount), 0))}</span></article>
     </div>
     <Tabs tabs={[
-      { id: "a-verifier", label: "À vérifier", count: pending.length, content: <article className="panel review-list">{pending.map(row => item(row, true))}{!pending.length && <p className="list-empty">Aucun paiement en attente.</p>}</article> },
-      { id: "historique", label: "Historique", count: done.length, content: <article className="panel review-list">{done.map(row => item(row, false))}{!done.length && <p className="list-empty">Aucun paiement traité.</p>}</article> },
+      { id: "a-verifier", label: "À vérifier", count: pending.length, content: <article className="panel review-list">{pending.map(row => item(row, true))}{!pending.length && <p className="list-empty mg-empty-auto">Aucun paiement en attente.</p>}</article> },
+      { id: "historique", label: "Historique", count: done.length, content: <article className="panel review-list">{done.map(row => item(row, false))}{!done.length && <p className="list-empty mg-empty-auto">Aucun paiement traité.</p>}</article> },
     ]}/>
   </section>;
 }

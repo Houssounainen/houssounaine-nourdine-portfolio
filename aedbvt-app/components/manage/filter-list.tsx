@@ -51,7 +51,7 @@ export function FilterList({ items, filters = [], placeholder = "Rechercher…",
     });
   }, [items, query, values]);
 
-  if (!items.length) return <>{empty ?? <div className="panel empty-state">Aucun élément.</div>}</>;
+  if (!items.length) return <>{empty ?? <div className="panel empty-state mg-empty-auto">Aucun élément.</div>}</>;
 
   const filtered = visible.length !== items.length;
 
@@ -81,10 +81,10 @@ export function FilterList({ items, filters = [], placeholder = "Rechercher…",
       ? <div className="panel table-wrap"><table>
         <thead>{table}</thead>
         <tbody>{visible.map(item => <Fragment key={item.id}>{item.node}</Fragment>)}</tbody>
-      </table>{!visible.length && <div className="empty-state">{noResult}</div>}</div>
+      </table>{!visible.length && <div className="empty-state mg-empty-auto">{noResult}</div>}</div>
       : <div className="panel list-card">
         {visible.map(item => <Fragment key={item.id}>{item.node}</Fragment>)}
-        {!visible.length && <div className="empty-state">{noResult}</div>}
+        {!visible.length && <div className="empty-state mg-empty-auto">{noResult}</div>}
       </div>}
   </div>;
 }

@@ -7,12 +7,14 @@ import { UiIcon } from "@/components/ui-icon";
 import { FilterList } from "@/components/manage/filter-list";
 import { closeDuesCycle, createDuesCycle, openDuesCycle, sendDuesReminder, updateMemberDue } from "./actions";
 import "@/app/manage.css";
+import { PageIcon } from "@/components/manage/page-icon";
+import { Avatar } from "@/components/avatar";
+import { getPeople } from "@/lib/people";
 
 const fmt=(value:number)=>value.toLocaleString("fr-FR")+" Ar";
 const labels:Record<string,string>={due:"À régler",partial:"Partielle",paid:"À jour",overdue:"En retard",exempt:"Exonérée"};
 const cycleLabels:Record<string,string>={draft:"Brouillon",open:"Ouvert",closed:"Clôturé"};
 const statusClass:Record<string,string>={paid:" ok",exempt:" ok",partial:" pinned",overdue:" priority-urgent",due:""};
-const initials=(name?:string)=>(name||"?").split(/\s+/).filter(Boolean).slice(0,2).map(part=>part[0]).join("").toUpperCase();
 
 export default async function DuesPage({
   searchParams,
@@ -48,6 +50,7 @@ export default async function DuesPage({
     ? await supabase.from("members").select("id,full_name,member_number,village,profile_id").in("id",memberIds)
     : {data:[] as any[]};
   const memberMap=new Map((members||[]).map((member)=>[member.id,member]));
+  const people=await getPeople(supabase,(members||[]).map((member)=>member.profile_id));
 
   // Filtres hérités de l’URL (liens existants), complétés par les filtres rapides côté client.
   const query=(filters.q||"").trim().toLocaleLowerCase("fr");
@@ -82,11 +85,11 @@ export default async function DuesPage({
   </>;
 
   const memberView=!selected
-    ? <div className="panel empty-state"><p>Aucun exercice créé.</p>{cycleSheet()}</div>
+    ? <div className="panel empty-state mg-empty-auto"><p>Aucun exercice créé.</p>{cycleSheet()}</div>
     : <FilterList
       placeholder="Nom, numéro, village…"
       filters={[{key:"status",label:"Statut",options:Object.entries(labels).map(([value,label])=>({value,label}))}]}
-      empty={<div className="panel empty-state">{rows.length?"Aucun membre ne correspond aux filtres.":selected.status==="draft"?"Exercice en brouillon : ouvrez-le pour générer les cotisations.":"Aucun membre concerné."}</div>}
+      empty={<div className="panel empty-state mg-empty-auto">{rows.length?"Aucun membre ne correspond aux filtres.":selected.status==="draft"?"Exercice en brouillon : ouvrez-le pour générer les cotisations.":"Aucun membre concerné."}</div>}
       items={filtered.map((due)=>{
         const member=memberMap.get(due.member_id);
         const effective=Math.max(0,Number(due.amount_due)-Number(due.waived_amount));
@@ -96,7 +99,7 @@ export default async function DuesPage({
           text:[member?.full_name,member?.member_number,member?.village].filter(Boolean).join(" "),
           facets:{status:due.current_status},
           node:<div className="list-row is-static stack-sm">
-            <span className="row-icon">{initials(member?.full_name)}</span>
+            <Avatar name={member?.full_name||"Membre"} url={member?.profile_id?people.get(member.profile_id)?.avatar_url:null} size={40}/>
             <div>
               <b>{member?.full_name||"Membre"}</b>
               <small>{member?.member_number||"—"} · {member?.village||"—"}{due.reminder_count?` · ${due.reminder_count} relance(s)`:""}{due.last_reminded_at?" · dernière "+new Date(due.last_reminded_at).toLocaleDateString("fr-FR"):""}</small>
@@ -126,11 +129,11 @@ export default async function DuesPage({
       <div><b><Link href={"/finance/dues?cycle="+cycle.id}>{cycle.label}</Link></b><small>{fmt(Number(cycle.amount))} · échéance {new Date(cycle.due_on+"T12:00:00").toLocaleDateString("fr-FR")}</small></div>
       <div className="row-end"><span className={"badge"+(cycle.status==="open"?" ok":cycle.status==="draft"?" pinned":"")}>{cycleLabels[cycle.status]||cycle.status}</span>{cycleActions(cycle)}</div>
     </div>)}</div>
-    : <div className="panel empty-state"><p>Aucun exercice créé.</p>{cycleSheet()}</div>;
+    : <div className="panel empty-state mg-empty-auto"><p>Aucun exercice créé.</p>{cycleSheet()}</div>;
 
   return <section className="page manage-page">
     <header className="page-header">
-      <div><h1>Cotisations annuelles</h1><p>{selected?`${selected.label} : ${paidCount} membre(s) à jour sur ${rows.length}, ${overdue} en retard.`:"Aucun exercice de cotisation."}</p></div>
+      <div><PageIcon href="/finance"/><h1>Cotisations annuelles</h1><p>{selected?`${selected.label} : ${paidCount} membre(s) à jour sur ${rows.length}, ${overdue} en retard.`:"Aucun exercice de cotisation."}</p></div>
       <div className="header-actions"><Link className="button secondary" href="/finance">← Finances</Link>{cycleSheet()}</div>
     </header>
 
@@ -138,12 +141,12 @@ export default async function DuesPage({
       {(cycles||[]).map((cycle)=><Link key={cycle.id} className={"chip"+(cycle.id===selectedId?" active":"")} aria-current={cycle.id===selectedId?"page":undefined} href={"/finance/dues?cycle="+cycle.id}>{cycle.label} <small>{cycleLabels[cycle.status]||cycle.status}</small></Link>)}
     </nav>}
 
-    <div className="stat-grid manage-stats">
-      <article><small>Membres concernés</small><strong>{rows.length}</strong><span>{selected?.label||"aucun exercice"}</span></article>
-      <article><small>Montant attendu</small><strong>{fmt(totalDue)}</strong><span>après exonérations</span></article>
-      <article><small>Encaissé</small><strong>{fmt(totalPaid)}</strong><span>{totalDue?Math.round(totalPaid/totalDue*100):0} %</span></article>
-      <article className={overdue?"attention-stat":""}><small>En retard</small><strong>{overdue}</strong><span>membre(s)</span></article>
-      <article><small>À jour</small><strong>{paidCount}</strong><span>payé ou exonéré</span></article>
+    <div className="mg-stats stat-grid manage-stats">
+      <article><span className="icon-tile" style={{"--tile":"var(--accent)"} as React.CSSProperties}><UiIcon name="users"/></span><small>Membres concernés</small><strong>{rows.length}</strong><span>{selected?.label||"aucun exercice"}</span></article>
+      <article><span className="icon-tile" style={{"--tile":"var(--violet)"} as React.CSSProperties}><UiIcon name="receipt"/></span><small>Montant attendu</small><strong>{fmt(totalDue)}</strong><span>après exonérations</span></article>
+      <article><span className="icon-tile" style={{"--tile":"var(--ok)"} as React.CSSProperties}><UiIcon name="wallet"/></span><small>Encaissé</small><strong>{fmt(totalPaid)}</strong><span>{totalDue?Math.round(totalPaid/totalDue*100):0} %</span></article>
+      <article className={overdue?"attention-stat":""}><span className="icon-tile" style={{"--tile":"var(--coral)"} as React.CSSProperties}><UiIcon name="clock"/></span><small>En retard</small><strong>{overdue}</strong><span>membre(s)</span></article>
+      <article><span className="icon-tile" style={{"--tile":"var(--teal)"} as React.CSSProperties}><UiIcon name="check"/></span><small>À jour</small><strong>{paidCount}</strong><span>payé ou exonéré</span></article>
     </div>
 
     <Tabs tabs={[

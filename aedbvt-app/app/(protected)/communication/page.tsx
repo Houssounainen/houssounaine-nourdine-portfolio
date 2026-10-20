@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { can } from "@/lib/access";
 import { sendInternalBroadcast } from "./actions";
+import { PageIcon } from "@/components/manage/page-icon";
 
 const segmentLabels:Record<string,string>={
   all:"Tous les comptes actifs",
@@ -23,7 +24,7 @@ export default async function CommunicationPage(){
   if(!can(profile?.role,"communication_manage")) notFound();
 
   return <section className="page">
-    <header className="page-header"><div><h1>Communication</h1></div><span className="status-pill">{broadcasts?.length||0} campagne(s)</span></header>
+    <header className="page-header"><div><PageIcon href="/communication"/><h1>Communication</h1></div><span className="status-pill">{broadcasts?.length||0} campagne(s)</span></header>
 
     <div className="content-grid communication-grid">
       <form action={sendInternalBroadcast} className="panel form-stack">
