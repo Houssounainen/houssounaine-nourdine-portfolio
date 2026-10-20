@@ -429,3 +429,8 @@ td .mg-empty-auto::before, .list-row .mg-empty-auto::before { display: none; }
   .page-header > div:has(> .mg-page-icon) { column-gap: 12px; }
   .directory-panel .table-wrap table { min-width: 760px; }
 }
+.mg-empty-auto { grid-template-columns: 1fr !important; grid-column: 1 / -1; }
+.workspace-main .onboarding-admin-list > div > span.mg-person { display: flex; align-items: center; }
+.workspace-main .onboarding-admin-list > div > span.mg-person > span { display: grid; }
+.workspace-main .manage-page .task-progress i, .workspace-main .task-progress i { background: var(--brand-gradient); }
+.workspace-main .task-card .card-foot .mg-person { gap: 6px; }

@@ -379,3 +379,9 @@
   .soc-notif-panel { margin: 0 -6px; }
   .soc-notif-main { gap: 11px; padding: 10px; }
 }
+
+/* Neutralise « .panel a { color: accent } » pour les liens-cartes du périmètre social. */
+body .panel a:not(.button):is(.soc-notif-main, .soc-notif-announce, .soc-side-person, .soc-side-doc, .soc-side-link, .soc-story),
+body .panel :is(.soc-post-who, .soc-comment-bubble, .soc-side-shortcuts, .soc-profile-stats, .soc-me-stats, .soc-chat-members) a:not(.button) { color: var(--text); font-weight: inherit; }
+body .panel .soc-comment-bubble a:not(.button) { font-weight: 700; }
+body .panel .soc-side-card > header a { color: var(--accent); }

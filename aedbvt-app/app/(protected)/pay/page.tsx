@@ -117,7 +117,7 @@ export default async function PayPage({ searchParams }: { searchParams: Promise<
         </article>
         {!!receipts?.length && <article className="panel list-card">
           <header><h2>Reçus</h2><Link href="/me">Tout voir</Link></header>
-          {receipts.map(receipt => <a key={receipt.id} className="list-row pay-history-row" href={`/api/receipts/${receipt.id}`} style={{ gridTemplateColumns: "auto minmax(0,1fr) auto" }}>
+          {receipts.map((receipt, index) => <a key={receipt.id || index} className="list-row pay-history-row" href={`/api/receipts/${receipt.id}`} style={{ gridTemplateColumns: "auto minmax(0,1fr) auto" }}>
             <span className="icon-tile" style={{ "--tile": "#079455" } as React.CSSProperties} aria-hidden="true"><UiIcon name="receipt"/></span>
             <div><b>{receipt.receipt_number || "Reçu"}</b><small>{receipt.method} · {receipt.paid_at ? new Date(receipt.paid_at).toLocaleDateString("fr-FR") : ""}</small></div>
             <span className="meta">{ariary(Number(receipt.amount))}</span>
