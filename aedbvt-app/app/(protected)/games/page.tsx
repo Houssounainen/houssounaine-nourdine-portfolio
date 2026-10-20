@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getPeople } from "@/lib/people";
 import { GamesHub, type LeaderboardEntry } from "./games";
 
 export const dynamic = "force-dynamic";
@@ -39,23 +40,22 @@ export default async function GamesPage() {
     }
   }
 
+  const peopleMap = await getPeople(supabase, [...[...best.values()].map(entry => entry.authorId), user?.id]);
+  const people: Record<string, { name: string; avatar: string | null }> = {};
+  for (const [id, person] of peopleMap) people[id] = { name: person.full_name, avatar: person.avatar_url };
+
   const profileName = (profile.data as { full_name?: string | null } | null)?.full_name?.trim();
   const userName = profileName || user?.email?.split("@")[0] || "Vous";
 
   return (
     <section className="page games-page">
-      <header className="page-header">
-        <div>
-          <h1>Jeux</h1>
-          <p>Quatre jeux courts. Le quiz et le mot changent chaque jour ; un classement est établi pour chaque jeu.</p>
-        </div>
-      </header>
       <GamesHub
         today={today}
         userId={user?.id ?? null}
         userName={userName}
         entries={[...best.values()]}
         leaderboardAvailable={leaderboardAvailable}
+        people={people}
       />
     </section>
   );

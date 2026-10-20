@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 export async function updateMyProfile(formData: FormData) {
@@ -36,4 +37,16 @@ export async function createMyRequest(formData: FormData) {
   });
 
   revalidatePath("/me");
+}
+
+export async function updateMyBio(formData: FormData) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+  const bio = String(formData.get("bio") || "").trim().slice(0, 280);
+  // p_url = null : la photo actuelle est conservée (coalesce côté base), seule la bio change.
+  const { error } = await supabase.rpc("set_my_avatar", { p_url: null, p_bio: bio });
+  revalidatePath("/me");
+  revalidatePath(`/people/${user.id}`);
+  redirect(error ? "/me?error=bio#profil" : "/me?ok=Bio%20enregistr%C3%A9e#profil");
 }

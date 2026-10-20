@@ -72,7 +72,7 @@ export default async function GovernancePage() {
       {key:"type",label:"Type",options:[{value:"ordinary",label:"Ordinaires"},{value:"extraordinary",label:"Extraordinaires"}]},
       {key:"status",label:"Statut",mode:"select",options:["draft","published","open","closed","archived"].map(value=>({value,label:statusLabel[value]}))},
     ]}
-    empty={<div className="panel empty-state"><p>Aucune assemblée créée.</p>{staff&&assemblySheet()}</div>}
+    empty={<div className="hm-empty is-column"><span className="icon-tile solid lg" style={{"--tile":"#0ba5ec"} as React.CSSProperties}><UiIcon name="users"/></span><div><b>Aucune assemblée</b><small>Les assemblées générales convoquées apparaîtront ici.</small></div>{staff&&assemblySheet()}</div>}
     items={(assemblies||[]).map(assembly=>({
       id:assembly.id,
       text:[assembly.title,assembly.location,assembly.mode].filter(Boolean).join(" "),
@@ -94,14 +94,14 @@ export default async function GovernancePage() {
       <div><b>{election.title}</b><small>Du {new Date(election.starts_at).toLocaleString("fr-FR",{dateStyle:"medium",timeStyle:"short"})} au {new Date(election.ends_at).toLocaleString("fr-FR",{dateStyle:"medium",timeStyle:"short"})}</small></div>
       <div className="row-end"><span className={"badge"+statusClass(election.status)}>{electionStatus[election.status]||election.status}</span></div>
     </Link>)}</div>
-    : <div className="panel empty-state"><p>Aucune élection créée.</p>{staff&&electionSheet("primary")}</div>;
+    : <div className="hm-empty is-column"><span className="icon-tile solid lg" style={{"--tile":"#7a5af8"} as React.CSSProperties}><UiIcon name="check"/></span><div><b>Aucune élection</b><small>Les scrutins de l’association apparaîtront ici.</small></div>{staff&&electionSheet("primary")}</div>;
 
   const textView=<>
     <div className="tab-head"><p>Statuts, règlement intérieur et politiques, avec versions et amendements.</p><Link className="button secondary" href="/governance/documents"><UiIcon name="book"/>Centre documentaire</Link></div>
     <FilterList
       placeholder="Rechercher un texte…"
       filters={categories.length>1?[{key:"category",label:"Catégorie",mode:"select",options:categories.map(value=>({value,label:value}))}]:[]}
-      empty={<div className="panel empty-state">Aucun texte enregistré.</div>}
+      empty={<div className="hm-empty is-column"><span className="icon-tile solid lg" style={{"--tile":"#344054"} as React.CSSProperties}><UiIcon name="book"/></span><div><b>Aucun texte enregistré</b><small>Statuts, règlement intérieur et politiques.</small></div></div>}
       items={(docs||[]).map(d=>({
         id:d.id,
         text:[d.title,d.category].filter(Boolean).join(" "),
@@ -124,21 +124,22 @@ export default async function GovernancePage() {
         <div><b>{d.title}</b><small>{d.number}{d.decision_date?" · "+new Date(d.decision_date).toLocaleDateString("fr-FR"):""}{d.decision_type?" · "+d.decision_type:""}</small></div>
         <div className="row-end"><span className={"badge"+(["adopted","elected"].includes(d.outcome)?" ok":"")}>{outcomeLabel[d.outcome]||d.outcome}</span></div>
       </Link>)}</div>
-      : <div className="panel empty-state">Aucune décision consignée.</div>}
+      : <div className="hm-empty is-column"><span className="icon-tile solid lg" style={{"--tile":"#12b76a"} as React.CSSProperties}><UiIcon name="list"/></span><div><b>Aucune décision consignée</b><small>Le registre des décisions est vide.</small></div></div>}
   </>;
 
   return (
-    <section className="page manage-page">
-      <header className="page-header">
+    <section className="page manage-page hm-gov">
+      <header className="page-header hm-page-head">
+        <span className="icon-tile solid lg" style={{"--tile":"#344054"} as React.CSSProperties}><UiIcon name="shield"/></span>
         <div><h1>Gouvernance</h1><p>{upcoming.length} assemblée(s) à venir, {openElections.length} scrutin(s) ouvert(s), {docs?.length||0} texte(s) de référence.</p></div>
         {staff&&<div className="header-actions">{electionSheet()}{assemblySheet()}</div>}
       </header>
 
-      <div className="stat-grid manage-stats">
-        <article><a className="stat-link" href="#assemblees"><small>Assemblées</small><strong>{assemblies?.length||0}</strong><span>{upcoming.length} à venir</span></a></article>
-        <article><a className="stat-link" href="#elections"><small>Élections</small><strong>{elections?.length||0}</strong><span>{openElections.length} scrutin(s) ouvert(s)</span></a></article>
-        <article><a className="stat-link" href="#textes"><small>Textes officiels</small><strong>{docs?.length||0}</strong><span>{(docs||[]).filter(d=>d.published).length} publié(s)</span></a></article>
-        <article><a className="stat-link" href="#decisions"><small>Décisions récentes</small><strong>{decisions?.length||0}</strong><span>registre durable</span></a></article>
+      <div className="stat-grid manage-stats hm-stat-tiles">
+        <article><a className="stat-link" href="#assemblees"><span className="icon-tile" style={{"--tile":"#0ba5ec"} as React.CSSProperties}><UiIcon name="users"/></span><small>Assemblées</small><strong>{assemblies?.length||0}</strong><span>{upcoming.length} à venir</span></a></article>
+        <article><a className="stat-link" href="#elections"><span className="icon-tile" style={{"--tile":"#7a5af8"} as React.CSSProperties}><UiIcon name="check"/></span><small>Élections</small><strong>{elections?.length||0}</strong><span>{openElections.length} scrutin(s) ouvert(s)</span></a></article>
+        <article><a className="stat-link" href="#textes"><span className="icon-tile" style={{"--tile":"#344054"} as React.CSSProperties}><UiIcon name="book"/></span><small>Textes officiels</small><strong>{docs?.length||0}</strong><span>{(docs||[]).filter(d=>d.published).length} publié(s)</span></a></article>
+        <article><a className="stat-link" href="#decisions"><span className="icon-tile" style={{"--tile":"#12b76a"} as React.CSSProperties}><UiIcon name="list"/></span><small>Décisions récentes</small><strong>{decisions?.length||0}</strong><span>registre durable</span></a></article>
       </div>
 
       <Tabs tabs={[

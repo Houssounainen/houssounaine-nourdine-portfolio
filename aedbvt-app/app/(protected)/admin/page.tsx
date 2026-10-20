@@ -4,6 +4,9 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { inviteMemberAccount, inviteUser, updateUserAccess } from "./actions";
 import { can, ROLE_LABELS } from "@/lib/access";
+import { PageIcon } from "@/components/manage/page-icon";
+import { Avatar } from "@/components/avatar";
+import { getPeople } from "@/lib/people";
 
 export default async function AdminPage() {
   const supabase = await createClient();
@@ -18,6 +21,7 @@ export default async function AdminPage() {
     supabase.from("members").select("id,full_name,member_number,profile_id,email,invitation_sent_at,account_activated_at").eq("status","active").order("full_name"),
   ]);
 
+  const people = await getPeople(supabase, (profiles||[]).map((profile)=>profile.id));
   let emails = new Map<string,string>();
   if (admin) {
     const { data } = await admin.auth.admin.listUsers({ page: 1, perPage: 200 });
@@ -26,7 +30,7 @@ export default async function AdminPage() {
 
   return (
     <section className="page">
-      <header className="page-header"><div><h1>Administration</h1></div><span className="status-pill">{me?.full_name||"Administrateur"} · administrateur</span></header>
+      <header className="page-header"><div><PageIcon href="/admin"/><h1>Administration</h1></div><span className="status-pill">{me?.full_name||"Administrateur"} · administrateur</span></header>
 
       <div className="admin-tools-grid">
         <Link href="/admin/settings" className="panel admin-tool-card"><span className="eyebrow">Institutionnel</span><h2>Paramètres</h2><p>Nom, contacts, support, textes publics et cotisation par défaut.</p><b>Configurer →</b></Link>
@@ -53,21 +57,21 @@ export default async function AdminPage() {
       <article className="panel onboarding-admin-list">
         {(members||[]).map((member)=>{
           const state=member.account_activated_at?"Activé":member.profile_id?"Invité":"À inviter";
-          return <div key={member.id}><span><b>{member.full_name}</b><small>{member.member_number||"—"} · {member.email||"email non renseigné"}</small></span><span className={"badge onboarding-"+(member.account_activated_at?"active":member.profile_id?"invited":"pending")}>{state}</span><small>{member.account_activated_at?"Activé le "+new Date(member.account_activated_at).toLocaleDateString("fr-FR"):member.invitation_sent_at?"Invité le "+new Date(member.invitation_sent_at).toLocaleDateString("fr-FR"):"Aucune invitation envoyée"}</small>{!member.profile_id&&member.email&&<form action={inviteMemberAccount}><input type="hidden" name="member_id" value={member.id}/><button className="button secondary">Inviter</button></form>}</div>;
+          return <div key={member.id}><span className="mg-person"><Avatar name={member.full_name} url={member.profile_id?people.get(member.profile_id)?.avatar_url:null} size={36}/><span><b>{member.full_name}</b><small>{member.member_number||"—"} · {member.email||"email non renseigné"}</small></span></span><span className={"badge onboarding-"+(member.account_activated_at?"active":member.profile_id?"invited":"pending")}>{state}</span><small>{member.account_activated_at?"Activé le "+new Date(member.account_activated_at).toLocaleDateString("fr-FR"):member.invitation_sent_at?"Invité le "+new Date(member.invitation_sent_at).toLocaleDateString("fr-FR"):"Aucune invitation envoyée"}</small>{!member.profile_id&&member.email&&<form action={inviteMemberAccount}><input type="hidden" name="member_id" value={member.id}/><button className="button secondary">Inviter</button></form>}</div>;
         })}
-        {!members?.length&&<div className="empty-state">Aucun membre actif.</div>}
+        {!members?.length&&<div className="empty-state mg-empty-auto">Aucun membre actif.</div>}
       </article>
 
       <h2 className="section-title">Comptes & rôles</h2>
       <div className="table-wrap panel">
         <table><thead><tr><th>Utilisateur</th><th>Email</th><th>Rôle</th><th>État</th><th>Action</th></tr></thead>
-        <tbody>{(profiles||[]).map((profile)=><tr key={profile.id}><td><b>{profile.full_name || "Utilisateur"}</b></td><td>{emails.get(profile.id) || "—"}</td><td>{ROLE_LABELS[profile.role as keyof typeof ROLE_LABELS] || profile.role}</td><td><span className={"badge "+(profile.active?"ok":"")}>{profile.active?"Actif":"Suspendu"}</span></td><td>{profile.id===user!.id?<span className="muted">Compte administrateur principal</span>:<form action={updateUserAccess} className="table-action"><input type="hidden" name="profile_id" value={profile.id}/><select name="role" defaultValue={profile.role}><option value="membre">Membre</option><option value="secretaire">Secrétaire</option><option value="tresorier">Trésorier</option><option value="bureau">Bureau</option><option value="admin">Administrateur</option></select><select name="active" defaultValue={String(profile.active)}><option value="true">Actif</option><option value="false">Suspendu</option></select><button className="button secondary">Mettre à jour</button></form>}</td></tr>)}</tbody></table>
+        <tbody>{(profiles||[]).map((profile)=><tr key={profile.id}><td><span className="mg-person"><Avatar name={profile.full_name || "Utilisateur"} url={people.get(profile.id)?.avatar_url} size={34}/><b>{profile.full_name || "Utilisateur"}</b></span></td><td>{emails.get(profile.id) || "—"}</td><td>{ROLE_LABELS[profile.role as keyof typeof ROLE_LABELS] || profile.role}</td><td><span className={"badge "+(profile.active?"ok":"")}>{profile.active?"Actif":"Suspendu"}</span></td><td>{profile.id===user!.id?<span className="muted">Compte administrateur principal</span>:<form action={updateUserAccess} className="table-action"><input type="hidden" name="profile_id" value={profile.id}/><select name="role" defaultValue={profile.role}><option value="membre">Membre</option><option value="secretaire">Secrétaire</option><option value="tresorier">Trésorier</option><option value="bureau">Bureau</option><option value="admin">Administrateur</option></select><select name="active" defaultValue={String(profile.active)}><option value="true">Actif</option><option value="false">Suspendu</option></select><button className="button secondary">Mettre à jour</button></form>}</td></tr>)}</tbody></table>
       </div>
 
       <div className="section-heading-row"><h2 className="section-title">Journal d’audit</h2><Link className="button secondary" href="/admin/audit">Ouvrir le journal complet →</Link></div>
       <article className="panel audit-list">
         {(logs||[]).map((log)=><div key={log.id}><time>{new Date(log.created_at).toLocaleString("fr-FR")}</time><b>{log.action}</b><span>{log.table_name}</span><small>{log.record_id || "—"}</small></div>)}
-        {!logs?.length && <div className="empty-state">Aucune opération auditée pour le moment.</div>}
+        {!logs?.length && <div className="empty-state mg-empty-auto">Aucune opération auditée pour le moment.</div>}
       </article>
     </section>
   );

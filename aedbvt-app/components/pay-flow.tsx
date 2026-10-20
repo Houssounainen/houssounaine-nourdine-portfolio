@@ -42,11 +42,12 @@ export function PayForm({ cycles, numbers, defaultPhone, apiOperators }: { cycle
     {cycles.length > 1 && <label>Exercice<select name="cycle_id" value={cycleId} onChange={event => setCycleId(event.target.value)}>{cycles.map(item => <option key={item.id} value={item.id}>{item.label} · reste {ariary(item.balance)}</option>)}</select></label>}
     {cycles.length <= 1 && <input type="hidden" name="cycle_id" value={cycleId}/>}
     <fieldset className="pay-operators">
-      <legend>Payer avec</legend>
-      {available.map(key => <label key={key} className={`pay-operator${operator === key ? " is-selected" : ""}`}>
+      <legend>Choisissez votre opérateur</legend>
+      {available.map(key => <label key={key} className={`pay-operator op-${key}${operator === key ? " is-selected" : ""}`}>
         <input type="radio" name="operator" value={key} checked={operator === key} onChange={() => setOperator(key)}/>
-        <i style={{ background: OPERATORS[key].color }} aria-hidden="true"/>
+        <span className={`pay-op-mark lg op-${key}`} aria-hidden="true">{OPERATORS[key].short}</span>
         <span><b>{OPERATORS[key].label}</b><small>{apiOperators.includes(key) ? "Confirmation sur votre téléphone" : `Envoi au ${formatPhone(numbers[key] || "")}`}</small></span>
+        <span className="pay-operator-check" aria-hidden="true"><UiIcon name="check"/></span>
       </label>)}
     </fieldset>
     <div className="form-two">

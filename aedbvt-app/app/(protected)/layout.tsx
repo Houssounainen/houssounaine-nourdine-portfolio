@@ -10,7 +10,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
   await bootstrapAdmin(user);
 
   const [{data:profile},{count:unreadCount}]=await Promise.all([
-    supabase.from("profiles").select("full_name,role,active").eq("id", user.id).maybeSingle(),
+    supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
     supabase.from("internal_notifications").select("*",{count:"exact",head:true}).eq("recipient_id",user.id).is("read_at",null),
   ]);
 

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Sheet } from "@/components/sheet";
+import { UiIcon } from "@/components/ui-icon";
 import { ImagePicker } from "@/components/image-picker";
 import { createClient } from "@/lib/supabase/server";
 import { can } from "@/lib/access";
@@ -16,7 +17,7 @@ function localInputValue(value:string|null){
 
 export default async function ContentPage({
   searchParams,
-}:{searchParams:Promise<{status?:string;q?:string}>}){
+}:{searchParams:Promise<{status?:string;q?:string;new?:string}>}){
   const filters=await searchParams;
   const supabase=await createClient();
   const {data:{user}}=await supabase.auth.getUser();
@@ -42,8 +43,8 @@ export default async function ContentPage({
     return acc;
   },{});
 
-  return <section className="page">
-    <header className="page-header"><div><h1>Contenu</h1></div><Link className="button secondary" href="/news">Voir les actualités →</Link></header>
+  return <section className="page hm-content">
+    <header className="page-header hm-page-head"><span className="icon-tile solid lg" style={{"--tile":"#ee46bc"} as React.CSSProperties}><UiIcon name="document"/></span><div><h1>Contenu</h1><p>Rédigez, programmez et publiez les actualités de l’association.</p></div><Link className="button secondary" href="/news">Voir les actualités<UiIcon name="arrow"/></Link></header>
 
     <div className="stat-grid">
       <article><small>Brouillons</small><strong>{counts.draft||0}</strong><span>à préparer</span></article>
@@ -52,7 +53,7 @@ export default async function ContentPage({
       <article><small>Archivés</small><strong>{counts.archived||0}</strong><span>retirés du flux</span></article>
     </div>
 
-    <div className="header-actions" style={{margin:"0 0 16px"}}><Sheet label="Nouvel article" title="Rédiger une publication" description="Brouillon, programmation ou publication immédiate." wide>
+    <div className="header-actions" style={{margin:"0 0 16px"}}><Sheet label="Nouvel article" title="Rédiger une publication" description="Brouillon, programmation ou publication immédiate." wide defaultOpen={filters.new==="1"} successMessage="Article enregistré">
     <form action={createEditorialArticle} className="form-stack">
       
       <div className="form-two"><label>Titre<input name="title" required maxLength={160}/></label><label>Catégorie<select name="category">{ARTICLE_CATEGORIES.map((category)=><option key={category}>{category}</option>)}</select></label></div>
@@ -76,6 +77,7 @@ export default async function ContentPage({
     <div className="editorial-list">
       {articles.map((article)=><details className="panel editorial-item" key={article.id}>
         <summary>
+          <span className="hm-content-thumb" aria-hidden="true">{/* eslint-disable-next-line @next/next/no-img-element */}{article.cover_url?<img src={article.cover_url} alt="" loading="lazy"/>:<UiIcon name="document"/>}</span>
           <span><small>{article.category||"Actualité"} · {new Date(article.updated_at||article.created_at).toLocaleString("fr-FR")}</small><b>{article.title}</b>{article.excerpt&&<em>{article.excerpt}</em>}</span>
           <span><span className={"badge article-"+article.status}>{articleStatusLabel(article.status)}</span>{article.featured&&<span className="badge featured">À la une</span>}</span>
         </summary>
@@ -91,7 +93,7 @@ export default async function ContentPage({
         </form>
         {article.status!=="archived"&&<form action={archiveEditorialArticle} className="editorial-archive"><input type="hidden" name="article_id" value={article.id}/><button className="button danger">Archiver</button></form>}
       </details>)}
-      {!articles.length&&<div className="panel empty-state">Aucun contenu ne correspond aux filtres.</div>}
+      {!articles.length&&<div className="hm-empty is-column"><span className="icon-tile solid lg" style={{"--tile":"#ee46bc"} as React.CSSProperties}><UiIcon name="document"/></span><div><b>Aucun contenu</b><small>{rows?.length?"Aucun article ne correspond aux filtres.":"Rédigez votre premier article avec « Nouvel article »."}</small></div></div>}
     </div>
   </section>;
 }

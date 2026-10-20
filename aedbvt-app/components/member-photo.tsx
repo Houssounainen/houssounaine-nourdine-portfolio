@@ -5,9 +5,11 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { uploadImage } from "@/lib/media";
 import { UiIcon } from "@/components/ui-icon";
+import { toast } from "@/components/toaster";
+import { cropSquare, uploadAvatar } from "@/lib/square-image";
 
 /** Photo d’identité de la carte : recadrée en carré, compressée, stockée dans un espace privé. */
-export function MemberPhoto({ url, name, editable = true }: { url: string | null; name: string; editable?: boolean }) {
+export function MemberPhoto({ url, name, editable = true, syncAvatar = true }: { url: string | null; name: string; editable?: boolean; syncAvatar?: boolean }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -23,6 +25,9 @@ export function MemberPhoto({ url, name, editable = true }: { url: string | null
       const { path } = await uploadImage(square, { bucket: "identity-photos", folder: "card", maxSize: 720 });
       const { error: rpcError } = await createClient().rpc("set_my_member_photo", { p_path: path });
       if (rpcError) throw new Error("La photo n’a pas pu être associée à votre fiche.");
+      // La même photo devient la photo de profil visible dans la discussion, le fil, le marché…
+      if (syncAvatar) await uploadAvatar(file).catch(() => undefined);
+      toast("Photo enregistrée");
       router.refresh();
     } catch (cause) {
       setPreview(url);
@@ -43,17 +48,4 @@ export function MemberPhoto({ url, name, editable = true }: { url: string | null
     </label>}
     {error && <p className="field-error no-print" role="alert">{error}</p>}
   </div>;
-}
-
-async function cropSquare(file: File): Promise<File> {
-  const bitmap = await createImageBitmap(file).catch(() => null);
-  if (!bitmap) return file;
-  const side = Math.min(bitmap.width, bitmap.height);
-  const size = Math.min(side, 720);
-  const canvas = document.createElement("canvas");
-  canvas.width = size; canvas.height = size;
-  canvas.getContext("2d")!.drawImage(bitmap, (bitmap.width - side) / 2, (bitmap.height - side) / 2, side, side, 0, 0, size, size);
-  bitmap.close();
-  const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, "image/jpeg", 0.85));
-  return blob ? new File([blob], "photo.jpg", { type: "image/jpeg" }) : file;
 }

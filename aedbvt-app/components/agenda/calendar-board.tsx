@@ -3,11 +3,12 @@
 import { useMemo, useState } from "react";
 import { Sheet } from "@/components/sheet";
 import { UiIcon } from "@/components/ui-icon";
+import { EventTicket, categoryColor, type TicketPerson } from "@/components/agenda/event-ticket";
 import { createEvent, createMeeting, toggleEventRegistration, toggleMeetingAttendance } from "@/app/(protected)/agenda/actions";
 
 export type AgendaItem = {
   id: string; kind: "event" | "meeting"; title: string; starts_at: string; ends_at?: string | null;
-  location?: string | null; label: string; description?: string | null; agenda?: string[]; mine: boolean; count: number;
+  location?: string | null; label: string; description?: string | null; agenda?: string[]; mine: boolean; count: number; people?: TicketPerson[];
 };
 
 const TZ = "Indian/Antananarivo";
@@ -26,24 +27,24 @@ function RsvpForm({ item }: { item: AgendaItem }) {
   return <form action={action}>
     <input type="hidden" name={item.kind === "event" ? "event_id" : "meeting_id"} value={item.id}/>
     <input type="hidden" name="current" value={item.mine ? "on" : "off"}/>
-    <button className={`button ${item.mine ? "secondary" : "primary"}`}>{item.mine ? <><UiIcon name="check"/>{item.kind === "event" ? "Inscrit" : "Présent"}</> : item.kind === "event" ? "Participer" : "Confirmer"}<span className="rsvp-count">{item.count}</span></button>
+    <button className={`button ${item.mine ? "secondary" : "primary"}`}>{item.mine ? <><UiIcon name="check"/>{item.kind === "event" ? "Inscrit" : "Présent"}</> : item.kind === "event" ? "Participer" : "Confirmer"}</button>
   </form>;
 }
 
 function ItemCard({ item, past }: { item: AgendaItem; past: boolean }) {
-  return <article className={`agenda-item kind-${item.kind}${past ? " is-past" : ""}`}>
-    <div className="agenda-item-time"><b>{time(item.starts_at)}</b>{item.ends_at && <small>{time(item.ends_at)}</small>}</div>
-    <div className="agenda-item-body">
-      <p className="agenda-item-meta"><i aria-hidden="true"/>{item.label}{item.location ? ` · ${item.location}` : ""}</p>
-      <h3>{item.title}</h3>
-      {item.description && <p className="agenda-item-desc">{item.description}</p>}
-      {!!item.agenda?.length && <ol>{item.agenda.map(point => <li key={point}>{point}</li>)}</ol>}
-      <div className="agenda-item-actions">
-        {!past && <RsvpForm item={item}/>}
-        <a className="button secondary" href={`/api/agenda/ics?kind=${item.kind}&id=${item.id}`}><UiIcon name="download"/>Ajouter à mon calendrier</a>
-      </div>
-    </div>
-  </article>;
+  return <EventTicket title={item.title} startsAt={item.starts_at} endsAt={item.ends_at} location={item.location} label={item.label}
+    people={item.people} count={item.count} mine={item.mine} past={past} className={`kind-${item.kind}`}>
+    {!past && <RsvpForm item={item}/>}
+    <a className="button secondary" href={`/api/agenda/ics?kind=${item.kind}&id=${item.id}`} aria-label={`Ajouter « ${item.title} » à mon calendrier`}><UiIcon name="download"/>Calendrier</a>
+  </EventTicket>;
+}
+
+function ItemDetails({ item }: { item: AgendaItem }) {
+  if (!item.description && !item.agenda?.length) return null;
+  return <div className="hm-ticket-extra">
+    {item.description && <p className="hm-ticket-desc">{item.description}</p>}
+    {!!item.agenda?.length && <ol>{item.agenda.map(point => <li key={point}>{point}</li>)}</ol>}
+  </div>;
 }
 
 function EventForm({ date }: { date?: string }) {
@@ -108,7 +109,13 @@ export function CalendarBoard({ items, staff, initialMonth }: { items: AgendaIte
   const upcoming = visible.filter(item => keyOf(new Date(item.starts_at)) >= today).sort((a, b) => a.starts_at.localeCompare(b.starts_at));
   const dayItems = byDay.get(selected) || [];
 
+  const legend = [...new Map(items.map(item => [item.kind === "meeting" ? "Réunion" : item.label, categoryColor(item.label)])).entries()];
+  const highlights = items.filter(item => keyOf(new Date(item.starts_at)) >= today).sort((a, b) => a.starts_at.localeCompare(b.starts_at)).slice(0, 3);
+
   return <div className="calendar-board">
+    {highlights.length > 0 && <section className="hm-highlights" aria-label="Prochains rendez-vous">
+      {highlights.map(item => <ItemCard key={item.kind + item.id} item={item} past={false}/>)}
+    </section>}
     <div className="calendar-toolbar">
       <div className="calendar-nav">
         <button type="button" className="icon-button" onClick={() => shift(-1)} aria-label="Période précédente" disabled={view === "list"}><UiIcon name="chevron" style={{ transform: "rotate(180deg)" }}/></button>
@@ -126,6 +133,8 @@ export function CalendarBoard({ items, staff, initialMonth }: { items: AgendaIte
       </div>
     </div>
 
+    {legend.length > 0 && <ul className="hm-legend" aria-label="Catégories">{legend.map(([label, color]) => <li key={label} style={{ "--cat": color } as React.CSSProperties}>{label}</li>)}</ul>}
+
     {view !== "list" && <div className="calendar-split">
       <div className={`calendar-grid-view view-${view}`}>
         <div className="calendar-weekdays">{DAYS.map(day => <span key={day}>{day}</span>)}</div>
@@ -137,18 +146,18 @@ export function CalendarBoard({ items, staff, initialMonth }: { items: AgendaIte
               className={`calendar-cell${outside ? " is-outside" : ""}${key === today ? " is-today" : ""}${selected === key ? " is-selected" : ""}`}>
               <span className="calendar-cell-day">{Number(key.slice(8))}</span>
               <span className="calendar-cell-items">
-                {list.slice(0, view === "week" ? 6 : 2).map(item => <span key={item.kind + item.id} className={`calendar-pill kind-${item.kind}${item.mine ? " is-mine" : ""}`}>{view === "week" && <b>{time(item.starts_at)}</b>}{item.title}</span>)}
+                {list.slice(0, view === "week" ? 6 : 2).map(item => <span key={item.kind + item.id} className={`calendar-pill hm-pill kind-${item.kind}${item.mine ? " is-mine" : ""}`} style={{ "--cat": categoryColor(item.label) } as React.CSSProperties}>{view === "week" && <b>{time(item.starts_at)}</b>}{item.title}</span>)}
                 {list.length > (view === "week" ? 6 : 2) && <span className="calendar-more">+{list.length - (view === "week" ? 6 : 2)}</span>}
               </span>
-              {list.length > 0 && <span className="calendar-dot" aria-hidden="true"/>}
+              {list.length > 0 && <span className="calendar-dot hm-dots" aria-hidden="true">{list.slice(0, 3).map(item => <i key={item.kind + item.id} style={{ background: categoryColor(item.label) }}/>)}</span>}
             </button>;
           })}
         </div>
       </div>
       <aside className="calendar-day-panel" aria-live="polite">
         <header><h3>{longDay(selected)}</h3>{selected === today && <span className="badge">Aujourd’hui</span>}</header>
-        {dayItems.map(item => <ItemCard key={item.kind + item.id} item={item} past={selected < today}/>)}
-        {!dayItems.length && <p className="list-empty">Rien de prévu ce jour.</p>}
+        {dayItems.map(item => <div key={item.kind + item.id} className="hm-day-item"><ItemCard item={item} past={selected < today}/><ItemDetails item={item}/></div>)}
+        {!dayItems.length && <div className="hm-day-empty"><span className="icon-tile lg" style={{ "--tile": "#f79009" } as React.CSSProperties}><UiIcon name="calendar"/></span><p>Rien de prévu ce jour.</p></div>}
         {staff && selected >= today && <div className="calendar-day-add">
           <Sheet label="Événement ce jour" title="Nouvel événement" description={longDay(selected)} variant="secondary"><EventForm date={selected}/></Sheet>
           <Sheet label="Réunion" title="Nouvelle réunion" description={longDay(selected)} variant="secondary"><MeetingForm date={selected}/></Sheet>
@@ -160,16 +169,16 @@ export function CalendarBoard({ items, staff, initialMonth }: { items: AgendaIte
       {upcoming.map((item, index) => {
         const key = keyOf(new Date(item.starts_at));
         const showDay = index === 0 || keyOf(new Date(upcoming[index - 1].starts_at)) !== key;
-        return <div key={item.kind + item.id}>{showDay && <h3 className="calendar-list-day">{longDay(key)}</h3>}<ItemCard item={item} past={false}/></div>;
+        return <div key={item.kind + item.id}>{showDay && <h3 className="calendar-list-day">{longDay(key)}</h3>}<ItemCard item={item} past={false}/><ItemDetails item={item}/></div>;
       })}
-      {!upcoming.length && <p className="panel empty-state">Aucun rendez-vous à venir.</p>}
+      {!upcoming.length && <div className="hm-empty is-column"><span className="icon-tile solid lg" style={{ "--tile": "#f79009" } as React.CSSProperties}><UiIcon name="calendar"/></span><div><b>Aucun rendez-vous à venir</b><small>Les événements et réunions apparaîtront ici.</small></div></div>}
     </div>}
   </div>;
 }
 
-export function AgendaCreateActions() {
+export function AgendaCreateActions({ defaultOpen = false }: { defaultOpen?: boolean }) {
   return <>
-    <Sheet label="Réunion" title="Nouvelle réunion" variant="secondary"><MeetingForm/></Sheet>
-    <Sheet label="Événement" title="Nouvel événement"><EventForm/></Sheet>
+    <Sheet label="Réunion" title="Nouvelle réunion" variant="secondary" successMessage="Réunion planifiée"><MeetingForm/></Sheet>
+    <Sheet label="Événement" title="Nouvel événement" defaultOpen={defaultOpen} successMessage="Événement publié"><EventForm/></Sheet>
   </>;
 }

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PublicFooter } from "@/components/public-footer";
 import { getPublicSettings } from "@/lib/public-settings";
+import { UiIcon } from "@/components/ui-icon";
 
 export default async function SupportPage(){
   const settings=await getPublicSettings();
@@ -13,9 +14,9 @@ export default async function SupportPage(){
       <p className="public-info-lead">Besoin d’aide pour votre compte, votre candidature ou un document ? Utilisez le canal correspondant ci-dessous.</p>
 
       <div className="support-grid">
-        <section><h2>Compte</h2><p>Si vous avez oublié votre mot de passe, utilisez la récupération depuis l’écran de connexion. Pour une invitation non reçue ou un compte suspendu, contactez l’administration.</p><Link className="button secondary" href="/forgot-password">Réinitialiser mon mot de passe</Link></section>
-        <section><h2>Candidature</h2><p>La page de suivi permet de consulter votre dossier avec la référence et le code privés fournis lors du dépôt.</p><Link className="button secondary" href="/application-status">Suivre ma candidature</Link></section>
-        <section><h2>Membre connecté</h2><p>Depuis Mon espace, vous pouvez consulter vos cotisations, reçus, documents et demandes personnelles.</p><Link className="button secondary" href="/login">Accéder à mon espace</Link></section>
+        <section><span className="icon-tile lg solid" style={{"--tile":"var(--accent)"} as React.CSSProperties}><UiIcon name="lock"/></span><h2>Compte</h2><p>Si vous avez oublié votre mot de passe, utilisez la récupération depuis l’écran de connexion. Pour une invitation non reçue ou un compte suspendu, contactez l’administration.</p><Link className="button secondary" href="/forgot-password">Réinitialiser mon mot de passe</Link></section>
+        <section><span className="icon-tile lg solid" style={{"--tile":"var(--orange)"} as React.CSSProperties}><UiIcon name="document"/></span><h2>Candidature</h2><p>La page de suivi permet de consulter votre dossier avec la référence et le code privés fournis lors du dépôt.</p><Link className="button secondary" href="/application-status">Suivre ma candidature</Link></section>
+        <section><span className="icon-tile lg solid" style={{"--tile":"var(--teal)"} as React.CSSProperties}><UiIcon name="user"/></span><h2>Membre connecté</h2><p>Depuis Mon espace, vous pouvez consulter vos cotisations, reçus, documents et demandes personnelles.</p><Link className="button secondary" href="/login">Accéder à mon espace</Link></section>
       </div>
 
       {(email||settings.contact_phone||settings.official_address)&&<section className="support-contact"><h2>Contacter l’association</h2>{email&&<p>Email : <a href={"mailto:"+email}>{email}</a></p>}{settings.contact_phone&&<p>Téléphone : {settings.contact_phone}</p>}{settings.official_address&&<p>Adresse : {settings.official_address}</p>}</section>}

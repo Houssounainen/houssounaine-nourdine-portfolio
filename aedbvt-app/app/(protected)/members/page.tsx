@@ -5,7 +5,9 @@ import { can } from "@/lib/access";
 import { addMember, inviteMember } from "./actions";
 import { MemberDirectory } from "@/components/member-directory";
 import { Sheet } from "@/components/sheet";
-import { UiIcon } from "@/components/ui-icon";
+import { UiIcon, type IconName } from "@/components/ui-icon";
+import { getPeople } from "@/lib/people";
+import { PageIcon } from "@/components/manage/page-icon";
 
 export default async function MembersPage({
   searchParams,
@@ -18,11 +20,20 @@ export default async function MembersPage({
     supabase.from("members").select("id,member_number,full_name,village,program,study_level,phone,email,status,profile_id,invitation_sent_at,account_activated_at").order("full_name"),
   ]);
   if (!can(profile?.role,"members_manage")) notFound();
+  const people=await getPeople(supabase,(members||[]).map(member=>member.profile_id));
+  const avatars=Object.fromEntries([...people].map(([id,person])=>[id,person.avatar_url]));
+  const list=members||[];
+  const stats:{label:string;value:number;tone:string;icon:IconName}[]=[
+    {label:"Fiches au registre",value:list.length,tone:"var(--accent)",icon:"users"},
+    {label:"Membres actifs",value:list.filter(m=>m.status==="active").length,tone:"var(--ok)",icon:"check"},
+    {label:"Comptes activés",value:list.filter(m=>m.account_activated_at).length,tone:"var(--violet)",icon:"user"},
+    {label:"À inviter",value:list.filter(m=>m.status==="active"&&!m.profile_id&&!m.account_activated_at).length,tone:"var(--orange)",icon:"send"},
+  ];
 
   return (
     <section className="page">
       <header className="page-header">
-        <div><h1>Membres</h1><p>{members?.length || 0} fiches au registre · {(members||[]).filter((m)=>m.status==="active").length} actives</p></div>
+        <div><PageIcon href="/members"/><h1>Membres</h1><p>{members?.length || 0} fiches au registre · {(members||[]).filter((m)=>m.status==="active").length} actives</p></div>
         <div className="header-actions">
           <details className="menu-button">
             <summary className="button secondary"><UiIcon name="download"/>Exporter</summary>
@@ -52,7 +63,9 @@ export default async function MembersPage({
       {params.error&&<div className="error-box">{params.error}</div>}
 
 
-      <MemberDirectory members={members||[]} inviteAction={inviteMember}/>
+      <div className="stat-grid mg-stats">{stats.map(stat=><article key={stat.label} style={{"--stat-color":stat.tone} as React.CSSProperties}><span className="icon-tile" style={{"--tile":stat.tone} as React.CSSProperties}><UiIcon name={stat.icon}/></span><strong>{stat.value}</strong><small>{stat.label}</small></article>)}</div>
+
+      <MemberDirectory members={list} avatars={avatars} inviteAction={inviteMember}/>
     </section>
   );
 }

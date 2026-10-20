@@ -99,6 +99,7 @@ export function navigationForRole(role:string|null|undefined):[string,string][]{
     ["/agenda","Agenda"],
     ["/chat","Discussion"],
     ["/community","Communauté"],
+    ["/people","Annuaire"],
     ["/market","Marché"],
     ["/library","Bibliothèque"],
     ["/games","Jeux"],

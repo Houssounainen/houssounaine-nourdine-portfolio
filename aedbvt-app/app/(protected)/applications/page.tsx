@@ -2,6 +2,9 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { can } from "@/lib/access";
 import { reviewMembershipApplication } from "./actions";
+import { PageIcon } from "@/components/manage/page-icon";
+import { Avatar } from "@/components/avatar";
+import { UiIcon } from "@/components/ui-icon";
 
 const labels:Record<string,string>={
   pending:"Reçue",
@@ -47,17 +50,17 @@ export default async function ApplicationsPage({
   const approved=rows.filter((item)=>item.status==="approved").length;
 
   return <section className="page">
-    <header className="page-header"><div><h1>Candidatures</h1></div><span className="status-pill">{pending} reçue(s) · {inReview} en cours</span></header>
+    <header className="page-header"><div><PageIcon href="/applications"/><h1>Candidatures</h1></div><span className="status-pill">{pending} reçue(s) · {inReview} en cours</span></header>
 
     {filters.decision==="approved"&&<article className="panel"><span className="badge ok">Candidature approuvée</span><p>{filters.invite==="invited"?"Le membre a été créé et son invitation de connexion a été envoyée par email.":filters.invite==="linked"?"Le membre est approuvé. Son compte est activé et il peut se connecter avec le mot de passe choisi lors de sa demande.":filters.invite==="skipped"?"Le membre a été créé. Ajoute un email pour lui envoyer son accès.":"Le membre a été créé, mais l’invitation email n’a pas pu être envoyée. Tu peux la renvoyer depuis Membres."}</p></article>}
     {filters.decision==="rejected"&&<article className="panel"><span className="badge">Candidature traitée</span><p>La candidature a été refusée et l’historique est conservé.</p></article>}
     {filters.error&&<div className="error-box">La décision n’a pas pu être enregistrée. Réessaie.</div>}
 
-    <div className="stat-grid">
-      <article><small>À examiner</small><strong>{pending}</strong><span>nouvelle(s) candidature(s)</span></article>
-      <article><small>En cours</small><strong>{inReview}</strong><span>dossier(s) pris en charge</span></article>
-      <article><small>Approuvées</small><strong>{approved}</strong><span>membre(s) créé(s)</span></article>
-      <article><small>Total</small><strong>{rows.length}</strong><span>historique conservé</span></article>
+    <div className="stat-grid mg-stats">
+      <article><span className="icon-tile" style={{"--tile":"var(--orange)"} as React.CSSProperties}><UiIcon name="bell"/></span><small>À examiner</small><strong>{pending}</strong><span>nouvelle(s) candidature(s)</span></article>
+      <article><span className="icon-tile" style={{"--tile":"var(--accent)"} as React.CSSProperties}><UiIcon name="clock"/></span><small>En cours</small><strong>{inReview}</strong><span>dossier(s) pris en charge</span></article>
+      <article><span className="icon-tile" style={{"--tile":"var(--ok)"} as React.CSSProperties}><UiIcon name="check"/></span><small>Approuvées</small><strong>{approved}</strong><span>membre(s) créé(s)</span></article>
+      <article><span className="icon-tile" style={{"--tile":"var(--violet)"} as React.CSSProperties}><UiIcon name="list"/></span><small>Total</small><strong>{rows.length}</strong><span>historique conservé</span></article>
     </div>
 
     <form className="panel request-filter-bar" method="get">
@@ -71,7 +74,7 @@ export default async function ApplicationsPage({
     <div className="application-review-list">
       {filtered.map((item)=><article className="panel application-review-card" key={item.id}>
         <div className="application-review-head">
-          <span><small>{item.reference}</small><h2>{item.full_name}</h2><em>{new Date(item.submitted_at).toLocaleString("fr-FR")}</em></span>
+          <Avatar name={item.full_name} size={48}/><span><small>{item.reference}</small><h2>{item.full_name}</h2><em>{new Date(item.submitted_at).toLocaleString("fr-FR")}</em></span>
           <span className={"badge application-"+item.status}>{labels[item.status]||item.status}</span>
         </div>
 
@@ -97,7 +100,7 @@ export default async function ApplicationsPage({
 
         {item.status==="approved"&&<div className="application-member-created"><b>Membre créé</b><span>Cette personne apparaît dans le registre. Si son email est valide, son accès peut être activé par invitation.</span></div>}
       </article>)}
-      {!filtered.length&&<div className="panel empty-state">Aucune candidature ne correspond aux filtres.</div>}
+      {!filtered.length&&<div className="panel empty-state mg-empty-auto">Aucune candidature ne correspond aux filtres.</div>}
     </div>
   </section>;
 }

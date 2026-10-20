@@ -7,6 +7,7 @@ import { UiIcon } from "@/components/ui-icon";
 import { FilterList } from "@/components/manage/filter-list";
 import { createInvoice, createQuote } from "./actions";
 import "@/app/manage.css";
+import { PageIcon } from "@/components/manage/page-icon";
 
 const fmt = (value: number) => value.toLocaleString("fr-FR") + " Ar";
 const quoteStatus: Record<string,string> = { draft: "Brouillon", issued: "Envoyé", accepted: "Accepté", converted: "Facturé", cancelled: "Annulé" };
@@ -70,7 +71,7 @@ export default async function DocumentsPage() {
   const quoteView=<FilterList
     placeholder="Numéro, destinataire, objet…"
     filters={[{key:"status",label:"Statut",options:Object.entries(quoteStatus).filter(([value])=>value!=="converted").map(([value,label])=>({value,label}))}]}
-    empty={<div className="panel empty-state"><p>Aucun devis.</p>{quoteSheet()}</div>}
+    empty={<div className="panel empty-state mg-empty-auto"><p>Aucun devis.</p>{quoteSheet()}</div>}
     items={(quotes||[]).map((q)=>({
       id:q.id,
       text:[q.number,q.recipient_name,q.subject].filter(Boolean).join(" "),
@@ -90,7 +91,7 @@ export default async function DocumentsPage() {
   const invoiceView=<FilterList
     placeholder="Numéro, destinataire, objet…"
     filters={[{key:"status",label:"Statut",options:Object.entries(invoiceStatus).map(([value,label])=>({value,label}))}]}
-    empty={<div className="panel empty-state"><p>Aucune facture.</p>{finance&&invoiceSheet("primary")}</div>}
+    empty={<div className="panel empty-state mg-empty-auto"><p>Aucune facture.</p>{finance&&invoiceSheet("primary")}</div>}
     items={(invoices||[]).map((i)=>{
       const paid=invoicePaidMap.get(i.id)||0;
       const remaining=Math.max(0,Number(i.total||0)-paid);
@@ -122,7 +123,7 @@ export default async function DocumentsPage() {
         <div><b>{p.receipt_number||"Reçu"}</b><small>{member?.full_name||"Membre"}{p.paid_at?" · "+day(p.paid_at):""}</small></div>
         <div className="row-end"><strong>{fmt(Number(p.amount))}</strong><a className="button secondary" href={"/api/receipts/"+p.id}><UiIcon name="download"/>PDF</a></div>
       </div>;})}
-      {!memberPayments?.length&&<div className="empty-state">Aucun reçu de cotisation.</div>}
+      {!memberPayments?.length&&<div className="empty-state mg-empty-auto">Aucun reçu de cotisation.</div>}
     </div>
     {finance&&<div className="panel list-card">
       <header><h2>Reçus de factures</h2></header>
@@ -131,22 +132,22 @@ export default async function DocumentsPage() {
         <div><b>{p.receipt_number}</b><small>Facture {invoice?.number||"—"} · {invoice?.recipient_name||"Destinataire"}{p.paid_at?" · "+day(p.paid_at):""}</small></div>
         <div className="row-end"><strong>{fmt(Number(p.amount))}</strong><a className="button secondary" href={"/api/documents/invoice-payments/"+p.id}><UiIcon name="download"/>PDF</a></div>
       </div>;})}
-      {!invoicePayments?.length&&<div className="empty-state">Aucun reçu de facture.</div>}
+      {!invoicePayments?.length&&<div className="empty-state mg-empty-auto">Aucun reçu de facture.</div>}
     </div>}
   </>;
 
   return (
     <section className="page manage-page">
       <header className="page-header">
-        <div><h1>Documents</h1><p>{quotes?.length||0} devis, {invoices?.length||0} facture(s) dont {openInvoices.length} non soldée(s). Les documents émis ne sont jamais supprimés.</p></div>
+        <div><PageIcon href="/documents"/><h1>Documents</h1><p>{quotes?.length||0} devis, {invoices?.length||0} facture(s) dont {openInvoices.length} non soldée(s). Les documents émis ne sont jamais supprimés.</p></div>
         <div className="header-actions">{finance&&invoiceSheet()}{quoteSheet()}</div>
       </header>
 
-      <div className="stat-grid manage-stats">
-        <article><a className="stat-link" href="#devis"><small>Devis</small><strong>{quotes?.length||0}</strong><span>valeur {fmt(quoteTotal)}</span></a></article>
-        <article><a className="stat-link" href="#factures"><small>Factures</small><strong>{invoices?.length||0}</strong><span>toutes périodes</span></a></article>
-        <article className={openInvoiceTotal?"attention-stat":""}><a className="stat-link" href="#factures"><small>À encaisser</small><strong>{fmt(openInvoiceTotal)}</strong><span>factures non soldées</span></a></article>
-        <article><a className="stat-link" href="#recus"><small>Reçus récents</small><strong>{(memberPayments?.length||0)+(invoicePayments?.length||0)}</strong><span>membres et factures</span></a></article>
+      <div className="mg-stats stat-grid manage-stats">
+        <article><a className="stat-link" href="#devis"><span className="icon-tile" style={{"--tile":"var(--accent)"} as React.CSSProperties}><UiIcon name="document"/></span><small>Devis</small><strong>{quotes?.length||0}</strong><span>valeur {fmt(quoteTotal)}</span></a></article>
+        <article><a className="stat-link" href="#factures"><span className="icon-tile" style={{"--tile":"var(--violet)"} as React.CSSProperties}><UiIcon name="receipt"/></span><small>Factures</small><strong>{invoices?.length||0}</strong><span>toutes périodes</span></a></article>
+        <article className={openInvoiceTotal?"attention-stat":""}><a className="stat-link" href="#factures"><span className="icon-tile" style={{"--tile":"var(--orange)"} as React.CSSProperties}><UiIcon name="wallet"/></span><small>À encaisser</small><strong>{fmt(openInvoiceTotal)}</strong><span>factures non soldées</span></a></article>
+        <article><a className="stat-link" href="#recus"><span className="icon-tile" style={{"--tile":"var(--ok)"} as React.CSSProperties}><UiIcon name="check"/></span><small>Reçus récents</small><strong>{(memberPayments?.length||0)+(invoicePayments?.length||0)}</strong><span>membres et factures</span></a></article>
       </div>
 
       {!finance&&<p className="notice">Le secrétariat prépare les devis ; la conversion en facture et la facturation restent réservées aux rôles financiers.</p>}

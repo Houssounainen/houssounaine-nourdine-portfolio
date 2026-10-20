@@ -8,6 +8,7 @@ import { UiIcon } from "@/components/ui-icon";
 import { FilterList } from "@/components/manage/filter-list";
 import { createAsset, createStockItem, recordStockMovement } from "./actions";
 import "@/app/manage.css";
+import { PageIcon } from "@/components/manage/page-icon";
 
 const assetStatus:Record<string,string>={
   available:"Disponible",
@@ -142,7 +143,7 @@ export default async function AssetsPage({
       {key:"status",label:"Statut",mode:"select",options:Object.entries(assetStatus).map(([value,label])=>({value,label}))},
       ...((categories||[]).length?[{key:"category",label:"Catégorie",mode:"select" as const,options:(categories||[]).map(c=>({value:c.id,label:c.name}))}]:[]),
     ]}
-    empty={<div className="panel empty-state">{(assets||[]).length?<p>Aucun bien ne correspond aux filtres. <Link href="/assets">Réinitialiser</Link></p>:<><p>Aucun bien enregistré.</p>{manage&&assetSheet()}</>}</div>}
+    empty={<div className="panel empty-state mg-empty-auto">{(assets||[]).length?<p>Aucun bien ne correspond aux filtres. <Link href="/assets">Réinitialiser</Link></p>:<><p>Aucun bien enregistré.</p>{manage&&assetSheet()}</>}</div>}
     items={filteredAssets.map((asset)=>{
       const category=categoryMap.get(asset.category_id);
       const custodian=profileMap.get(asset.custodian_id);
@@ -159,7 +160,7 @@ export default async function AssetsPage({
     <FilterList
       placeholder="Rechercher un article…"
       filters={[{key:"level",label:"Niveau",options:[{value:"low",label:"Stock bas"},{value:"ok",label:"Suffisant"}]}]}
-      empty={<div className="panel empty-state"><p>Aucun article de stock.</p>{manage&&stockSheet("primary")}</div>}
+      empty={<div className="panel empty-state mg-empty-auto"><p>Aucun article de stock.</p>{manage&&stockSheet("primary")}</div>}
       items={(stockItems||[]).map((item)=>{
         const low=Number(item.quantity_on_hand)<=Number(item.reorder_level);
         return {
@@ -202,17 +203,17 @@ export default async function AssetsPage({
           <div className="row-end"><strong>{Number(move.quantity).toLocaleString("fr-FR")} {item?.unit||""}</strong><time>{new Date(move.created_at).toLocaleDateString("fr-FR")}</time></div>
         </div>;
       })}
-      {!movements?.length&&<div className="empty-state">Aucun mouvement enregistré.</div>}
+      {!movements?.length&&<div className="empty-state mg-empty-auto">Aucun mouvement enregistré.</div>}
     </div>
   </>;
 
   const maintenanceView=toRepair.length
     ? <div className="panel list-card">{toRepair.map((asset)=><Fragment key={asset.id}>{assetRow(asset)}</Fragment>)}</div>
-    : <div className="panel empty-state">Aucun bien en maintenance ni endommagé.</div>;
+    : <div className="panel empty-state mg-empty-auto">Aucun bien en maintenance ni endommagé.</div>;
 
   return <section className="page manage-page">
     <header className="page-header">
-      <div><h1>Patrimoine</h1><p>{assets?.length||0} bien(s) inventorié(s), {stockItems?.length||0} article(s) de stock, {lowStock} à réapprovisionner.</p></div>
+      <div><PageIcon href="/assets"/><h1>Patrimoine</h1><p>{assets?.length||0} bien(s) inventorié(s), {stockItems?.length||0} article(s) de stock, {lowStock} à réapprovisionner.</p></div>
       <div className="header-actions">
         <a className="button secondary" href="/api/exports/assets?format=csv"><UiIcon name="download"/>Exporter</a>
         {manage&&stockSheet()}
@@ -220,12 +221,12 @@ export default async function AssetsPage({
       </div>
     </header>
 
-    <div className="stat-grid manage-stats">
-      <article><a className="stat-link" href="#equipements"><small>Patrimoine actif</small><strong>{(assets||[]).filter((a)=>!["retired","lost"].includes(a.status)).length}</strong><span>biens suivis</span></a></article>
-      <article><a className="stat-link" href="#equipements"><small>Valeur d’acquisition</small><strong>{totalValue.toLocaleString("fr-FR")} Ar</strong><span>hors biens retirés/perdus</span></a></article>
-      <article><a className="stat-link" href="#equipements"><small>Affectés</small><strong>{assigned}</strong><span>avec détenteur</span></a></article>
-      <article><a className="stat-link" href="#maintenance"><small>Maintenance</small><strong>{maintenance}</strong><span>bien(s)</span></a></article>
-      <article className={lowStock?"attention-stat":""}><a className="stat-link" href="#stock"><small>Stock bas</small><strong>{lowStock}</strong><span>article(s) à réapprovisionner</span></a></article>
+    <div className="mg-stats stat-grid manage-stats">
+      <article><a className="stat-link" href="#equipements"><span className="icon-tile" style={{"--tile":"var(--orange)"} as React.CSSProperties}><UiIcon name="tag"/></span><small>Patrimoine actif</small><strong>{(assets||[]).filter((a)=>!["retired","lost"].includes(a.status)).length}</strong><span>biens suivis</span></a></article>
+      <article><a className="stat-link" href="#equipements"><span className="icon-tile" style={{"--tile":"var(--ok)"} as React.CSSProperties}><UiIcon name="wallet"/></span><small>Valeur d’acquisition</small><strong>{totalValue.toLocaleString("fr-FR")} Ar</strong><span>hors biens retirés/perdus</span></a></article>
+      <article><a className="stat-link" href="#equipements"><span className="icon-tile" style={{"--tile":"var(--accent)"} as React.CSSProperties}><UiIcon name="user"/></span><small>Affectés</small><strong>{assigned}</strong><span>avec détenteur</span></a></article>
+      <article><a className="stat-link" href="#maintenance"><span className="icon-tile" style={{"--tile":"var(--violet)"} as React.CSSProperties}><UiIcon name="bolt"/></span><small>Maintenance</small><strong>{maintenance}</strong><span>bien(s)</span></a></article>
+      <article className={lowStock?"attention-stat":""}><a className="stat-link" href="#stock"><span className="icon-tile" style={{"--tile":"var(--coral)"} as React.CSSProperties}><UiIcon name="info"/></span><small>Stock bas</small><strong>{lowStock}</strong><span>article(s) à réapprovisionner</span></a></article>
     </div>
 
     <Tabs tabs={[

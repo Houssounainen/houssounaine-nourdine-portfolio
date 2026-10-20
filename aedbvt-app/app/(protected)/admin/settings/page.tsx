@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { can } from "@/lib/access";
 import { updateInstitutionalSettings } from "./actions";
+import { PageIcon } from "@/components/manage/page-icon";
 
 const keys=[
   "association_name","association_short_name","association_city","association_country",
@@ -24,7 +25,7 @@ export default async function InstitutionalSettingsPage(){
   const value=(key:string,fallback="")=>map.get(key)||fallback;
 
   return <section className="page">
-    <header className="page-header"><div><h1>Paramètres</h1></div><Link className="button secondary" href="/admin">← Administration</Link></header>
+    <header className="page-header"><div><PageIcon href="/admin"/><h1>Paramètres</h1></div><Link className="button secondary" href="/admin">← Administration</Link></header>
 
     <form action={updateInstitutionalSettings} className="settings-form">
       <article className="panel form-stack">

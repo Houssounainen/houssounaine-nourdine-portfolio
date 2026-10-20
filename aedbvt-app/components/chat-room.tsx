@@ -4,6 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type FormEve
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { UiIcon } from "@/components/ui-icon";
+import { Avatar, AvatarStack } from "@/components/avatar";
 import {
   CHAT_MAX_LENGTH, chatErrorMessage, isChatMessage, loadChatPage, mergeChatMessages,
   reconcileChatMessages, removeChatMessage, sendChatMessage, synchronizeChat, type ChatMessage,
@@ -16,7 +17,16 @@ type Props = {
   initialMessages: ChatMessage[];
   initialHasMore: boolean;
   initiallyUnavailable: boolean;
+  /** Noms et photos de profil connus (auteurs des messages, membres). */
+  people?: Record<string, ChatPerson>;
+  /** Membres actifs, pour la liste latérale du salon. */
+  members?: ChatPerson[];
 };
+
+export type ChatPerson = { id: string; full_name: string; avatar_url: string | null };
+
+/** Deux messages se suivent « en rafale » s’ils viennent du même auteur à moins de 5 minutes. */
+const GROUP_GAP = 5 * 60 * 1000;
 
 const dayLabel = (date: string) => new Date(date).toLocaleDateString("fr-FR", {
   day: "numeric", month: "long", year: "numeric", timeZone: "Indian/Antananarivo",
@@ -25,7 +35,7 @@ const timeLabel = (date: string) => new Date(date).toLocaleTimeString("fr-FR", {
   hour: "2-digit", minute: "2-digit", timeZone: "Indian/Antananarivo",
 });
 
-export function ChatRoom({ viewerId, canModerate, initialMessages, initialHasMore, initiallyUnavailable }: Props) {
+export function ChatRoom({ viewerId, canModerate, initialMessages, initialHasMore, initiallyUnavailable, people: initialPeople = {}, members = [] }: Props) {
   const [client] = useState(() => createClient());
   const [messages, setMessages] = useState(initialMessages);
   const messagesRef = useRef(initialMessages);
@@ -35,6 +45,7 @@ export function ChatRoom({ viewerId, canModerate, initialMessages, initialHasMor
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [unavailable, setUnavailable] = useState(initiallyUnavailable);
   const [blocked, setBlocked] = useState(false);
@@ -82,6 +93,25 @@ export function ChatRoom({ viewerId, canModerate, initialMessages, initialHasMor
       : await client.from("chat_message_likes").delete().eq("message_id", id).eq("user_id", viewerId);
     if (error && error.code !== "23505") setLikes(state => ({ ...state, [id]: current }));
   }, [client, likes, viewerId]);
+
+  // Photos de profil des auteurs : celles connues au chargement, complétées à l’arrivée de nouveaux auteurs.
+  const [people, setPeople] = useState<Record<string, ChatPerson>>(initialPeople);
+  const missingAuthors = [...new Set(messages.map(message => message.author_id))].filter(id => !people[id]).sort().join(",");
+  useEffect(() => {
+    if (!missingAuthors) return;
+    let cancelled = false;
+    void client.rpc("get_people", { p_ids: missingAuthors.split(",") }).then(({ data, error }) => {
+      if (cancelled || error || !Array.isArray(data)) return;
+      setPeople(state => {
+        const next = { ...state };
+        for (const person of data as ChatPerson[]) next[person.id] = person;
+        // Évite de redemander en boucle un auteur introuvable (compte désactivé).
+        for (const id of missingAuthors.split(",")) if (!next[id]) next[id] = { id, full_name: "", avatar_url: null };
+        return next;
+      });
+    });
+    return () => { cancelled = true; };
+  }, [client, missingAuthors]);
 
   const updateMessages = useCallback((update: (current: ChatMessage[]) => ChatMessage[]) => {
     if (!mounted.current || blockedRef.current) return;
@@ -246,14 +276,38 @@ export function ChatRoom({ viewerId, canModerate, initialMessages, initialHasMor
     if (scroller.current) scroller.current.scrollTop = scroller.current.scrollHeight;
   }
 
-  return <section className="page chat-page">
-    <header className="page-header chat-page-header">
-      <div><h1>Discussion</h1><p className="dashboard-subtitle">Visible par tous les membres actifs. Le Bureau peut retirer un message.</p></div>
-    </header>
-    <div className="chat-layout">
+  const last = messages[messages.length - 1];
+  const me = people[viewerId] || members.find(member => member.id === viewerId);
+  const nameOf = (message: ChatMessage) => people[message.author_id]?.full_name || message.author_name;
+  const photoOf = (id: string) => people[id]?.avatar_url || null;
+  const participants = members.length ? members : Object.values(people).filter(person => person.full_name);
+  const sameRun = (a: ChatMessage | undefined, b: ChatMessage | undefined) => Boolean(a && b && a.author_id === b.author_id
+    && dayLabel(a.created_at) === dayLabel(b.created_at) && Math.abs(Date.parse(b.created_at) - Date.parse(a.created_at)) < GROUP_GAP);
+
+  return <section className="page chat-page soc-chat">
+    <div className="chat-layout soc-chat-layout">
+      <aside className="soc-chat-list" aria-label="Conversations">
+        <header><h1>Discussions</h1></header>
+        <div className="soc-chat-convo is-active" aria-current="true">
+          <span className="soc-chat-group-icon"><UiIcon name="chat"/></span>
+          <span className="soc-chat-convo-text"><b>Salon général</b><small>{last ? `${last.author_id === viewerId ? "Vous" : nameOf(last).split(/\s+/)[0]} : ${last.deleted_at ? "message retiré" : last.body}` : "Aucun message pour l’instant"}</small></span>
+          {last && <time dateTime={last.created_at}>{timeLabel(last.created_at)}</time>}
+        </div>
+        {participants.length > 0 && <>
+          <p className="soc-chat-list-label">Membres · {participants.length}</p>
+          <ul className="soc-chat-members">
+            {participants.slice(0, 30).map(person => <li key={person.id}><Link href={`/people/${person.id}`}>
+              <Avatar name={person.full_name} url={person.avatar_url} size={36}/>
+              <span>{person.full_name}{person.id === viewerId && <small> (vous)</small>}</span>
+            </Link></li>)}
+          </ul>
+        </>}
+      </aside>
       <section className="chat-room" aria-labelledby="chat-room-title">
         <header className="chat-room-header">
-          <div><h2 id="chat-room-title">Salon général</h2></div>
+          <span className="soc-chat-group-icon"><UiIcon name="chat"/></span>
+          <div className="soc-chat-room-title"><h2 id="chat-room-title">Salon général</h2><p>Tous les membres actifs · le Bureau peut retirer un message</p></div>
+          {participants.length > 0 && <span className="soc-chat-stack"><AvatarStack people={participants.map(person => ({ name: person.full_name, url: person.avatar_url }))} max={4} size={28}/></span>}
           <span className={`chat-connection ${live && online && !blocked ? "is-live" : ""}`} role="status"><i aria-hidden="true"/>{blocked ? "Accès fermé" : !online ? "Hors connexion" : syncing ? "Synchronisation…" : live ? "En direct" : "Actualisation auto"}</span>
         </header>
         {blocked ? <div className="chat-empty" role="alert"><UiIcon name="shield" width={36} height={36}/><h3>Votre accès au salon est fermé.</h3><p>Reconnectez-vous avec un compte membre actif pour retrouver la discussion.</p><Link className="button primary" href="/login">Se reconnecter</Link></div> : <>
@@ -266,22 +320,36 @@ export function ChatRoom({ viewerId, canModerate, initialMessages, initialHasMor
             if (nearBottom.current) setNewMessages(false);
           }}>
             {hasMore && <div className="chat-history-control"><button className="chat-text-button" type="button" disabled={loadingHistory || !online} onClick={() => void loadHistory()}>{loadingHistory ? "Chargement…" : "Voir les messages précédents"}</button></div>}
-            {!messages.length && !unavailable && <div className="chat-empty"><span className="chat-empty-icon"><UiIcon name="chat" width={32} height={32}/></span><h3>Aucun message</h3><p>Les messages envoyés ici sont visibles par tous les membres actifs.</p><button className="chat-text-button" type="button" onClick={() => composer.current?.focus()}>Écrire le premier message <UiIcon name="arrow"/></button></div>}
+            {!messages.length && !unavailable && <div className="chat-empty"><span className="icon-tile lg solid" style={{ "--tile": "#0ba5ec" } as React.CSSProperties}><UiIcon name="chat"/></span><h3>Aucun message</h3><p>Les messages envoyés ici sont visibles par tous les membres actifs.</p><button className="chat-text-button" type="button" onClick={() => composer.current?.focus()}>Écrire le premier message <UiIcon name="arrow"/></button></div>}
             <ol className="chat-messages" aria-label="Messages">
               {messages.map((message, index) => {
                 const own = message.author_id === viewerId;
                 const day = dayLabel(message.created_at);
                 const showDay = index === 0 || dayLabel(messages[index - 1].created_at) !== day;
-                return <li className="chat-message-item" key={message.id}>
+                const joinsPrev = sameRun(messages[index - 1], message);
+                const joinsNext = sameRun(message, messages[index + 1]);
+                const name = nameOf(message);
+                const like = likes[message.id];
+                const position = joinsPrev ? (joinsNext ? "is-middle" : "is-last") : (joinsNext ? "is-first" : "is-single");
+                return <li className={`chat-message-item soc-msg-item ${position}`} key={message.id}>
                   {showDay && <div className="chat-day"><span>{day}</span></div>}
-                  <article className={`chat-message ${own ? "is-own" : ""}`} aria-label={`Message de ${own ? "vous" : message.author_name}`}>
-                    {!own && <span className="chat-avatar" aria-hidden="true">{message.author_name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase()}</span>}
+                  <article className={`chat-message soc-msg ${own ? "is-own" : ""} ${position}${selectedId === message.id ? " is-selected" : ""}`} aria-label={`Message de ${own ? "vous" : name}`}>
+                    {!own && (joinsNext ? <span className="soc-msg-spacer" aria-hidden="true"/> : <Avatar name={name} url={photoOf(message.author_id)} size={32} href={`/people/${message.author_id}`} className="soc-msg-avatar"/>)}
                     <div className="chat-message-content">
-                      <div className="chat-message-meta"><b>{own ? "Vous" : message.author_name}</b><time dateTime={message.created_at} title={day}>{timeLabel(message.created_at)}</time></div>
-                      <div className={`chat-bubble ${message.deleted_at ? "is-removed" : ""}`} onDoubleClick={() => { if (!message.deleted_at) void toggleLike(message.id); }}>{message.deleted_at ? <em>Message retiré</em> : message.body}</div>
-                      {!message.deleted_at && <button type="button" className={`chat-like${likes[message.id]?.liked ? " is-liked" : ""}${likes[message.id]?.count ? " has-count" : ""}`} aria-pressed={Boolean(likes[message.id]?.liked)} aria-label={likes[message.id]?.liked ? "Je n’aime plus" : "J’aime"} onClick={() => void toggleLike(message.id)}><UiIcon name="heart"/>{likes[message.id]?.count ? <span>{likes[message.id].count}</span> : null}</button>}
-                      {!message.deleted_at && (own || canModerate) && <div className="chat-message-actions">
-                        {confirmId === message.id ? <div className="chat-remove-confirm" role="group" aria-label="Confirmer le retrait du message"><span>Retirer ce message pour tous ?</span><button type="button" onClick={() => setConfirmId(null)} disabled={removingId === message.id}>Annuler</button><button type="button" onClick={() => void remove(message.id)} disabled={Boolean(removingId)}>{removingId === message.id ? "Retrait…" : "Confirmer"}</button></div> : <button type="button" onClick={() => setConfirmId(message.id)} disabled={!online}>{own ? "Retirer" : "Modérer"}<span className="sr-only"> le message de {message.author_name} à {timeLabel(message.created_at)}</span></button>}
+                      {!joinsPrev && !own && <div className="chat-message-meta"><b>{name}</b></div>}
+                      <div className="soc-msg-line">
+                        <div className={`chat-bubble ${message.deleted_at ? "is-removed" : ""}`} onClick={() => setSelectedId(current => current === message.id ? null : message.id)} onDoubleClick={() => { if (!message.deleted_at) void toggleLike(message.id); }}>
+                          {message.deleted_at ? <em>Message retiré</em> : message.body}
+                          <time className="soc-msg-time" dateTime={message.created_at} title={day}>{timeLabel(message.created_at)}</time>
+                          {!message.deleted_at && like?.count ? <span className={`soc-msg-reaction${like.liked ? " is-liked" : ""}`} aria-hidden="true"><UiIcon name="heart"/>{like.count > 1 && like.count}</span> : null}
+                        </div>
+                        {!message.deleted_at && <div className="soc-msg-tools">
+                          <button type="button" className={`chat-like${like?.liked ? " is-liked" : ""}${like?.count ? " has-count" : ""}`} aria-pressed={Boolean(like?.liked)} aria-label={`${like?.liked ? "Je n’aime plus" : "J’aime"}${like?.count ? ` (${like.count})` : ""}`} onClick={() => void toggleLike(message.id)}><UiIcon name="heart"/></button>
+                          {(own || canModerate) && confirmId !== message.id && <button type="button" className="soc-msg-remove" onClick={() => setConfirmId(message.id)} disabled={!online} aria-label={`${own ? "Retirer" : "Modérer"} le message de ${name} à ${timeLabel(message.created_at)}`}><UiIcon name="trash"/></button>}
+                        </div>}
+                      </div>
+                      {!message.deleted_at && (own || canModerate) && confirmId === message.id && <div className="chat-message-actions">
+                        <div className="chat-remove-confirm" role="group" aria-label="Confirmer le retrait du message"><span>Retirer ce message pour tous ?</span><button type="button" onClick={() => setConfirmId(null)} disabled={removingId === message.id}>Annuler</button><button type="button" onClick={() => void remove(message.id)} disabled={Boolean(removingId)}>{removingId === message.id ? "Retrait…" : "Confirmer"}</button></div>
                       </div>}
                     </div>
                   </article>
@@ -294,9 +362,13 @@ export function ChatRoom({ viewerId, canModerate, initialMessages, initialHasMor
           <form ref={form} onSubmit={send} className="chat-composer">
             {error && <p className="chat-error" role="alert">{error}</p>}
             <label htmlFor="chat-draft" className="sr-only">Message</label>
-            <div className="chat-composer-input"><textarea ref={composer} id="chat-draft" name="message" value={draft} maxLength={CHAT_MAX_LENGTH} rows={2} placeholder="Écrire un message" aria-describedby="chat-composer-hint" onChange={event => setDraft(event.target.value)} onKeyDown={event => {
-              if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) { event.preventDefault(); form.current?.requestSubmit(); }
-            }}/><button className="button primary chat-send" type="submit" disabled={sending || !online || !draft.trim()} aria-busy={sending}><UiIcon name="send"/><span>{sending ? "Envoi…" : "Envoyer"}</span></button></div>
+            <div className="chat-composer-input">
+              <Avatar name={me?.full_name || "Vous"} url={me?.avatar_url || null} size={36} className="soc-composer-avatar"/>
+              <textarea ref={composer} id="chat-draft" name="message" value={draft} maxLength={CHAT_MAX_LENGTH} rows={1} placeholder="Écrire un message…" aria-describedby="chat-composer-hint" onChange={event => setDraft(event.target.value)} onKeyDown={event => {
+                if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) { event.preventDefault(); form.current?.requestSubmit(); }
+              }}/>
+              <button className="button primary chat-send" type="submit" disabled={sending || !online || !draft.trim()} aria-busy={sending}><UiIcon name="send"/><span>{sending ? "Envoi…" : "Envoyer"}</span></button>
+            </div>
             <div className="chat-composer-footer" id="chat-composer-hint"><span>Entrée pour envoyer · Maj + Entrée pour une nouvelle ligne</span><span>{draft.length.toLocaleString("fr-FR")} / 2 000</span></div>
           </form>
         </>}

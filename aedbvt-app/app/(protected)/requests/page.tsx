@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { can } from "@/lib/access";
 import { processRequest } from "./actions";
 import { createIssuanceFromRequest } from "../administration/actions";
+import { PageIcon } from "@/components/manage/page-icon";
+import { Avatar } from "@/components/avatar";
 
 const labels: Record<string,string>={attestation:"Attestation",information:"Information",correction:"Correction",aide:"Aide",document:"Document",autre:"Autre"};
 const statusLabels: Record<string,string>={pending:"Reçue",in_review:"En traitement",completed:"Terminée",rejected:"Refusée"};
@@ -44,7 +46,7 @@ export default async function RequestsPage({
   });
 
   return <section className="page">
-    <header className="page-header"><div><h1>Demandes</h1></div><span className="status-pill">{pending} reçue(s) · {inReview} en traitement</span></header>
+    <header className="page-header"><div><PageIcon href="/requests"/><h1>Demandes</h1></div><span className="status-pill">{pending} reçue(s) · {inReview} en traitement</span></header>
 
     <form className="panel request-filter-bar" method="get">
       <label className="request-filter-search"><span className="sr-only">Rechercher</span><input name="q" defaultValue={filters.q||""} placeholder="Nom, numéro membre, objet…"/></label>
@@ -62,7 +64,7 @@ export default async function RequestsPage({
           <div className="article-meta"><span className="badge">{labels[request.request_type]||request.request_type}</span><span className={"badge request-"+request.status}>{statusLabels[request.status]||request.status}</span><time>{new Date(request.created_at).toLocaleDateString("fr-FR")}</time></div>
           <h2>{request.subject}</h2>
           <p>{request.details||"Aucun détail fourni."}</p>
-          <div className="request-member"><b>{member?.full_name||"Membre"}</b><small>{[member?.member_number,member?.village].filter(Boolean).join(" · ")}</small></div>
+          <div className="request-member mg-person"><Avatar name={member?.full_name||"Membre"} size={38}/><span><b>{member?.full_name||"Membre"}</b><small>{[member?.member_number,member?.village].filter(Boolean).join(" · ")}</small></span></div>
           {request.request_type==="attestation"&&!issuanceByRequest.has(request.id)&&!["completed","rejected"].includes(request.status)&&<form action={createIssuanceFromRequest} className="request-document-action"><input type="hidden" name="request_id" value={request.id}/><button className="button primary">Préparer l’attestation</button></form>}
           {issuanceByRequest.has(request.id)&&<a className="button secondary" href={"/administration/issuances/"+issuanceByRequest.get(request.id)?.id}>Ouvrir le document</a>}
           <form action={processRequest} className="form-stack">
@@ -73,7 +75,7 @@ export default async function RequestsPage({
           </form>
         </article>;
       })}
-      {!filtered.length&&<div className="panel empty-state">Aucune demande ne correspond aux filtres sélectionnés.</div>}
+      {!filtered.length&&<div className="panel empty-state mg-empty-auto">Aucune demande ne correspond aux filtres sélectionnés.</div>}
     </div>
   </section>
 }
