@@ -22,7 +22,7 @@ export function Composer({ action, authorName, authorAvatar, canAnnounce, defaul
   const form = useRef<HTMLFormElement>(null);
   const area = useRef<HTMLTextAreaElement>(null);
   const categories = Object.entries(POST_CATEGORIES).filter(([key]) => key !== "annonce" || canAnnounce);
-  const firstName = authorName.split(/\s+/).filter(Boolean).slice(-1)[0] || "";
+  const firstName = authorName.split(/\s+/).filter(Boolean)[0] || "";
 
   useEffect(() => {
     if (!defaultOpen) return;
