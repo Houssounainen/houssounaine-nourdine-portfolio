@@ -42,4 +42,4 @@ export function ussdHref(code: string) {
   return "tel:" + code.replace(/#/g, "%23");
 }
 
-export const ariary = (value: number) => `${Math.round(value).toLocaleString("fr-FR")} Ar`;
+export const ariary = (value: number) => `${Math.round(value).toLocaleString("fr-FR").replace(/[\u202f\u00a0]/g, "\u00a0")}\u00a0Ar`;
