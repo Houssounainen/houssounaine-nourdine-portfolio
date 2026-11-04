@@ -27,7 +27,8 @@
   <meta name="twitter:title" content="Homeopharma Tuléar — Étude de cas">
   <meta name="twitter:description" content="Vulgarisation claire et responsable de contenus liés aux produits naturels et au bien-être.">
   <meta name="twitter:image" content="https://houssounainenourdine.vercel.app/assets/og/homeopharma.jpg">
-  <link rel="icon" href="/assets/profile.webp" type="image/webp">
+  <link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,7 +38,7 @@
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"CreativeWork","name":"Homeopharma Tuléar — Étude de cas","headline":"Homeopharma Tuléar","description":"Vulgarisation claire et responsable de contenus liés aux produits naturels et au bien-être.","url":"https://houssounainenourdine.vercel.app/projets/homeopharma","image":"https://houssounainenourdine.vercel.app/assets/og/homeopharma.jpg","inLanguage":["fr","en"],"author":{"@type":"Person","name":"Houssounaine Nourdine","jobTitle":"Lead Community Manager","url":"https://houssounainenourdine.vercel.app/"},"about":"Bien-être naturel"}</script>
   <script>
     (function () {
-      try { document.documentElement.dataset.theme = localStorage.getItem("v2-theme") === "light" ? "light" : "dark"; } catch (error) { /* stockage indisponible */ }
+      try { document.documentElement.dataset.theme = (function (s) { return s === "light" || s === "dark" ? s : (window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark"); })(localStorage.getItem("v2-theme")); } catch (error) { /* stockage indisponible */ }
       document.documentElement.classList.add("js");
     })();
   </script>

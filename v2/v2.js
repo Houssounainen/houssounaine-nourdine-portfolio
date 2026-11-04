@@ -241,8 +241,9 @@
     const grid = $("[data-cases]");
     grid.replaceChildren();
     cases.forEach((item, index) => {
-      const card = document.createElement("button");
-      card.type = "button";
+      /* Vrai lien vers la page du projet (indexable, ouvrable dans un nouvel onglet) ; le clic simple ouvre la fenêtre animée. */
+      const card = document.createElement("a");
+      card.href = `/projets/${item.id}${state.lang === "en" ? "?lang=en" : ""}`;
       card.className = `case reveal${item.featured ? " case-featured" : ""}`;
       card.dataset.case = item.id;
       card.dataset.category = item.category;
@@ -252,7 +253,7 @@
       const project = projectData[item.id];
       card.innerHTML = `
         <span class="case-top"><img alt="" loading="lazy" width="54" height="54"><span class="case-type"></span></span>
-        <span class="case-copy"><h3></h3><p></p></span>
+        <div class="case-copy"><h3></h3><p></p></div>
         <span class="case-proof"><strong></strong><span></span></span>
         <span class="case-more" aria-hidden="true">↗</span>`;
       $("img", card).src = asset(item.logo);
@@ -268,7 +269,11 @@
       } else proof.textContent = item.proof;
       $(".case-proof span", card).textContent = T(item.proofKey);
       card.setAttribute("aria-label", `${T("viewCase")} — ${project.title}`);
-      card.addEventListener("click", () => openCase(item.id, card));
+      card.addEventListener("click", (event) => {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        openCase(item.id, card);
+      });
       grid.append(card);
     });
     observeReveals(grid);

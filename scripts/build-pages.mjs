@@ -119,7 +119,8 @@ function casePage(id) {
   <meta name="twitter:title" content="${esc(project.title)} — Étude de cas">
   <meta name="twitter:description" content="${esc(project.summary[0])}">
   <meta name="twitter:image" content="${SITE}/assets/og/${id}.jpg">
-  <link rel="icon" href="/assets/profile.webp" type="image/webp">
+  <link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -129,7 +130,7 @@ function casePage(id) {
   <script type="application/ld+json">${JSON.stringify(json)}</script>
   <script>
     (function () {
-      try { document.documentElement.dataset.theme = localStorage.getItem("v2-theme") === "light" ? "light" : "dark"; } catch (error) { /* stockage indisponible */ }
+      try { document.documentElement.dataset.theme = (function (s) { return s === "light" || s === "dark" ? s : (window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark"); })(localStorage.getItem("v2-theme")); } catch (error) { /* stockage indisponible */ }
       document.documentElement.classList.add("js");
     })();
   </script>
