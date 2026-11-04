@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -u
 
-if [ "${VERCEL_PROJECT_PRODUCTION_URL:-}" != "houssounainenourdine.vercel.app" ]; then
+# Identifier le portfolio par ses fichiers, indépendamment du compte Vercel.
+if [ ! -f index.html ] || [ ! -d v2 ]; then
   exit 0
 fi
 
