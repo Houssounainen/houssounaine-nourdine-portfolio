@@ -50,6 +50,6 @@ Le formulaire prépare un e-mail dans l’application du visiteur et ne stocke a
 
 ## Publication
 
-Adresse officielle : [houssounainenourdine.vercel.app](https://houssounainenourdine.vercel.app/).
+Adresse officielle : [nourdine.vercel.app](https://nourdine.vercel.app/).
 
 Le site est déployé automatiquement sur Vercel depuis la branche `main`. Les anciennes URL de rubriques (`/projects`, `/works`, `/clients`, etc.) ouvrent la page d’accueil sur la section correspondante ; `/association` redirige vers `/classique/association`.

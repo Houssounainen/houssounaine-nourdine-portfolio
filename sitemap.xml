@@ -1,89 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://houssounainenourdine.vercel.app/</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://houssounainenourdine.vercel.app/?lang=fr"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://houssounainenourdine.vercel.app/?lang=en"/>
+    <loc>https://nourdine.vercel.app/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://nourdine.vercel.app/?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nourdine.vercel.app/?lang=en"/>
     <lastmod>2026-10-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://houssounainenourdine.vercel.app/projets/sfcb</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://houssounainenourdine.vercel.app/projets/sfcb?lang=fr"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://houssounainenourdine.vercel.app/projets/sfcb?lang=en"/>
+    <loc>https://nourdine.vercel.app/projets/sfcb</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://nourdine.vercel.app/projets/sfcb?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nourdine.vercel.app/projets/sfcb?lang=en"/>
     <lastmod>2026-10-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://houssounainenourdine.vercel.app/projets/raiky</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://houssounainenourdine.vercel.app/projets/raiky?lang=fr"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://houssounainenourdine.vercel.app/projets/raiky?lang=en"/>
+    <loc>https://nourdine.vercel.app/projets/raiky</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://nourdine.vercel.app/projets/raiky?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nourdine.vercel.app/projets/raiky?lang=en"/>
     <lastmod>2026-10-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://houssounainenourdine.vercel.app/projets/tfc</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://houssounainenourdine.vercel.app/projets/tfc?lang=fr"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://houssounainenourdine.vercel.app/projets/tfc?lang=en"/>
+    <loc>https://nourdine.vercel.app/projets/tfc</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://nourdine.vercel.app/projets/tfc?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nourdine.vercel.app/projets/tfc?lang=en"/>
     <lastmod>2026-10-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://houssounainenourdine.vercel.app/projets/univpass</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://houssounainenourdine.vercel.app/projets/univpass?lang=fr"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://houssounainenourdine.vercel.app/projets/univpass?lang=en"/>
+    <loc>https://nourdine.vercel.app/projets/univpass</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://nourdine.vercel.app/projets/univpass?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nourdine.vercel.app/projets/univpass?lang=en"/>
     <lastmod>2026-10-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://houssounainenourdine.vercel.app/projets/le-jardin</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://houssounainenourdine.vercel.app/projets/le-jardin?lang=fr"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://houssounainenourdine.vercel.app/projets/le-jardin?lang=en"/>
+    <loc>https://nourdine.vercel.app/projets/le-jardin</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://nourdine.vercel.app/projets/le-jardin?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nourdine.vercel.app/projets/le-jardin?lang=en"/>
     <lastmod>2026-10-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://houssounainenourdine.vercel.app/projets/indian-basket</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://houssounainenourdine.vercel.app/projets/indian-basket?lang=fr"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://houssounainenourdine.vercel.app/projets/indian-basket?lang=en"/>
+    <loc>https://nourdine.vercel.app/projets/indian-basket</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://nourdine.vercel.app/projets/indian-basket?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nourdine.vercel.app/projets/indian-basket?lang=en"/>
     <lastmod>2026-10-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://houssounainenourdine.vercel.app/projets/homeopharma</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://houssounainenourdine.vercel.app/projets/homeopharma?lang=fr"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://houssounainenourdine.vercel.app/projets/homeopharma?lang=en"/>
+    <loc>https://nourdine.vercel.app/projets/homeopharma</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://nourdine.vercel.app/projets/homeopharma?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nourdine.vercel.app/projets/homeopharma?lang=en"/>
     <lastmod>2026-10-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://houssounainenourdine.vercel.app/projets/total-tools</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://houssounainenourdine.vercel.app/projets/total-tools?lang=fr"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://houssounainenourdine.vercel.app/projets/total-tools?lang=en"/>
+    <loc>https://nourdine.vercel.app/projets/total-tools</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://nourdine.vercel.app/projets/total-tools?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nourdine.vercel.app/projets/total-tools?lang=en"/>
     <lastmod>2026-10-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://houssounainenourdine.vercel.app/projets/wedis</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://houssounainenourdine.vercel.app/projets/wedis?lang=fr"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://houssounainenourdine.vercel.app/projets/wedis?lang=en"/>
+    <loc>https://nourdine.vercel.app/projets/wedis</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://nourdine.vercel.app/projets/wedis?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nourdine.vercel.app/projets/wedis?lang=en"/>
     <lastmod>2026-10-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://houssounainenourdine.vercel.app/projets/shain</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://houssounainenourdine.vercel.app/projets/shain?lang=fr"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://houssounainenourdine.vercel.app/projets/shain?lang=en"/>
+    <loc>https://nourdine.vercel.app/projets/shain</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://nourdine.vercel.app/projets/shain?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nourdine.vercel.app/projets/shain?lang=en"/>
     <lastmod>2026-10-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
