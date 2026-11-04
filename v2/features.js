@@ -533,7 +533,7 @@
          </section>`,
         `<section class="slide slide-end">
            <div><h2 class="script">${esc(T("thanks"))}</h2><p class="slide-lead">${esc(l.deckContact)}</p>
-           <ul class="slide-contact"><li><svg aria-hidden="true"><use href="#i-mail"/></svg>houssounainen@gmail.com</li><li><svg aria-hidden="true"><use href="#i-whatsapp"/></svg>+261 34 48 861 37</li><li><svg aria-hidden="true"><use href="#i-globe"/></svg>houssounainenourdine.vercel.app</li></ul></div>
+           <ul class="slide-contact"><li><svg aria-hidden="true"><use href="#i-mail"/></svg>houssounainen@gmail.com</li><li><svg aria-hidden="true"><use href="#i-whatsapp"/></svg>+261 34 48 861 37</li><li><svg aria-hidden="true"><use href="#i-globe"/></svg>nourdine.vercel.app</li></ul></div>
            <img src="${HN.asset("assets/qr-portfolio.svg")}" alt="QR code" class="slide-qr">
          </section>`
       ];

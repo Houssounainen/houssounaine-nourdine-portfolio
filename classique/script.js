@@ -1,7 +1,7 @@
 "use strict";
 
 const CONTACT_EMAIL = "houssounainen@gmail.com";
-const SITE_ORIGIN = "https://houssounainenourdine.vercel.app";
+const SITE_ORIGIN = "https://nourdine.vercel.app";
 const GA_MEASUREMENT_ID = "G-1LL57GXLVY";
 const FEATURE_FLAGS = Object.freeze({ testimonials: false, publications: false, resume: false });
 const RESUME_URL = "";
