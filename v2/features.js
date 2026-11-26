@@ -494,7 +494,7 @@
         ["271 K+", T("metricFollowers")], [HN.lang() === "fr" ? "100,4 M" : "100.4 M", T("metricViews")], ["24", T("metricClients")]
       ];
       const steps = [
-        ["2026", "raikyLeadTitle"], ["2025", "raikyInternTitle"], ["2024", "betTitle"], ["2024", "treasurerTitle"], ["2022", "akamaTitle"], ["2017", "personalMedia"]
+        ["2026", "raikyLeadTitle"], ["2025", "raikyInternTitle"], ["—", "trainerTitle"], ["2024", "treasurerTitle"], ["2022", "akamaTitle"], ["2017", "personalMedia"]
       ];
       const featuredCases = HN.cases.slice(0, 4);
       const recent = works.filter((work) => !work.video).slice(0, 8);
